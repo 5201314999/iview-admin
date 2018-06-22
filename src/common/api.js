@@ -43,19 +43,18 @@ function filter_trim(o){
  * send request
  * @param method
  * @param url
- * @param config
  * @param params
  * @param success
  * @param failure
  * @private
  */
-function _base(method, url, config, params, success, failure){
+function _base(method, url, params, success, failure){
     if(params){
         params = filter_trim(params);
     }else{
         params = {};
     }
-    let _config = {
+    let config = {
         method: method,
         url: url,
         data: params,
@@ -63,14 +62,7 @@ function _base(method, url, config, params, success, failure){
         headers: {'Content-Type': 'application/json;charset=utf-8'},
         timeout: 3000
     };
-    if(config){
-        for(let i in config){
-            if(config.hasOwnProperty(i) && !_config.hasOwnProperty(i)){
-                _config[i] = config[i];
-            }
-        }
-    }
-    axios(_config).then(function(response){
+    axios(config).then(function(response){
         if((typeof success).toLowerCase() === 'function'){
             success(response.data);
         }
