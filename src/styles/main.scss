@@ -1,1 +1,48 @@
 @charset "UTF-8";
+
+$themeColor: #1890ff;
+$darkColor: #001529;
+
+html, body{
+    width: 100%;
+    height: 100%;
+}
+html{
+    font-family: sans-serif;
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -ms-overflow-style: scrollbar;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+body{
+    margin: 0;
+    font-family: "Microsoft YaHei","Monospaced Number","Chinese Quote",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(0,0,0,.65);
+    background-color: #fff;
+}
+a{
+    color: $themeColor;
+    background-color: transparent;
+    text-decoration: none;
+    outline: none;
+    cursor: pointer;
+    -webkit-transition: color .3s;
+    transition: color .3s;
+    -webkit-text-decoration-skip: objects;
+}
+img{
+    vertical-align: middle;
+    border-style: none;
+}
+.right{
+    float: right;
+    height: 100%;
+}
+.left{
+    float: left;
+    height: 100%;
+}
+@import "components/layout";
