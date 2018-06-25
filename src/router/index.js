@@ -8,17 +8,24 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Home from '../views/Home'
-import Login from '../views/Login';
+
+import previewRouter from './control/preview';
+import LogRouter from './control/log';
 
 Vue.use(VueRouter);
+
+const childrenRouter = [
+    previewRouter,
+    LogRouter
+];
 
 const router = new VueRouter({
     mode: 'hash',
     routes: [{
         path: '/',
         component: Home,
-        children: []
-    }, {path: '/login', component: Login}]
+        children: [...childrenRouter]
+    }]
 });
 
 export default router;
