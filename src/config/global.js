@@ -3,13 +3,23 @@
  * @author lirongtong <lirongtong@hotmail.com>
  * @github: https://github.com/wildidea
  * @date 2018-6-21 15:06
+ *
+ * @desc 全局变量, 组件内访问 [ this.G.user.name / {{ G.user.name }} ]
  */
 const title = '影视运营系统';
 
+/**
+ * 用户信息(初始化后覆盖)
+ * @type {{name: string}}
+ */
 const user = {
     name: '李荣通'
 };
 
+/**
+ * 左侧菜单
+ * @type {{items: *[], active: string, open: string[], collapsed: boolean}}
+ */
 const menu = {
     items: [
         {
@@ -86,14 +96,25 @@ const menu = {
     collapsed: false
 };
 
+/**
+ * API
+ * @type {*}
+ */
 const api = {
     user: 'user/getLoginUser',
     logout: 'user/logout'
 };
 
+/**
+ * 面包屑(默认)
+ * @type {*[]}
+ */
+const breadcrumb = [{path: '/', title: '首页', icon: 'ios-home-outline'}];
+
 export default {
     title,
     user,
     menu,
+    breadcrumb,
     api
 }

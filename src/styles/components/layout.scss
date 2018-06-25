@@ -299,3 +299,30 @@
     -ms-flex-direction: row;
     flex-direction: row;
 }
+.ivu-layout{
+    .ivu-breadcrumb{
+        background: #FFF;
+    }
+    .ivu-layout-content,
+    .ivu-breadcrumb{
+        padding: 16px 32px;
+        margin-bottom: 16px;
+        span{
+            a, a:active, a:hover, a:visited{
+                color: $themeColor;
+            }
+            .ivu-icon{
+                font-size: 16px;
+                margin-right: 5px;
+                vertical-align: -1px;
+            }
+        }
+        span:last-child{
+            font-weight: normal;
+            span{
+                color: #C0C0C0;
+                cursor: default;
+            }
+        }
+    }
+}
