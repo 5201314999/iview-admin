@@ -179,12 +179,11 @@
                                     line-height: 40px;
                                     margin-top: 4px;
                                     margin-bottom: 4px;
-                                    overflow: hidden;
                                     text-overflow: ellipsis;
                                     cursor: pointer;
                                     padding: 0 20px;
-                                    position: relative;
                                     display: block;
+                                    position: relative;
                                     white-space: nowrap;
                                     color: hsla(0, 0%, 100%, .65);
                                     border-right: 0;
@@ -211,9 +210,24 @@
                                     a.router-link-active{
                                         color: #FFF;
                                     }
-                                }
-                                .ivu-menu-item-selected{
-                                    background: $themeColor;
+                                    .ivu-dropdown-rel{
+                                        padding: 0;
+                                        .ivu-icon{
+                                            position: absolute;
+                                            right: 0;
+                                            top: 12px;
+                                            text-align: right;
+                                        }
+                                    }
+                                    .ivu-dropdown-rel:hover{
+                                        a, .ivu-icon{
+                                           color: #FFF;
+                                        }
+                                    }
+                                    .ivu-select-dropdown{
+                                        margin-left: 20px;
+                                        top: -14px !important;
+                                    }
                                 }
                                 .ivu-dropdown-item:hover,
                                 .ivu-dropdown-item:active,
@@ -223,6 +237,12 @@
                                 }
                                 .ivu-dropdown-item:not(:last-child){
                                     margin-bottom: 8px;
+                                }
+                                .ivu-menu-item-selected,
+                                .ivu-menu-item-selected:hover,
+                                .ivu-menu-item-selected:active,
+                                .ivu-menu-item-selected:visited{
+                                    background: $themeColor;
                                 }
                             }
                         }

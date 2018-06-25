@@ -9,15 +9,9 @@ import VueRouter from 'vue-router';
 
 import Home from '../views/Home'
 
-import previewRouter from './control/preview';
-import LogRouter from './control/log';
-
 Vue.use(VueRouter);
 
-const childrenRouter = [
-    previewRouter,
-    LogRouter
-];
+const childrenRouter = [];
 
 const router = new VueRouter({
     mode: 'hash',
