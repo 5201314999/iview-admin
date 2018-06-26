@@ -45,7 +45,6 @@
                     }
                 }
                 this.breadcrumb = breadcrumb;
-                console.log(this.$router);
             }
         },
         watch: {

@@ -105,16 +105,9 @@ const api = {
     logout: 'user/logout'
 };
 
-/**
- * 面包屑(默认)
- * @type {*[]}
- */
-const breadcrumb = [{path: '/', title: '首页', icon: 'ios-home-outline'}];
-
 export default {
     title,
     user,
     menu,
-    breadcrumb,
     api
 }

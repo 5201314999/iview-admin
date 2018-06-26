@@ -26,5 +26,19 @@ exports.install = function(Vue){
 
     Vue.prototype.setTitle = function(title){
         document.title = (title ? title : this.G.title) + ' - 后台管理';
-    }
+    };
+
+    Vue.prototype.inArray = function(elem, array, i){
+        let len;
+        if(array){
+            len = array.length;
+            i = i ? i < 0 ? Math.max(0, len + i) : i : 0;
+            for(; i < len; i++){
+                if(i in array && array[i] ===  elem){
+                    return i;
+                }
+            }
+        }
+        return -1;
+    };
 };
