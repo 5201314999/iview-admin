@@ -127,7 +127,6 @@
                                 }
                             }
                         }
-                        console.log(this.menu);
                     }
                     this.updateMenuActive();
                 }

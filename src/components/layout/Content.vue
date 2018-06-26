@@ -33,7 +33,12 @@
                 }else{
                     for(i in match){
                         if(parseInt(i.toString()) === parseInt((match.length - 1).toString())){
-                            breadcrumb.push({title: match[i].name});
+                            if(typeof match[i].name === 'undefined' || match[i].name === ''){
+                                let last = breadcrumb.pop();
+                                breadcrumb.push({title: last.title});
+                            }else{
+                                breadcrumb.push({title: match[i].name});
+                            }
                         }else{
                             if(parseInt(i.toString()) === 0){
                                 let path = match[i].path === '' ? '/' : match[i].path;
