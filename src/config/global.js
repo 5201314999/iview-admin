@@ -105,9 +105,12 @@ const api = {
     logout: 'user/logout'
 };
 
+const footer = 'Copyright &copy; 2018';
+
 export default {
     title,
     user,
     menu,
-    api
+    api,
+    footer
 }

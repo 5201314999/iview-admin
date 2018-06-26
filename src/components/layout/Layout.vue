@@ -5,6 +5,7 @@
             <layout>
                 <fl-header @collapsed="collapse = G.menu.collapsed"></fl-header>
                 <fl-content></fl-content>
+                <fl-footer></fl-footer>
             </layout>
         </layout>
     </div>
@@ -15,12 +16,14 @@
     import Sider from './Sider';
     import Header from './Header';
     import Content from './Content';
+    import Footer from './Footer';
 
     const LayoutComponent = {
         components: {
             'fl-sider': Sider,
             'fl-header': Header,
-            'fl-content': Content
+            'fl-content': Content,
+            'fl-footer': Footer
         },
         data() {
             return {

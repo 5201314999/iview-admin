@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="layout-content">
         <Breadcrumb>
             <template v-for="(item, index) in breadcrumb">
                 <BreadcrumbItem :to="item.path" :key="index">

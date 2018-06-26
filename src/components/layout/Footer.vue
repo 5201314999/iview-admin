@@ -1,11 +1,7 @@
 <template>
-    <div></div>
+    <div class="layout-footer">
+        <div class="footer-content">
+            <div class="copyright" v-html="G.footer"></div>
+        </div>
+    </div>
 </template>
-
-<script>
-
-    const FooterComponent = {};
-
-    export default FooterComponent;
-
-</script>
