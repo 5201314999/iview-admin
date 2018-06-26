@@ -17,6 +17,7 @@ const router = new VueRouter({
     mode: 'hash',
     routes: [{
         path: '/',
+        name: '首页',
         component: Home,
         children: [...childrenRouter]
     }]
