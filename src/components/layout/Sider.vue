@@ -59,6 +59,7 @@
                 return this.collapse;
             },
             collapsedState: function(){
+                if(!this.collapse) this.getMenuActive();
                 return this.collapse ? 'sider-collapsed' : '';
             }
         },
@@ -115,12 +116,16 @@
                 let route = this.$route,
                     path = route.path.substring(1);
                 if(path !== ''){
-                    path = path.replace(/\//, '-');
-                    if(this.inArray(path, this.names) !== -1){
-                        this.$set(this.menu, 'active', path);
+                    let name = path.replace(/\//, '-'),
+                        has = this.inArray(name, this.names) !== -1;
+                    if(!has){
+                        name = this.getRootName(path);
+                    }
+                    if(this.inArray(name, this.names) !== -1){
+                        this.$set(this.menu, 'active', name);
                         for(let i in this.nameObj){
                             if(this.nameObj.hasOwnProperty(i)){
-                                if(this.nameObj[i][path]){
+                                if(this.nameObj[i][name]){
                                     if(this.inArray(i, this.menu.open) === -1){
                                         this.menu.open.push(i);
                                     }
@@ -130,6 +135,20 @@
                     }
                     this.updateMenuActive();
                 }
+            },
+            getRootName(path) {
+                let paths = path.split('/'),
+                    name = '';
+                if(paths.length > 1){
+                    for(let i in paths){
+                        if(paths.hasOwnProperty(i)){
+                            if(this.inArray(paths[i], this.names) !== -1){
+                                name = paths[i];
+                            }
+                        }
+                    }
+                }
+                return name ? name : path;
             },
             setMenuActiveDef() {
                 this.$set(this.menu, 'active', this.G.menu.active);

@@ -12,9 +12,7 @@ const title = '影视运营系统';
  * 用户信息(初始化后覆盖)
  * @type {{name: string}}
  */
-const user = {
-    name: '李荣通'
-};
+const user = {};
 
 /**
  * 左侧菜单
@@ -29,13 +27,13 @@ const menu = {
             children: [
                 {
                     title: '预览效果',
-                    name: 'preview',
-                    path: 'preview'
+                    name: 'previews',
+                    path: '/previews'
                 },
                 {
                     title: '操作日志',
-                    name: 'log',
-                    path: 'log'
+                    name: 'logs',
+                    path: '/logs'
                 }
             ]
         },
@@ -46,25 +44,25 @@ const menu = {
             children: [
                 {
                     title: '页面管理',
-                    name: 'page',
-                    path: 'page'
+                    name: 'pages',
+                    path: '/pages'
                 },
                 {
                     title: '标签管理',
-                    name: 'tab',
-                    path: 'tab'
+                    name: 'tabs',
+                    path: '/tabs'
                 }
             ]
         },
         {
             title: '专题运营',
-            name: 'special-topic',
+            name: 'specials',
             icon: 'android-globe',
             children: [
                 {
                     title: '专题页管理',
-                    name: 'special',
-                    path: 'special'
+                    name: 'specials',
+                    path: '/specials'
                 }
             ]
         },
@@ -75,23 +73,23 @@ const menu = {
             children: [
                 {
                     title: '推荐组管理',
-                    name: 'recommend-group',
-                    path: 'recommend/group'
+                    name: 'group',
+                    path: '/recommend/group'
                 },
                 {
-                    title: '推荐组样式管理',
-                    name: 'recommend-style',
-                    path: 'recommend/style'
+                    title: '推荐组布局管理',
+                    name: 'style',
+                    path: '/recommend/style'
                 },
                 {
-                    title: '组件库管理',
-                    name: 'recommend-component',
-                    path: 'recommend/component'
+                    title: '样式组件库',
+                    name: 'component',
+                    path: '/recommend/component'
                 }
             ]
         }
     ],
-    active: 'preview',
+    active: 'previews',
     open: ['control'],
     collapsed: false
 };
@@ -102,9 +100,24 @@ const menu = {
  */
 const api = {
     user: 'user/getLoginUser',
-    logout: 'user/logout'
+    logout: 'user/logout',
+    getRecModuleList:'/rec-module-manager/rec-module-list',
+    addStyleComponent:'/rec-module-manager/rec-module/',
+    getLayoutList:'/rec-layout-manager/rec-layout-list',
+    getGroupList:'/rec-group-manager/rec-group-list',
+    pages: {
+        list: '/page-manager/page-list',
+        create: '/page-manager/page',
+        detail: '/page-manager/page',
+        delete: '/page-manager/page/{page-id}',
+        state: '/page-manager/page/{page-id}/change-state/{state}'
+    }
 };
 
+/**
+ * footer content
+ * @type {string}
+ */
 const footer = 'Copyright &copy; 2018';
 
 export default {

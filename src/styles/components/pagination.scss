@@ -1,0 +1,33 @@
+.pagination{
+  padding: 24px 0 0 0;
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .ivu-page{
+    .ivu-select-placeholder,
+    .ivu-select-selected-value{
+      font-size: 14px;
+    }
+    .ivu-select{
+      .ivu-select-item{
+        font-size: 14px !important;
+      }
+    }
+    input[type="text"]{
+      text-align: center;
+    }
+    .ivu-page-total{
+      vertical-align: bottom;
+      color: #999;
+    }
+    .ivu-page-item-active{
+      background-color: $themeColor;
+    }
+  }
+  .pagination-total{
+    margin-right: 15px;
+    color: #bababa;
+    font-size: 14px;
+  }
+}

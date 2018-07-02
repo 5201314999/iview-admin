@@ -2,6 +2,9 @@
 
 $themeColor: #1890ff;
 $darkColor: #001529;
+$greemColor: #5cb85c;
+$redColor: #ff0600;
+$orangeColor: #ec971f;
 
 html, body{
     width: 100%;
@@ -37,6 +40,10 @@ img{
     vertical-align: middle;
     border-style: none;
 }
+.container,
+.ivu-layout{
+    overflow: hidden;
+}
 .right{
     float: right;
     height: 100%;
@@ -45,4 +52,56 @@ img{
     float: left;
     height: 100%;
 }
-@import "components/layout";
+.clearfix{
+    zoom: 1;
+}
+.clearfix:after{
+    visibility: hidden;
+    display: table;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+.red{
+    color: $redColor;
+}
+.green{
+    color: $greemColor;
+}
+.fl-container{
+    .fl-content{
+        padding: 24px;
+        background: #FFF;
+        border-radius: 2px;
+        transition: all .3s;
+        .fl-search{
+            .search-input{
+                width: 350px;
+                margin-right: 20px;
+            }
+            .search-button{
+                button{
+                    margin-right: 10px;
+                }
+                button:last-child{
+                    margin-right: 0;
+                }
+            }
+            .search-senior{
+                border: 1px solid #e8e8ea;
+                border-radius: 2px;
+                padding: 10px;
+                margin-top: 20px;
+                width: 100%;
+            }
+        }
+        .fl-table{
+            margin-top: 20px;
+        }
+    }
+}
+@import "./components/layout";
+@import "./components/table";
+@import "./components/pagination";
+@import "./components/modal";

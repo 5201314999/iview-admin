@@ -3,7 +3,7 @@
         <div class="header">
             <icon type="android-menu" class="header-trigger" @click="collapsedMenu"></icon>
             <div class="header-nav right">
-                <span class="nav-item"><icon type="android-person"></icon>{{ G.user.name }}</span>
+                <span class="nav-item"><icon type="android-person"></icon>{{ name }}</span>
                 <span class="nav-item" @click="logoutUser">
                     <icon type="power"></icon>退出登录
                 </span>
@@ -15,9 +15,12 @@
 <script>
 
     const HeaderComponent = {
-        mounted() {
-            this.getUserInfo();
+        mounted(){
             this.setTitle();
+            this.getUserInfo();
+            this.$on('get-user-success', function(){
+                this.$set(this, 'name', this.G.user.name);
+            })
         },
         methods: {
             collapsedMenu() {
@@ -27,6 +30,9 @@
             logoutUser() {
                 this.logout();
             }
+        },
+        data() {
+            return {name: ''}
         }
     };
 

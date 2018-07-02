@@ -1,0 +1,70 @@
+.ivu-table{
+  table{
+    font-size: 14px;
+  }
+  .ivu-table-header{
+    th{
+      font-weight: normal;
+      height: 48px;
+    }
+  }
+  .ivu-table-body{
+    overflow: hidden;
+    .date{
+      color: #999;
+    }
+    tr:nth-child(2n) td{
+      background: transparent;
+    }
+    tr.ivu-table-row-hover{
+      td{
+        background: #f8f8f9;
+      }
+    }
+    .action{
+      span{
+        vertical-align: middle;
+        color: $themeColor;
+        cursor: pointer;
+        margin-right: 15px;
+        .ivu-icon-ios-arrow-down{
+          margin-left: 5px;
+        }
+      }
+      span:last-child{
+        margin-right: 0;
+      }
+      .ivu-poptip-popper{
+        min-width: auto;
+        a.act-item{
+          display: block;
+          font-size: 14px;
+          padding: 5px 10px;
+        }
+      }
+    }
+  }
+  .ivu-table-filter i,
+  .ivu-table-sort i{
+    color: #bbbec4;
+  }
+  .ivu-table-tip{
+    padding: 40px 0;
+    overflow: hidden;
+    td{
+      border-bottom: none;
+    }
+  }
+}
+.ivu-table-popper{
+  .ivu-checkbox-wrapper{
+    font-size: 14px;
+    padding: 5px;
+  }
+  .ivu-table-filter-footer{
+    padding: 4px 8px;
+    button{
+      font-size: 14px;
+    }
+  }
+}
