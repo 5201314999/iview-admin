@@ -21,76 +21,25 @@ const user = {};
 const menu = {
     items: [
         {
-            title: '控制台',
-            name: 'control',
-            icon: 'ios-speedometer-outline',
+            title: 'Home',
+            name: 'home',
+            icon: 'ios-home-outline',
             children: [
                 {
-                    title: '预览效果',
-                    name: 'previews',
-                    path: '/previews'
+                    title: 'Table',
+                    name: 'table',
+                    path: '/table'
                 },
                 {
-                    title: '操作日志',
-                    name: 'logs',
-                    path: '/logs'
-                }
-            ]
-        },
-        {
-            title: 'Launcher 运营',
-            name: 'launcher',
-            icon: 'android-laptop',
-            children: [
-                {
-                    title: '页面管理',
-                    name: 'pages',
-                    path: '/pages'
-                },
-                {
-                    title: '标签管理',
-                    name: 'tabs',
-                    path: '/tabs'
-                }
-            ]
-        },
-        {
-            title: '专题运营',
-            name: 'specials',
-            icon: 'android-globe',
-            children: [
-                {
-                    title: '专题页管理',
-                    name: 'specials',
-                    path: '/specials'
-                }
-            ]
-        },
-        {
-            title: '推荐组库',
-            name: 'recommend',
-            icon: 'ios-photos-outline',
-            children: [
-                {
-                    title: '推荐组管理',
-                    name: 'group',
-                    path: '/recommend/group'
-                },
-                {
-                    title: '推荐组布局管理',
-                    name: 'style',
-                    path: '/recommend/style'
-                },
-                {
-                    title: '样式组件库',
-                    name: 'component',
-                    path: '/recommend/component'
+                    title: 'Pagination',
+                    name: 'pagination',
+                    path: '/pagination'
                 }
             ]
         }
     ],
-    active: 'previews',
-    open: ['control'],
+    active: 'table',
+    open: ['home'],
     collapsed: false
 };
 

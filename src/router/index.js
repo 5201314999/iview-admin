@@ -9,15 +9,21 @@ import VueRouter from 'vue-router';
 
 import Home from '../views/Home'
 
+import DemoTableRouter from './demo/table';
+import DemoPaginationRouter from './demo/pagination';
+
 Vue.use(VueRouter);
 
-const childrenRouter = [];
+const childrenRouter = [
+    DemoTableRouter,
+    DemoPaginationRouter
+];
 
 const router = new VueRouter({
     mode: 'hash',
     routes: [{
         path: '/',
-        name: '首页',
+        name: 'Home',
         component: Home,
         children: [...childrenRouter]
     }]

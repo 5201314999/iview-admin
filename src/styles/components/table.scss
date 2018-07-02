@@ -12,6 +12,12 @@
     overflow: hidden;
     .date{
       color: #999;
+      p{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        white-space: nowrap;
+      }
     }
     tr:nth-child(2n) td{
       background: transparent;
