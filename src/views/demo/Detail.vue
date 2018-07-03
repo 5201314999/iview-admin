@@ -1,6 +1,9 @@
 <template>
     <div class="fl-container">
-        <div class="fl-content">
+        <Card>
+            <Row slot="title">
+                <icon type="wand" class="mr5"></icon>效果
+            </Row>
             <div class="fl-detail">
                 <Row>
                     <Col span="12">
@@ -48,10 +51,10 @@
                     </Col>
                 </Row>
             </div>
-        </div>
+        </Card>
         <Card class="mt20">
             <Row slot="title">
-                <icon type="code" class="mr5"></icon>代码示例
+                <icon type="code" class="mr5"></icon>代码
             </Row>
             <pre v-highlight><code>{{ html }}</code></pre>
         </Card>

@@ -1,13 +1,16 @@
 <template>
     <div class="fl-container">
-        <div class="fl-content">
+        <Card>
+            <Row slot="title">
+                <icon type="wand" class="mr5"></icon>效果
+            </Row>
             <Row class="fl-table">
                 <Table :columns="columns" :data="list" :loading="loading" size="large" stripe></Table>
             </Row>
-        </div>
+        </Card>
         <Card class="mt20">
             <Row slot="title">
-                <icon type="code" class="mr5"></icon>代码示例
+                <icon type="code" class="mr5"></icon>代码
             </Row>
             <Row v-highlight>
                 <pre><code lang="html">{{ content }}</code></pre>

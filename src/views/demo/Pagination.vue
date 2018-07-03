@@ -1,16 +1,21 @@
 <template>
     <div class="fl-container">
-        <div class="fl-content clearfix">
-            <Row class="pagination mb20">
-                <span class="pagination-total">
-                    共 {{ total }} 条记录 第 {{ pagination.pageNum }} / {{ Math.ceil(total/pagination.pageSize) }} 页
-                </span>
-                <Page :total="total" :current="pagination.pageNum" :page-size="pagination.pageSize" show-elevator show-sizer @on-change="setPaginationNum" @on-page-size-change="setPaginationSize"></Page>
+        <Card class="clearfix">
+            <Row slot="title">
+                <icon type="wand" class="mr5"></icon>效果
             </Row>
-        </div>
+            <div class="clearfix">
+                <Row class="pagination mb20">
+                    <span class="pagination-total">
+                        共 {{ total }} 条记录 第 {{ pagination.pageNum }} / {{ Math.ceil(total/pagination.pageSize) }} 页
+                    </span>
+                    <Page :total="total" :current="pagination.pageNum" :page-size="pagination.pageSize" show-elevator show-sizer @on-change="setPaginationNum" @on-page-size-change="setPaginationSize"></Page>
+                </Row>
+            </div>
+        </Card>
         <Card class="mt20">
             <Row slot="title">
-                <icon type="code" class="mr5"></icon>代码示例
+                <icon type="code" class="mr5"></icon>代码
             </Row>
             <pre v-highlight><code>{{ html }}</code></pre>
         </Card>
