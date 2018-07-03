@@ -11,19 +11,23 @@ import Home from '../views/Home'
 
 import DemoTableRouter from './demo/table';
 import DemoPaginationRouter from './demo/pagination';
+import DemoFormRouter from './demo/form';
+import DemoDetailRouter from './demo/detail';
 
 Vue.use(VueRouter);
 
 const childrenRouter = [
     DemoTableRouter,
-    DemoPaginationRouter
+    DemoPaginationRouter,
+    DemoFormRouter,
+    DemoDetailRouter
 ];
 
 const router = new VueRouter({
     mode: 'hash',
     routes: [{
         path: '/',
-        name: 'Home',
+        name: '首页',
         component: Home,
         children: [...childrenRouter]
     }]

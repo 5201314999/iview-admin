@@ -9,5 +9,5 @@ import Table from '../../views/demo/Table';
 export default {
     path: 'table',
     component: Table,
-    name: 'Table'
+    name: '表格（Table）'
 }

@@ -13,9 +13,11 @@ import api from './common/api';
 import _global from './config/global';
 import 'iview/dist/styles/iview.css';
 import './styles/main.scss';
+import highlight from './plugins/highlight';
 
 Vue.use(iView);
 Vue.use(base);
+Vue.use(highlight);
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.G = _global;

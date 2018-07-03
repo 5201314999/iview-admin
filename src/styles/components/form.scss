@@ -1,0 +1,42 @@
+.fl-container{
+    .fl-content{
+        .ivu-form-item{
+            border-bottom: 1px solid #ededed;
+            padding-bottom: 24px;
+            .ivu-form-item-label,
+            .ivu-form-item-content{
+                font-size: 14px;
+            }
+            .ivu-form-item-label{
+                width: 120px;
+                padding: 12px 12px 12px 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            .ivu-form-item-error-tip{
+                left: 10px;
+                top: 5px;
+                position: relative;
+                float: left;
+            }
+            .ivu-form-item-content{
+                .ivu-row.form-input{
+                    width: 33.333333%;
+                    float: left;
+                }
+            }
+        }
+        .ivu-form-item:after{
+            visibility: hidden;
+            display: table;
+            font-size: 0;
+            content: " ";
+            clear: both;
+            height: 0;
+        }
+        .ivu-form-item:last-child{
+            border-bottom: none;
+        }
+    }
+}

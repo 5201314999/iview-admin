@@ -1,0 +1,45 @@
+.fl-detail{
+    .fl-item{
+        padding: 20px 0;
+        border-bottom: 1px solid #f1f1f1;
+        .fl-item-label{
+            width: 10%;
+            min-width: 120px;
+            max-width: 200px;
+            text-align: right;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-right: 10px;
+            color: #999;
+            float: left;
+        }
+        .fl-item-content{
+            float: left;
+            max-width: 80%;
+        }
+    }
+    .fl-item:first-child{
+        padding-top: 0;
+    }
+    .fl-item:last-child{
+        padding-top: 20px;
+    }
+    .fl-item-image{
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        .ivu-icon-images{
+            font-size: 72px;
+            color: #ababab;
+            vertical-align: middle;
+        }
+    }
+    .fl-item-btn{
+        border-bottom: none;
+        padding-top: 40px !important;
+        .ivu-btn-ghost{
+            margin-right: 15px;
+        }
+    }
+}

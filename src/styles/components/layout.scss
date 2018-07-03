@@ -349,3 +349,36 @@
         }
     }
 }
+code{
+    font-size: 16px;
+    font-family: "Courier New", "Consolas";
+}
+.fl-container{
+    .fl-content{
+        padding: 24px;
+        background: #FFF;
+        border-radius: 2px;
+        transition: all .3s;
+        .fl-search{
+            .search-input{
+                width: 350px;
+                margin-right: 20px;
+            }
+            .search-button{
+                button{
+                    margin-right: 10px;
+                }
+                button:last-child{
+                    margin-right: 0;
+                }
+            }
+            .search-senior{
+                border: 1px solid #e8e8ea;
+                border-radius: 2px;
+                padding: 10px;
+                margin-top: 20px;
+                width: 100%;
+            }
+        }
+    }
+}

@@ -10,5 +10,5 @@ import Pagination from '../../views/demo/Pagination';
 export default {
     path: 'pagination',
     component : Pagination,
-    name: 'Pagination'
+    name: '分页（Page）'
 }

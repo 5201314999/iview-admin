@@ -21,19 +21,29 @@ const user = {};
 const menu = {
     items: [
         {
-            title: 'Home',
+            title: '首页',
             name: 'home',
             icon: 'ios-home-outline',
             children: [
                 {
-                    title: 'Table',
+                    title: '表格（Table）',
                     name: 'table',
                     path: '/table'
                 },
                 {
-                    title: 'Pagination',
+                    title: '分页（Page）',
                     name: 'pagination',
                     path: '/pagination'
+                },
+                {
+                    title: '表单（Form）',
+                    name: 'form',
+                    path: '/form'
+                },
+                {
+                    title: '详情（Detail）',
+                    name: 'detail',
+                    path: '/detail'
                 }
             ]
         }
