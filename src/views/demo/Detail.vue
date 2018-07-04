@@ -44,8 +44,8 @@
                         <div class="fl-item fl-item-btn clearfix">
                             <div class="fl-item-label">&nbsp;</div>
                             <div class="fl-item-content">
-                                <Button size="large" type="ghost">返回</Button>
                                 <Button type="primary" size="large">确定</Button>
+                                <Button size="large" type="ghost">返回</Button>
                             </div>
                         </div>
                     </Col>

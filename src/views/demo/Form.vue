@@ -33,6 +33,27 @@
                         </CheckboxGroup>
                     </div>
                 </FormItem>
+                <FormItem prop="select" label="业务标签" class="clearfix">
+                    <div class="fl-select">
+                        <Select placeholder="请选择" value="movie" :style="{width: '100px'}">
+                            <Option value="movie">影视</Option>
+                            <Option value="app1">少儿</Option>
+                            <Option value="app2">大屏购物</Option>
+                            <Option value="app3">游戏</Option>
+                            <Option value="app4">应用</Option>
+                        </Select>
+                    </div>
+                </FormItem>
+                <FormItem prop="textarea" label="推荐组标签" class="fl-textarea flex clearfix">
+                    <Input type="textarea" placeholder="默认宽高 600 * 200，根据项目需求自行覆盖定义" />
+                </FormItem>
+                <FormItem prop="num" label="数字输入框" class="fl-number clearfix">
+                    <InputNumber :min="form.validate.min" v-model="form.validate.num"></InputNumber>
+                </FormItem>
+                <FormItem label=" " class="fl-form-btn">
+                    <Button type="primary" size="large">提交</Button>
+                    <Button size="large" type="ghost">返回</Button>
+                </FormItem>
             </Form>
         </div>
     </div>
@@ -48,12 +69,16 @@
                         name: '',
                         title: '',
                         show: '1',
-                        range: []
+                        range: [],
+                        select: [],
+                        num: 0,
+                        min: 0
                     },
                     rules: {
                         name: [{required: true, message: '推荐组名称不能为空', trigger: 'blur'}],
                         title: [{required: true, trigger: 'click', message: '请选择是否展示推荐组标题',}],
-                        range: [{required: true}]
+                        range: [{required: true, message: '至少选择一个适用范围'}],
+                        num: [{required: true, message: '至少选择一个适用范围'}]
                     }
                 }
             }

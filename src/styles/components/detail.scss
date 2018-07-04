@@ -44,8 +44,11 @@
     .fl-item-btn{
         border-bottom: none;
         padding-top: 40px !important;
-        .ivu-btn-ghost{
+        .ivu-btn{
             margin-right: 15px;
+        }
+        .ivu-btn:last-child{
+            margin-right: 0;
         }
     }
 }
