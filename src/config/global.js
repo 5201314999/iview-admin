@@ -53,6 +53,10 @@ const menu = {
     collapsed: false
 };
 
+const accept = {
+    images: 'image/gif, image/jpeg, image/png, image/jpeg'
+};
+
 /**
  * API
  * @type {*}
@@ -84,5 +88,6 @@ export default {
     user,
     menu,
     api,
-    footer
+    footer,
+    accept
 }

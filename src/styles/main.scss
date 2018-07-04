@@ -110,6 +110,8 @@ img{
     -webkit-justify-content: center;
     -webkit-box-pack: center;
     -ms-flex-pack: center;
+    -webkit-flex-direction: column;
+    flex-direction: column;
 }
 
 @import "./components/layout";
