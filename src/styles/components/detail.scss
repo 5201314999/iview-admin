@@ -2,21 +2,23 @@
     .fl-item{
         padding: 20px 0;
         border-bottom: 1px solid #f1f1f1;
+        display: flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        align-items: center;
+        -moz-box-align: center;
         .fl-item-label{
-            width: 10%;
-            min-width: 120px;
-            max-width: 200px;
+            width: 120px;
             text-align: right;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-            margin-right: 10px;
+            margin-right: 5px;
             color: #999;
-            float: left;
         }
         .fl-item-content{
-            float: left;
-            max-width: 80%;
+            max-width: 1024px;
         }
     }
     .fl-item:first-child{
@@ -27,7 +29,11 @@
     }
     .fl-item-image{
         display: flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
         align-items: center;
+        -moz-box-align: center;
         justify-content: left;
         .ivu-icon-images{
             font-size: 72px;
