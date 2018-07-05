@@ -15,6 +15,7 @@
             }
             .ivu-form-item-label{
                 width: 120px;
+                min-width: 120px;
                 padding: 12px 0;
                 text-overflow: ellipsis;
                 overflow: hidden;
@@ -30,7 +31,6 @@
                 margin-left: 10px;
             }
             .ivu-form-item-content{
-                overflow: hidden;
                 .ivu-row.form-input{
                     width: 33.333333%;
                     float: left;
@@ -98,72 +98,77 @@
     .fl-checkbox{
         margin-right: 10px;
         z-index: 100;
-        padding-bottom: 0 !important;
-        .ivu-checkbox{
-            display: none;
-        }
-        .ivu-checkbox-group-item{
-            margin-right: 15px;
-            margin-bottom: 15px;
-            position: relative;
-            border-radius: 4px;
+        padding-bottom: 15px !important;
+        .ivu-form-item-content{
             overflow: hidden;
-        }
-        .ivu-checkbox-group-item:last-child{
-            margin-right: 0;
-        }
-        span.ivu-checkbox + *{
-            width: 100px;
-            height: 36px;
-            line-height: 34px;
-            text-align: center;
-            border: 1px solid #d8d8d8;
-            display: block;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 0;
-            margin-left: 0;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            padding: 0 2px;
-        }
-        span.ivu-checkbox + *:hover{
-            border: 1px solid $themeColor;
-            color: $themeColor;
-        }
-        span.ivu-checkbox-checked + *,
-        span.ivu-checkbox-checked + *:hover{
-            border: 1px solid $themeColor;
-            color: $themeColor;
-        }
-        .fl-checkbox-arrow{
-            display: none;
-            width: 0;
-            height: 0;
-            border-width: 20px 0 26px 26px;
-            border-style: solid;
-            border-color: transparent transparent $themeColor transparent;
-            position: absolute;
-            top: -10px;
-            right: 0;
-        }
-        i.ivu-icon{
-            display: none;
-        }
-        .ivu-checkbox-wrapper-checked{
-            i.ivu-icon{
-                display: inline-block;
-                font-size: 32px;
-                color: #FFF;
-                position: absolute;
-                top: 12px;
-                right: 2px;
-                z-index: 100;
+            .ivu-checkbox-group{
+                float: left;
+            }
+            .ivu-checkbox{
+                display: none;
+            }
+            .ivu-checkbox-group-item{
+                margin-right: 15px;
+                position: relative;
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            .ivu-checkbox-group-item:last-child{
+                margin-right: 0;
+            }
+            span.ivu-checkbox + *{
+                width: 100px;
+                height: 36px;
+                line-height: 34px;
+                text-align: center;
+                border: 1px solid #d8d8d8;
+                display: block;
+                font-size: 14px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-right: 0;
+                margin-left: 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                padding: 0 2px;
+            }
+            span.ivu-checkbox + *:hover{
+                border: 1px solid $themeColor;
+                color: $themeColor;
+            }
+            span.ivu-checkbox-checked + *,
+            span.ivu-checkbox-checked + *:hover{
+                border: 1px solid $themeColor;
+                color: $themeColor;
             }
             .fl-checkbox-arrow{
-                display: block;
+                display: none;
+                width: 0;
+                height: 0;
+                border-width: 20px 0 26px 26px;
+                border-style: solid;
+                border-color: transparent transparent $themeColor transparent;
+                position: absolute;
+                top: -10px;
+                right: 0;
+            }
+            i.ivu-icon{
+                display: none;
+            }
+            .ivu-checkbox-wrapper-checked{
+                i.ivu-icon{
+                    display: inline-block;
+                    font-size: 32px;
+                    color: #FFF;
+                    position: absolute;
+                    top: 12px;
+                    right: 2px;
+                    z-index: 100;
+                }
+                .fl-checkbox-arrow{
+                    display: block;
+                }
             }
         }
     }
@@ -234,11 +239,13 @@
     }
     .fl-upload{
         align-items: center;
+        padding-bottom: 5px !important;
         .ivu-form-item-content{
             line-height: 10px;
         }
         .ivu-upload{
             display: inline-block;
+            margin-bottom: 10px;
         }
         .fl-upload-btn{
             width: 118px;

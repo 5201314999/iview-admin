@@ -49,7 +49,7 @@
                         <template v-if="item.status === 'finished'">
                             <img :src="item.url">
                             <div class="fl-upload-list-cover">
-                                <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+                                <Icon type="ios-eye-outline" @click.native="handleView(item.url)"></Icon>
                                 <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
                             </div>
                         </template>
@@ -59,12 +59,12 @@
                     </div>
                     <Upload
                             ref="upload"
-                            action="//jsonplaceholder.typicode.com/posts/"
+                            action="http://10.130.201.73/wildidea/demo/upload/upload.php"
                             :show-upload-list="false"
                             :default-file-list="defaultList"
                             :on-success="handleSuccess"
                             :format="['jpg', 'jpeg', 'gif', 'png']"
-                            :max-size="2048"
+                            :max-size="10240"
                             :on-format-error="handleFormatError"
                             :on-exceeded-size="handleMaxSize"
                             :before-upload="handleBeforeUpload"
@@ -76,8 +76,8 @@
                             <p>上传图片</p>
                         </div>
                     </Upload>
-                    <Modal title="查看大图" v-model="visible" class-name="fl-image-modal" :width="800">
-                        <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
+                    <Modal title="查看大图" v-model="visible" class-name="fl-image-modal">
+                        <img :src="imgUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </FormItem>
                 <FormItem label=" " class="fl-btn">
@@ -110,7 +110,7 @@
                         range: [{required: true, message: '至少选择一个适用范围'}]
                     }
                 },
-                imgName: '',
+                imgUrl: '',
                 visible: false,
                 multiple: true,
                 showUploadBtn: true,
@@ -120,8 +120,8 @@
         },
         methods: {
             handleSuccess(res, file) {
-                file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-                file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+                file.url = res.url;
+                file.name = res.name;
                 if(!this.multiple) this.handleUploadBtn();
             },
             handleRemove(file) {
@@ -150,8 +150,8 @@
                 }
                 return check;
             },
-            handleView(name) {
-                this.imgName = name;
+            handleView(url) {
+                this.imgUrl = url;
                 this.visible = true;
             },
             handleUploadBtn() {
