@@ -145,7 +145,7 @@
                     },
                     rules: {
                         name: [{required: true, message: '推荐组名称不能为空', trigger: 'blur'}],
-                        title: [{required: true}],
+                        title: [{required: true, trigger: 'change', message: '请选择是否展示组标题'}],
                         range: [{required: true, message: '至少选择一个适用范围'}],
                     }
                 },

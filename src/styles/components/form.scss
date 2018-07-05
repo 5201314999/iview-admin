@@ -24,11 +24,14 @@
                 color: #999;
             }
             .ivu-form-item-error-tip{
+                position: relative;
                 position: unset;
                 line-height: 36px;
                 padding-top: 0;
                 margin-left: 10px;
                 display: inline-block;
+                zoom: 1;
+                *display: inline;
                 vertical-align: top;
             }
             .ivu-form-item-content{
@@ -105,6 +108,11 @@
         padding-bottom: 15px !important;
         .ivu-form-item-content{
             overflow: hidden;
+            .ivu-checkbox-group{
+                display: inline-block;
+                zoom: 1;
+                *display: inline;
+            }
             .ivu-checkbox{
                 display: none;
             }
@@ -246,6 +254,8 @@
         }
         .ivu-upload{
             display: inline-block;
+            zoom: 1;
+            *display: inline;
             margin-bottom: 10px;
         }
         .fl-upload-btn{
@@ -269,6 +279,8 @@
         }
         .fl-upload-tips{
             display: inline-block;
+            zoom: 1;
+            *display: inline;
             vertical-align: top;
             padding-top: 100px;
             line-height: 20px;
@@ -277,6 +289,8 @@
         }
         .fl-upload-list{
             display: inline-block;
+            zoom: 1;
+            *display: inline;
             width: 120px;
             height: 120px;
             text-align: center;
@@ -319,7 +333,7 @@
             position: relative;
             .fl-drag-prev,
             .fl-drag-next{
-                padding: 15px 10px;
+                padding: 20px 5px;
                 background: #c2c2c2;
                 border-radius: 4px;
                 i{
