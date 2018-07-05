@@ -6,7 +6,7 @@
  *
  * @desc 全局变量, 组件内访问 [ this.G.user.name / {{ G.user.name }} ]
  */
-const title = '影视运营系统';
+const title = '基础框架DEMO';
 
 /**
  * 用户信息(初始化后覆盖)

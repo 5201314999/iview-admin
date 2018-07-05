@@ -25,10 +25,11 @@
             }
             .ivu-form-item-error-tip{
                 position: unset;
-                float: left;
                 line-height: 36px;
                 padding-top: 0;
                 margin-left: 10px;
+                display: inline-block;
+                vertical-align: top;
             }
             .ivu-form-item-content{
                 .ivu-row.form-input{
@@ -57,42 +58,45 @@
     .fl-radio{
         padding-bottom: 9px !important;
         z-index: 100;
-        .ivu-radio{
-            display: none;
-        }
-        .ivu-radio-group-item{
-            margin-right: 15px;
-            margin-bottom: 15px;
-        }
-        .ivu-radio-group-item:last-child{
-            margin-right: 0;
-        }
-        span.ivu-radio + *{
-            width: 100px;
-            height: 36px;
-            line-height: 34px;
-            text-align: center;
-            border: 1px solid #d8d8d8;
-            display: block;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: -2px;
-            margin-left: 0;
-            text-overflow: ellipsis;
+        .ivu-form-item-content{
             overflow: hidden;
-            white-space: nowrap;
-            padding: 0 2px;
-        }
-        span.ivu-radio + *:hover{
-            border: 1px solid $themeColor;
-            color: $themeColor;
-        }
-        span.ivu-radio-checked + *,
-        span.ivu-radio-checked + *:hover{
-            border: 1px solid $themeColor;
-            background-color: $themeColor;
-            color: #FFF;
+            .ivu-radio{
+                display: none;
+            }
+            .ivu-radio-group-item{
+                margin-right: 15px;
+                margin-bottom: 15px;
+            }
+            .ivu-radio-group-item:last-child{
+                margin-right: 0;
+            }
+            span.ivu-radio + *{
+                width: 100px;
+                height: 36px;
+                line-height: 34px;
+                text-align: center;
+                border: 1px solid #d8d8d8;
+                display: block;
+                font-size: 14px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-right: -2px;
+                margin-left: 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                padding: 0 2px;
+            }
+            span.ivu-radio + *:hover{
+                border: 1px solid $themeColor;
+                color: $themeColor;
+            }
+            span.ivu-radio-checked + *,
+            span.ivu-radio-checked + *:hover{
+                border: 1px solid $themeColor;
+                background-color: $themeColor;
+                color: #FFF;
+            }
         }
     }
     .fl-checkbox{
@@ -101,9 +105,6 @@
         padding-bottom: 15px !important;
         .ivu-form-item-content{
             overflow: hidden;
-            .ivu-checkbox-group{
-                float: left;
-            }
             .ivu-checkbox{
                 display: none;
             }
@@ -266,7 +267,14 @@
                 color: $themeColor;
             }
         }
-
+        .fl-upload-tips{
+            display: inline-block;
+            vertical-align: top;
+            padding-top: 100px;
+            line-height: 20px;
+            margin-left: 5px;
+            color: #bababa;
+        }
         .fl-upload-list{
             display: inline-block;
             width: 120px;
@@ -301,6 +309,36 @@
         }
         .fl-upload-list:hover .fl-upload-list-cover{
             display: block;
+        }
+    }
+    .fl-draggable{
+        .fl-drag-box{
+            padding: 15px 0;
+            margin: 20px 0 0;
+            border-top: 1px solid #F1F1F1;
+            position: relative;
+            .fl-drag-prev,
+            .fl-drag-next{
+                padding: 15px 10px;
+                background: #c2c2c2;
+                border-radius: 4px;
+                i{
+                    font-size: 50px;
+                    color: #FFF;
+                }
+            }
+            .fl-drag-prev{
+                float: left;
+            }
+            .fl-drag-next{
+                float: right;
+            }
+            .fl-drag-cont{
+                padding: 0 20px;
+                width: 100%;
+                display: block;
+                float: left;
+            }
         }
     }
 }

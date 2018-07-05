@@ -44,6 +44,9 @@
                 <FormItem prop="num" label="数字输入框" class="fl-number clearfix">
                     <InputNumber :min="form.validate.min" v-model="form.validate.num"></InputNumber>
                 </FormItem>
+                <FormItem prop="date" label="日期选择" class="fl-date">
+                    <DatePicker size="large" type="date"></DatePicker>
+                </FormItem>
                 <FormItem prop="images" label="图片上传" class="fl-upload flex clearfix">
                     <div class="fl-upload-list" v-for="item in uploadList">
                         <template v-if="item.status === 'finished'">
@@ -69,17 +72,53 @@
                             :on-exceeded-size="handleMaxSize"
                             :before-upload="handleBeforeUpload"
                             :accept="G.accept.images"
-                            :multiple="multiple"
+                            multiple
                             type="drag">
-                        <div class="fl-upload-btn flex flex-center" v-if="showUploadBtn">
+                        <div class="fl-upload-btn flex flex-center">
                             <Icon type="ios-cloud-upload-outline"></Icon>
                             <p>上传图片</p>
                         </div>
                     </Upload>
+                    <div class="fl-upload-tips">
+                        图片上传格式支持PNG, JPG, JPEG, GIF
+                    </div>
                     <Modal title="查看大图" v-model="visible" class-name="fl-image-modal">
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </FormItem>
+                <Card class="fl-draggable">
+                    <div class="fl-search clearfix">
+                        <div class="search-input left">
+                            <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" />
+                        </div>
+                        <div class="search-button left">
+                            <div class="fl-select">
+                                <Select placeholder="请选择" value="movie" :style="{width: '60px'}">
+                                    <Option value="movie">100</Option>
+                                    <Option value="app1">256</Option>
+                                    <Option value="app2">366</Option>
+                                    <Option value="app3">400</Option>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fl-drag-box flex" ref="source">
+                        <div class="fl-drag-prev flex-vertical">
+                            <Icon type="arrow-left-b"></Icon>
+                        </div>
+                        <div class="fl-drag-cont flex-vertical">
+                            <div class="fl-box-drag">
+
+                            </div>
+                        </div>
+                        <div class="fl-drag-next flex-vertical">
+                            <Icon type="arrow-right-b"></Icon>
+                        </div>
+                    </div>
+                    <div class="fl-drag-dest">
+
+                    </div>
+                </Card>
                 <FormItem label=" " class="fl-btn">
                     <Button type="primary" size="large">提交</Button>
                     <Button size="large" type="ghost">返回</Button>
@@ -98,36 +137,44 @@
                     validate: {
                         name: '',
                         title: '',
-                        show: '1',
-                        range: [],
+                        show: '0',
+                        range: ['desktop'],
                         select: [],
                         num: 0,
                         min: 0
                     },
                     rules: {
                         name: [{required: true, message: '推荐组名称不能为空', trigger: 'blur'}],
-                        title: [{required: true, trigger: 'click', message: '请选择是否展示推荐组标题',}],
-                        range: [{required: true, message: '至少选择一个适用范围'}]
+                        title: [{required: true}],
+                        range: [{required: true, message: '至少选择一个适用范围'}],
                     }
                 },
                 imgUrl: '',
                 visible: false,
-                multiple: true,
-                showUploadBtn: true,
                 uploadList: [],
-                defaultList: []
+                defaultList: [],
+                component: {
+                    data: [
+                        [
+                            {width: 268, height: 180},
+                            {width: 268, height: 180}
+                        ],
+                        [
+                            {width: 268, height: 360}
+                        ]
+                    ],
+                    ratio: 0.5
+                }
             }
         },
         methods: {
             handleSuccess(res, file) {
                 file.url = res.url;
                 file.name = res.name;
-                if(!this.multiple) this.handleUploadBtn();
             },
             handleRemove(file) {
                 const fileList = this.$refs.upload.fileList;
                 this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
-                if(!this.multiple) this.handleUploadBtn();
             },
             handleFormatError(file) {
                 this.$Notice.warning({
@@ -153,20 +200,10 @@
             handleView(url) {
                 this.imgUrl = url;
                 this.visible = true;
-            },
-            handleUploadBtn() {
-                let can = true;
-                if(!this.multiple){
-                    if(this.$refs.upload.fileList.length > 0){
-                        can = false;
-                    }
-                }
-                this.$set(this, 'showUploadBtn', can);
             }
         },
         mounted () {
             this.uploadList = this.$refs.upload.fileList;
-            this.handleUploadBtn();
         }
     };
     export default FormComponent;
