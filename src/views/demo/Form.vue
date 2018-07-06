@@ -86,39 +86,62 @@
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </FormItem>
-                <Card class="fl-draggable">
-                    <div class="fl-search clearfix">
-                        <div class="search-input left">
-                            <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" />
-                        </div>
-                        <div class="search-button left">
-                            <div class="fl-select">
-                                <Select placeholder="请选择" value="movie" :style="{width: '60px'}">
-                                    <Option value="movie">100</Option>
-                                    <Option value="app1">256</Option>
-                                    <Option value="app2">366</Option>
-                                    <Option value="app3">400</Option>
-                                </Select>
+                <Row class="fl-draggable mb20">
+                    <Card>
+                        <div class="fl-search clearfix">
+                            <div class="search-input left">
+                                <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" />
+                            </div>
+                            <div class="search-button left">
+                                <div class="fl-select">
+                                    <Select placeholder="请选择" value="movie" :style="{width: '60px'}">
+                                        <Option value="movie">100</Option>
+                                        <Option value="app1">256</Option>
+                                        <Option value="app2">366</Option>
+                                        <Option value="app3">400</Option>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="fl-drag-box flex" ref="source">
-                        <div class="fl-drag-prev flex-vertical">
-                            <Icon type="arrow-left-b"></Icon>
-                        </div>
-                        <div class="fl-drag-cont flex-vertical">
-                            <div class="fl-box-drag">
-
+                        <div class="fl-drag-box flex">
+                            <div class="fl-drag-prev" @click="handleComponentPrev">
+                                <Icon type="arrow-left-b"></Icon>
+                            </div>
+                            <div class="fl-drag-cont clearfix">
+                                <div class="fl-drag-list" id="source">
+                                    <div class="fl-drag-item" v-for="(item, index) in component" :key="index" :data-index="index">
+                                        <span v-for="(box, k) in item" :style="{width: box.width + 'px', height: box.height + 'px', 'margin-bottom': box.space + 'px'}" :key="k">{{ box.sourceWidth + ' * ' + box.sourceHeight }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fl-drag-next" @click="handleComponentNext">
+                                <Icon type="arrow-right-b"></Icon>
                             </div>
                         </div>
-                        <div class="fl-drag-next flex-vertical">
-                            <Icon type="arrow-right-b"></Icon>
+                    </Card>
+                    <Card class="mt20">
+                        <div slot="title" class="fl-drag-title flex">
+                            <span>第 1 行推荐</span>
+                            <Row><Button type="ghost">收起</Button></Row>
                         </div>
-                    </div>
-                    <div class="fl-drag-dest">
-
-                    </div>
-                </Card>
+                        <Row>
+                            <div class="fl-drag-box fl-drag-target-box flex">
+                                <div class="fl-drag-prev" @click="handleComponentPrev">
+                                    <Icon type="arrow-left-b"></Icon>
+                                </div>
+                                <div class="fl-drag-cont clearfix">
+                                    <div class="fl-drag-list" id="target"></div>
+                                </div>
+                                <div class="fl-drag-next" @click="handleComponentNext">
+                                    <Icon type="arrow-right-b"></Icon>
+                                </div>
+                            </div>
+                        </Row>
+                    </Card>
+                    <Row class="fl-drag-btn flex flex-center">
+                        <Icon type="ios-plus-empty" class="mr10"></Icon>添加推荐行
+                    </Row>
+                </Row>
                 <FormItem label=" " class="fl-btn">
                     <Button type="primary" size="large">提交</Button>
                     <Button size="large" type="ghost">返回</Button>
@@ -129,6 +152,8 @@
 </template>
 
 <script>
+
+    import Sortable from 'sortablejs';
 
     const FormComponent = {
         data() {
@@ -145,7 +170,7 @@
                     },
                     rules: {
                         name: [{required: true, message: '推荐组名称不能为空', trigger: 'blur'}],
-                        title: [{required: true, trigger: 'change', message: '请选择是否展示组标题'}],
+                        title: [{required: true, trigger: 'click', message: '请选择是否展示组标题'}],
                         range: [{required: true, message: '至少选择一个适用范围'}],
                     }
                 },
@@ -153,18 +178,7 @@
                 visible: false,
                 uploadList: [],
                 defaultList: [],
-                component: {
-                    data: [
-                        [
-                            {width: 268, height: 180},
-                            {width: 268, height: 180}
-                        ],
-                        [
-                            {width: 268, height: 360}
-                        ]
-                    ],
-                    ratio: 0.5
-                }
+                component: []
             }
         },
         methods: {
@@ -189,7 +203,7 @@
                 });
             },
             handleBeforeUpload() {
-                const check = this.uploadList.length < 5;
+                const check = this.uploadList.length < 1;
                 if (!check) {
                     this.$Notice.warning({
                         title: 'Up to five pictures can be uploaded.'
@@ -200,10 +214,65 @@
             handleView(url) {
                 this.imgUrl = url;
                 this.visible = true;
+            },
+            getComponentData() {
+                let width = 570, height = 368, space = 34,
+                    num = [1, 2, 3], ratio = 0.5, list = [];
+                for(let i = 0; i < 10; i++){
+                    let n = num[Math.round(Math.random() * (num.length - 1))],
+                        data = [], h;
+                    if(n > 1){
+                        for(let k = 0; k < n; k++){
+                            let ratioH = (height - space * (n - 1)) / n;
+                            h = Math.round((ratioH * ratio) * 10) / 10;
+                            let temp = {width: width * ratio, space: space * ratio, height: h, sourceWidth: width, sourceHeight: ratioH};
+                            if(k === n - 1) temp['space'] = 0;
+                            data.push(temp);
+                        }
+                    }else{
+                        h = Math.round(height * ratio * 10) / 10;
+                        let temp = {width: width * ratio, space: 0, height: h, sourceWidth: width, sourceHeight: height};
+                        data.push(temp);
+                    }
+                    list.push(data);
+                }
+                this.$set(this, 'component', list);
+            },
+            handleComponentPrev() {
+
+            },
+            handleComponentNext() {
+
+            },
+            handleDraggable() {
+                document.body.ondrop = function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                };
+                let source = document.getElementById('source');
+                Sortable.create(source, {
+                    group: {
+                        name: 'list',
+                        pull: 'clone'
+                    },
+                    animation: 120,
+                    ghostClass: 'fl-dragging'
+                });
+                let target = document.getElementById('target');
+                Sortable.create(target, {
+                    group: {
+                        name: 'list',
+                        pull: 'clone'
+                    },
+                    animation: 120,
+                    ghostClass: 'fl-dragging'
+                });
             }
         },
         mounted () {
             this.uploadList = this.$refs.upload.fileList;
+            this.getComponentData();
+            this.handleDraggable();
         }
     };
     export default FormComponent;

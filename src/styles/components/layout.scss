@@ -96,18 +96,20 @@
                 .ivu-menu-submenu{
                     .ivu-menu-submenu-title{
                         padding: 15px 20px;
-                    }
-                    .ivu-menu-submenu-title:hover,
-                    .ivu-menu-submenu-title:active,
-                    .ivu-menu-submenu-title:visited{
-                        background: $darkColor;
+                        &:hover,
+                        &:active,
+                        &:visited{
+                            background: $darkColor;
+                        }
                     }
                     .ivu-menu-submenu{
-                        .ivu-menu-submenu-title,
-                        .ivu-menu-submenu-title:hover,
-                        .ivu-menu-submenu-title:active,
-                        .ivu-menu-submenu-title:visited{
+                        .ivu-menu-submenu-title{
                             background: #000C17;
+                            &:hover,
+                            &:active,
+                            &:visited{
+                                background: #000C17;
+                            }
                         }
                     }
                     .ivu-menu-item{
@@ -124,17 +126,17 @@
                             right: 0;
                             content: "";
                         }
+                        &:hover,
+                        &:active,
+                        &:visited{
+                            background: #000C17;
+                            a, a:hover, a:link, a:visited{
+                                color: #FFF;
+                            }
+                        }
                     }
                     .ivu-menu-item-selected a{
                         color: #FFF;
-                    }
-                    .ivu-menu-item:hover,
-                    .ivu-menu-item:visited,
-                    .ivu-menu-item:active{
-                        background: #000C17;
-                        a, a:hover, a:link, a:visited{
-                            color: #FFF;
-                        }
                     }
                 }
             }
@@ -218,22 +220,22 @@
                                             top: 12px;
                                             text-align: right;
                                         }
-                                    }
-                                    .ivu-dropdown-rel:hover{
-                                        a, .ivu-icon{
-                                           color: #FFF;
+                                        &:hover{
+                                            a, .ivu-icon{
+                                                color: #FFF;
+                                            }
                                         }
                                     }
                                     .ivu-select-dropdown{
                                         margin-left: 20px;
                                         top: -14px !important;
                                     }
-                                }
-                                .ivu-dropdown-item:hover,
-                                .ivu-dropdown-item:active,
-                                .ivu-dropdown-item:visited{
-                                    background: transparent;
-                                    color: #FFF;
+                                    &:hover,
+                                    &:active,
+                                    &:visited{
+                                        background: transparent;
+                                        color: #FFF;
+                                    }
                                 }
                                 .ivu-dropdown-item:not(:last-child){
                                     margin-bottom: 8px;
@@ -273,9 +275,9 @@
             }
             .ivu-icon{
                 display: inline-block;
-            }
-            .ivu-icon:hover{
-                background: #e6f7ff;
+                &:hover{
+                    background: #e6f7ff;
+                }
             }
             .header-nav{
                 .nav-item{

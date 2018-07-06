@@ -89,10 +89,10 @@
                 overflow: hidden;
                 white-space: nowrap;
                 padding: 0 2px;
-            }
-            span.ivu-radio + *:hover{
-                border: 1px solid $themeColor;
-                color: $themeColor;
+                &:hover{
+                    border: 1px solid $themeColor;
+                    color: $themeColor;
+                }
             }
             span.ivu-radio-checked + *,
             span.ivu-radio-checked + *:hover{
@@ -141,10 +141,10 @@
                 overflow: hidden;
                 white-space: nowrap;
                 padding: 0 2px;
-            }
-            span.ivu-checkbox + *:hover{
-                border: 1px solid $themeColor;
-                color: $themeColor;
+                &:hover{
+                    border: 1px solid $themeColor;
+                    color: $themeColor;
+                }
             }
             span.ivu-checkbox-checked + *,
             span.ivu-checkbox-checked + *:hover{
@@ -269,12 +269,12 @@
                 display: block;
                 margin-bottom: 10px;
             }
-        }
-        .fl-upload-btn:hover{
-            border-color: $themeColor;
-            cursor: pointer;
-            .ivu-icon, p{
-                color: $themeColor;
+            &:hover{
+                border-color: $themeColor;
+                cursor: pointer;
+                .ivu-icon, p{
+                    color: $themeColor;
+                }
             }
         }
         .fl-upload-tips{
@@ -320,22 +320,29 @@
                     margin: 0 5px;
                 }
             }
-        }
-        .fl-upload-list:hover .fl-upload-list-cover{
-            display: block;
+            &:hover{
+                .fl-upload-list-cover{
+                    display: block;
+                }
+            }
         }
     }
     .fl-draggable{
+        overflow: hidden;
         .fl-drag-box{
-            padding: 15px 0;
+            padding: 15px 0 0;
             margin: 20px 0 0;
             border-top: 1px solid #F1F1F1;
             position: relative;
+            overflow: hidden;
             .fl-drag-prev,
             .fl-drag-next{
                 padding: 20px 5px;
-                background: #c2c2c2;
+                background: #F2F2F2;
                 border-radius: 4px;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
                 i{
                     font-size: 50px;
                     color: #FFF;
@@ -348,12 +355,69 @@
                 float: right;
             }
             .fl-drag-cont{
-                padding: 0 20px;
                 width: 100%;
-                display: block;
-                float: left;
+                overflow: hidden;
+                margin: 0 20px;
+                .fl-drag-list{
+                    min-width: 5000px;
+                    display: block;
+                    float: left;
+                    transform: translate3d(0px, 0px, 0px);
+                    transition: transform 500ms ease;
+                    .fl-drag-item{
+                        margin-right: 20px;
+                        cursor: move;
+                        float: left;
+                        display: block;
+                        span{
+                            background: #F2F2F2;
+                            margin-bottom: 10px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        span:last-child{
+                            margin-bottom: 0;
+                        }
+                    }
+                    .fl-box-drag:last-child{
+                        margin-right: 0;
+                    }
+                }
             }
         }
+        .fl-drag-title{
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .fl-dragging{
+            opacity: 0.5;
+        }
+        .fl-drag-target-box{
+            margin: 0;
+            padding: 0;
+            border-top: none;
+        }
+        .fl-drag-btn{
+            padding: 10px 0;
+            border: 1px solid #e9eaec;
+            margin-top: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-direction: row;
+            .ivu-icon{
+                font-size: 24px;
+            }
+            &:hover{
+                border-color: $themeColor;
+                color: $themeColor;
+            }
+        }
+    }
+    .ivu-card:hover{
+        box-shadow: none;
     }
 }
 .fl-image-modal{
