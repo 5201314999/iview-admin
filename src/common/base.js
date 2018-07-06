@@ -63,6 +63,12 @@ exports.install = function(Vue){
         return -1;
     };
 
+    /**
+     * parse url
+     * @param url (format: {param})
+     * @param params
+     * @returns {*}
+     */
     Vue.prototype.parseUrl = function(url, params){
         params = params ? params : {};
         if(Object.keys(params).length > 0){

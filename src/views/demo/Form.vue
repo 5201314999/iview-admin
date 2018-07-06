@@ -238,13 +238,13 @@
                 }
                 this.$set(this, 'component', list);
             },
-            handleComponentPrev() {
-
+            handleComponentPrev(event) {
+                console.log(event);
             },
             handleComponentNext() {
 
             },
-            handleDraggable() {
+            handleComponentDraggable() {
                 document.body.ondrop = function (event) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -252,17 +252,20 @@
                 let source = document.getElementById('source');
                 Sortable.create(source, {
                     group: {
-                        name: 'list',
-                        pull: 'clone'
+                        name: 'source',
+                        pull: 'clone',
+                        put: ['none']
                     },
                     animation: 120,
-                    ghostClass: 'fl-dragging'
+                    ghostClass: 'fl-dragging',
+                    sort: false
                 });
                 let target = document.getElementById('target');
                 Sortable.create(target, {
                     group: {
-                        name: 'list',
-                        pull: 'clone'
+                        name: 'source',
+                        pull: 'clone',
+                        put: ['source']
                     },
                     animation: 120,
                     ghostClass: 'fl-dragging'
@@ -272,7 +275,7 @@
         mounted () {
             this.uploadList = this.$refs.upload.fileList;
             this.getComponentData();
-            this.handleDraggable();
+            this.handleComponentDraggable();
         }
     };
     export default FormComponent;
