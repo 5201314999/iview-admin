@@ -360,11 +360,10 @@
                 margin: 0 20px;
                 .fl-drag-list{
                     min-width: 5000px;
-                    display: block;
+                    //display: block;
                     float: left;
                     height: 100%;
-                    transform: translate3d(0px, 0px, 0px);
-                    transition: transform 500ms ease;
+                    display: flex;
                     .fl-drag-item{
                         margin-right: 20px;
                         cursor: move;
