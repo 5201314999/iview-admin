@@ -104,12 +104,12 @@
                             </div>
                         </div>
                         <div class="fl-drag-box flex">
-                            <div class="fl-drag-prev" @click="handleComponentPrev">
+                            <div class="fl-drag-prev disabled" @click="handleComponentPrev">
                                 <Icon type="arrow-left-b"></Icon>
                             </div>
                             <div class="fl-drag-cont clearfix">
                                 <div class="fl-drag-list" id="source">
-                                    <div class="fl-drag-item" v-for="(item, index) in component" :key="index" :data-index="index">
+                                    <div class="fl-drag-item" v-for="(item, index) in component" :key="index" :data-index="index" :style="{'margin-right': index === component.length - 1 ? '0' : margin + 'px'}">
                                         <span v-for="(box, k) in item" :style="{width: box.width + 'px', height: box.height + 'px', 'margin-bottom': box.space + 'px'}" :key="k">{{ box.sourceWidth + ' * ' + box.sourceHeight }}</span>
                                     </div>
                                 </div>
@@ -178,7 +178,20 @@
                 visible: false,
                 uploadList: [],
                 defaultList: [],
-                component: []
+                component: [],
+                ratio: 0.5,
+                margin: 17,
+                drag: {
+                    scroll: 0,
+                    disabled: 'disabled',
+                    box: 'fl-drag-box',
+                    prev: 'fl-drag-prev',
+                    next: 'fl-drag-next',
+                    content: 'fl-drag-cont',
+                    list: 'fl-drag-list',
+                    item: 'fl-drag-item',
+                    margin: 40
+                }
             }
         },
         methods: {
@@ -217,7 +230,7 @@
             },
             getComponentData() {
                 let width = 570, height = 368, space = 34,
-                    num = [1, 2, 3], ratio = 0.5, list = [];
+                    num = [1, 2, 3], ratio = this.ratio, list = [];
                 for(let i = 0; i < 10; i++){
                     let n = num[Math.round(Math.random() * (num.length - 1))],
                         data = [], h;
@@ -238,11 +251,61 @@
                 }
                 this.$set(this, 'component', list);
             },
-            handleComponentPrev(event) {
-                console.log(event);
+            getComponentNodeWidth(node, name) {
+                let $dom = node.getElementsByClassName(name);
+                if($dom.length > 0){
+                    return $dom[0].clientWidth;
+                }
+                return 0;
             },
-            handleComponentNext() {
-
+            getComponentPagesNumber(node) {
+                let number = this.component.length,
+                    contentWidth = this.getComponentNodeWidth(node, this.drag.content),
+                    itemWidth = this.getComponentNodeWidth(node, this.drag.item),
+                    totalWidth = itemWidth * number + this.margin * (number - 1);
+                return Math.ceil(totalWidth / contentWidth);
+            },
+            handleComponentPrev(event) {
+                let parentNode = event.currentTarget.parentNode,
+                    listNode = parentNode.getElementsByClassName(this.drag.list)[0],
+                    scroll = this.drag.scroll;
+                if(scroll > 0){
+                    scroll -= 100;
+                    this.$set(this.drag, 'scroll', scroll);
+                }
+                listNode.style.transform = 'translateX(-' + scroll + '%) translateZ(0px)';
+                this.handleComponentSwitchState(parentNode, 'prev');
+            },
+            handleComponentNext(event) {
+                let parentNode = event.currentTarget.parentNode,
+                    listNode = parentNode.getElementsByClassName(this.drag.list)[0],
+                    scroll = this.drag.scroll,
+                    number = this.getComponentPagesNumber(parentNode);
+                if(scroll < (number - 1) * 100){
+                    scroll += 100;
+                    this.$set(this.drag, 'scroll', scroll);
+                }
+                listNode.style.transform = 'translateX(-' + scroll + '%) translateZ(0px)';
+                this.handleComponentSwitchState(parentNode, 'next', number);
+            },
+            handleComponentSwitchState(node, action, number) {
+                let next = node.getElementsByClassName(this.drag.next)[0],
+                    prev = node.getElementsByClassName(this.drag.prev)[0];
+                if(action === 'prev'){
+                    this.removeClass(next, this.drag.disabled);
+                    if(this.drag.scroll === 0){
+                        this.addClass(prev, this.drag.disabled);
+                    }
+                }else if(action === 'next'){
+                    if(this.drag.scroll > 0){
+                        this.removeClass(prev, this.drag.disabled);
+                    }else{
+                        this.addClass(prev, this.drag.disabled);
+                    }
+                    if(this.drag.scroll === (number - 1) * 100){
+                        this.addClass(next, this.drag.disabled);
+                    }
+                }
             },
             handleComponentDraggable() {
                 document.body.ondrop = function (event) {
@@ -268,7 +331,13 @@
                         put: ['source']
                     },
                     animation: 120,
-                    ghostClass: 'fl-dragging'
+                    ghostClass: 'fl-dragging',
+                    onRemove(evt){
+                        console.log(evt);
+                    },
+                    onAdd(evt) {
+                        console.log(evt)
+                    }
                 });
             }
         },

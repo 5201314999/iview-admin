@@ -83,6 +83,39 @@ exports.install = function(Vue){
     };
 
     /**
+     * has class
+     * @param obj
+     * @param cls
+     * @returns {*}
+     */
+    Vue.prototype.hasClass = function(obj, cls){
+        return obj.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+    };
+
+    /**
+     * add class
+     * @param obj
+     * @param cls
+     */
+    Vue.prototype.addClass = function(obj, cls){
+        if(!this.hasClass(obj, cls)){
+            obj.className += ' ' + cls;
+        }
+    };
+
+    /**
+     * remove class
+     * @param obj
+     * @param cls
+     */
+    Vue.prototype.removeClass = function(obj, cls){
+        if(this.hasClass(obj, cls)){
+            let reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+            obj.className = obj.className.replace(reg, ' ');
+        }
+    };
+
+    /**
      * confirm
      * @param content
      * @param ok
