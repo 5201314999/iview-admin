@@ -427,6 +427,9 @@
     .ivu-card:hover{
         box-shadow: none;
     }
+    > .fl-drag-item{
+        display: none;
+    }
 }
 .fl-image-modal{
     .ivu-modal-header,

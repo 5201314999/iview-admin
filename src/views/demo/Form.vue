@@ -87,7 +87,7 @@
                     </Modal>
                 </FormItem>
                 <Row class="fl-draggable mb20">
-                    <Card>
+                    <Card id="source-list">
                         <div class="fl-search clearfix">
                             <div class="search-input left">
                                 <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" />
@@ -103,7 +103,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="fl-drag-box flex">
+                        <div class="fl-drag-box flex" data-name="source">
                             <div class="fl-drag-prev disabled" @click="handleComponentPrev">
                                 <Icon type="arrow-left-b"></Icon>
                             </div>
@@ -119,28 +119,29 @@
                             </div>
                         </div>
                     </Card>
-                    <Card class="mt20">
+                    <div :is="element.component" v-for="element in drag.elements" v-bind="element.props"></div>
+                    <Card class="mt20" id="target-list">
                         <div slot="title" class="fl-drag-title flex">
                             <span>第 1 行推荐</span>
                             <Row><Button type="ghost">收起</Button></Row>
                         </div>
                         <Row>
-                            <div class="fl-drag-box fl-drag-target-box flex">
-                                <div class="fl-drag-prev" @click="handleComponentPrev">
+                            <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
+                                <div class="fl-drag-prev disabled" @click="handleComponentPrev">
                                     <Icon type="arrow-left-b"></Icon>
                                 </div>
                                 <div class="fl-drag-cont clearfix">
                                     <div class="fl-drag-list" id="target"></div>
                                 </div>
-                                <div class="fl-drag-next" @click="handleComponentNext">
+                                <div class="fl-drag-next disabled" @click="handleComponentNext">
                                     <Icon type="arrow-right-b"></Icon>
                                 </div>
                             </div>
                         </Row>
                     </Card>
-                    <Row class="fl-drag-btn flex flex-center">
+                    <div class="fl-drag-btn flex flex-center" @click="createComponentRow">
                         <Icon type="ios-plus-empty" class="mr10"></Icon>添加推荐行
-                    </Row>
+                    </div>
                 </Row>
                 <FormItem label=" " class="fl-btn">
                     <Button type="primary" size="large">提交</Button>
@@ -153,7 +154,49 @@
 
 <script>
 
+    import Vue from 'vue';
     import Sortable from 'sortablejs';
+
+    let bus = new Vue();
+
+    Vue.component('recommend-row', {
+        template: `<Card class="mt20" :id="'target-list-' + row">
+    <div slot="title" class="fl-drag-title flex">
+        <span>第 {{ row + 1 }} 行推荐</span>
+        <Row><Button type="ghost">收起</Button></Row>
+    </div>
+    <Row>
+        <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
+            <div class="fl-drag-prev disabled" @click="handleComponentPrev">
+                <Icon type="arrow-left-b"></Icon>
+            </div>
+            <div class="fl-drag-cont clearfix">
+                <div class="fl-drag-list" :id="'target-' + row"></div>
+            </div>
+            <div class="fl-drag-next disabled" @click="handleComponentNext">
+                <Icon type="arrow-right-b"></Icon>
+            </div>
+        </div>
+    </Row>
+</Card>`,
+        props: {
+            row: {type: Number}
+        },
+        methods: {
+            handleComponentPrev(event) {
+                bus.$emit('prev-action', event);
+            },
+            handleComponentNext(event) {
+                bus.$emit('next-action', event);
+            },
+            initComponentTargetDraggable(id) {
+                bus.$emit('init-target-draggable', id);
+            }
+        },
+        mounted() {
+            this.initComponentTargetDraggable('target-' + this.row);
+        }
+    });
 
     const FormComponent = {
         data() {
@@ -182,7 +225,9 @@
                 ratio: 0.5,
                 margin: 17,
                 drag: {
-                    scroll: 0,
+                    row: 1,
+                    num: 0,
+                    nums: {target: 0},
                     disabled: 'disabled',
                     box: 'fl-drag-box',
                     prev: 'fl-drag-prev',
@@ -190,7 +235,9 @@
                     content: 'fl-drag-cont',
                     list: 'fl-drag-list',
                     item: 'fl-drag-item',
-                    margin: 40
+                    margin: 40,
+                    source: 'source-list',
+                    elements: []
                 }
             }
         },
@@ -229,8 +276,8 @@
                 this.visible = true;
             },
             getComponentData() {
-                let width = 570, height = 368, space = 34,
-                    num = [1, 2, 3], ratio = this.ratio, list = [];
+                let vm = this, width = 570, height = 368, space = 34,
+                    num = [1, 2, 3], ratio = vm.ratio, list = [];
                 for(let i = 0; i < 10; i++){
                     let n = num[Math.round(Math.random() * (num.length - 1))],
                         data = [], h;
@@ -249,7 +296,7 @@
                     }
                     list.push(data);
                 }
-                this.$set(this, 'component', list);
+                this.$set(vm, 'component', list);
             },
             getComponentNodeWidth(node, name) {
                 let $dom = node.getElementsByClassName(name);
@@ -258,56 +305,106 @@
                 }
                 return 0;
             },
-            getComponentPagesNumber(node) {
-                let number = this.component.length,
-                    contentWidth = this.getComponentNodeWidth(node, this.drag.content),
-                    itemWidth = this.getComponentNodeWidth(node, this.drag.item),
-                    totalWidth = itemWidth * number + this.margin * (number - 1);
+            getComponentPagesNumber(node, num) {
+                let vm = this,
+                    number = num ? parseInt(num) : vm.component.length,
+                    contentWidth = vm.getComponentNodeWidth(node, vm.drag.content),
+                    itemWidth = vm.getComponentNodeWidth(node, vm.drag.item),
+                    totalWidth = itemWidth * number + vm.margin * (number - 1);
                 return Math.ceil(totalWidth / contentWidth);
             },
             handleComponentPrev(event) {
-                let parentNode = event.currentTarget.parentNode,
-                    listNode = parentNode.getElementsByClassName(this.drag.list)[0],
-                    scroll = this.drag.scroll;
-                if(scroll > 0){
-                    scroll -= 100;
-                    this.$set(this.drag, 'scroll', scroll);
+                let vm = this,
+                    parentNode = event.currentTarget.parentNode,
+                    listNode = parentNode.getElementsByClassName(vm.drag.list)[0],
+                    num = vm.drag.num,
+                    name = parentNode.getAttribute('data-name'),
+                    isTarget = name.indexOf('target') > -1;
+                if(isTarget){
+                    num = vm.drag.nums[name];
+                    if(num > 0){
+                        num -= 100;
+                        vm.$set(vm.drag.nums, name, num);
+                    }
+                    listNode.style.transform = 'translateX(-' + num + '%) translateZ(0px)';
+                    let number = vm.getComponentPagesNumber(parentNode, listNode.children.length);
+                    vm.handleComponentTargetSwitch(parentNode, number, name);
+                }else{
+                    if(num > 0){
+                        num -= 100;
+                        vm.$set(vm.drag, 'num', num);
+                    }
+                    listNode.style.transform = 'translateX(-' + num + '%) translateZ(0px)';
+                    vm.handleComponentSourceSwitch(parentNode, 'prev');
                 }
-                listNode.style.transform = 'translateX(-' + scroll + '%) translateZ(0px)';
-                this.handleComponentSwitchState(parentNode, 'prev');
             },
             handleComponentNext(event) {
-                let parentNode = event.currentTarget.parentNode,
-                    listNode = parentNode.getElementsByClassName(this.drag.list)[0],
-                    scroll = this.drag.scroll,
-                    number = this.getComponentPagesNumber(parentNode);
-                if(scroll < (number - 1) * 100){
-                    scroll += 100;
-                    this.$set(this.drag, 'scroll', scroll);
+                let vm = this,
+                    parentNode = event.currentTarget.parentNode,
+                    listNode = parentNode.getElementsByClassName(vm.drag.list)[0],
+                    name = parentNode.getAttribute('data-name'),
+                    isTarget = name.indexOf('target') > -1;
+                if(isTarget){
+                    let num = listNode.children.length,
+                        number = vm.getComponentPagesNumber(parentNode, num),
+                        targetNum = vm.drag.nums[name];
+                    if(targetNum < (number - 1) * 100){
+                        targetNum += 100;
+                        vm.$set(vm.drag.nums, name, targetNum);
+                    }
+                    listNode.style.transform = 'translateX(-' + targetNum + '%) translateZ(0px)';
+                    vm.handleComponentTargetSwitch(parentNode, number, name);
+                }else{
+                    let num = vm.drag.num,
+                        number = vm.getComponentPagesNumber(parentNode);
+                    if(num < (number - 1) * 100){
+                        num += 100;
+                        vm.$set(vm.drag, 'num', num);
+                    }
+                    listNode.style.transform = 'translateX(-' + num + '%) translateZ(0px)';
+                    vm.handleComponentSourceSwitch(parentNode, 'next', number);
                 }
-                listNode.style.transform = 'translateX(-' + scroll + '%) translateZ(0px)';
-                this.handleComponentSwitchState(parentNode, 'next', number);
             },
-            handleComponentSwitchState(node, action, number) {
-                let next = node.getElementsByClassName(this.drag.next)[0],
-                    prev = node.getElementsByClassName(this.drag.prev)[0];
+            handleComponentSourceSwitch(node, action, number) {
+                let vm = this,
+                    disabled = vm.drag.disabled,
+                    next = node.getElementsByClassName(vm.drag.next)[0],
+                    prev = node.getElementsByClassName(vm.drag.prev)[0];
                 if(action === 'prev'){
-                    this.removeClass(next, this.drag.disabled);
-                    if(this.drag.scroll === 0){
-                        this.addClass(prev, this.drag.disabled);
+                    vm.removeClass(next, disabled);
+                    if(vm.drag.num === 0){
+                        vm.addClass(prev, disabled);
                     }
                 }else if(action === 'next'){
-                    if(this.drag.scroll > 0){
-                        this.removeClass(prev, this.drag.disabled);
+                    if(vm.drag.num > 0){
+                        vm.removeClass(prev, disabled);
                     }else{
-                        this.addClass(prev, this.drag.disabled);
+                        vm.addClass(prev, disabled);
                     }
-                    if(this.drag.scroll === (number - 1) * 100){
-                        this.addClass(next, this.drag.disabled);
+                    if(this.drag.num === (number - 1) * 100){
+                        vm.addClass(next, disabled);
                     }
                 }
             },
-            handleComponentDraggable() {
+            handleComponentTargetSwitch(node, number, dest) {
+                let vm = this, disabled = vm.drag.disabled,
+                    num = vm.drag.nums[dest] ? vm.drag.nums[dest] : 0,
+                    next = node.getElementsByClassName(this.drag.next)[0],
+                    prev = node.getElementsByClassName(this.drag.prev)[0];
+                if(num > 0){
+                    vm.removeClass(prev, disabled);
+                    if(num === (number - 1) * 100){
+                        vm.addClass(next, disabled);
+                    }
+                }else{
+                    vm.addClass(prev, disabled);
+                    if(number > 1){
+                        vm.removeClass(next, disabled);
+                    }
+                }
+            },
+            initComponentSourceDraggable() {
+                let vm = this;
                 document.body.ondrop = function (event) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -323,28 +420,74 @@
                     ghostClass: 'fl-dragging',
                     sort: false
                 });
-                let target = document.getElementById('target');
+                let container = document.getElementsByClassName('fl-container')[0];
+                Sortable.create(container, {
+                    group: {
+                        name: 'body',
+                        pull: true,
+                        put: ['target']
+                    },
+                    animation: 120,
+                    ghostClass: 'fl-dragging',
+                    onAdd(event) {
+                        let children = event.target.children;
+                        if(children.length > 1){
+                            for(let i = 0; i < children.length; i++){
+                                if(children.hasOwnProperty(i)){
+                                    let cur = children[i];
+                                    if(vm.hasClass(cur, vm.drag.item)){
+                                        cur.remove();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            initComponentTargetDraggable(id) {
+                id = id ? id : 'target';
+                let vm = this, target = document.getElementById(id);
                 Sortable.create(target, {
                     group: {
-                        name: 'source',
-                        pull: 'clone',
+                        name: 'target',
+                        pull: true,
                         put: ['source']
                     },
                     animation: 120,
                     ghostClass: 'fl-dragging',
-                    onRemove(evt){
-                        console.log(evt);
-                    },
-                    onAdd(evt) {
-                        console.log(evt)
+                    onAdd(event) {
+                        let parentNode = target.parentNode.parentNode,
+                            num = target.children.length,
+                            number = vm.getComponentPagesNumber(parentNode, num);
+                        vm.handleComponentTargetSwitch(parentNode, number, 'target');
+                        event.item.style = 'margin-right: ' + vm.margin + 'px';
                     }
+                });
+            },
+            createComponentRow() {
+                let vm = this;
+                vm.drag.elements.unshift({component: 'recommend-row', props: {row: vm.drag.row}});
+                vm.drag.row++;
+            },
+            handleBroadcast() {
+                let vm = this;
+                bus.$on('prev-action', function(event){
+                    vm.handleComponentPrev(event);
+                });
+                bus.$on('next-action', function(event){
+                    vm.handleComponentNext(event);
+                });
+                bus.$on('init-target-draggable', function(id){
+                    vm.initComponentTargetDraggable(id);
                 });
             }
         },
         mounted () {
             this.uploadList = this.$refs.upload.fileList;
             this.getComponentData();
-            this.handleComponentDraggable();
+            this.initComponentSourceDraggable();
+            this.initComponentTargetDraggable();
+            this.handleBroadcast();
         }
     };
     export default FormComponent;

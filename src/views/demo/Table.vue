@@ -86,7 +86,7 @@
                         }
                     },
                     {
-                        title: '管理操作',
+                        title: '操作',
                         key: 'action',
                         width: 150,
                         render: (h, params) => {
