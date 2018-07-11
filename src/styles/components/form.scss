@@ -329,6 +329,22 @@
     }
     .fl-draggable{
         overflow: hidden;
+        .fl-drag-container{
+            .ivu-card-body{
+                position: relative;
+                overflow: hidden;
+                transition: height .3s ease;
+                padding: 0;
+            }
+            .fl-drag-box{
+                padding: 16px;
+            }
+        }
+        .fl-drag-body-hide{
+            .ivu-card-head{
+                border-bottom: none;
+            }
+        }
         .fl-drag-box{
             padding: 15px 0 0;
             margin: 20px 0 0;
@@ -399,6 +415,13 @@
             align-items: center;
             flex-direction: row;
             justify-content: space-between;
+            button{
+                outline: none;
+                font-size: 14px;
+                &:focus{
+                    box-shadow: none;
+                }
+            }
         }
         .fl-dragging{
             opacity: 0.5;

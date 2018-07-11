@@ -120,10 +120,14 @@
                         </div>
                     </Card>
                     <div :is="element.component" v-for="element in drag.elements" v-bind="element.props"></div>
-                    <Card class="mt20" id="target-list">
+                    <Card class="fl-drag-container mt20" id="target-list">
                         <div slot="title" class="fl-drag-title flex">
                             <span>第 1 行推荐</span>
-                            <Row><Button type="ghost">收起</Button></Row>
+                            <Row>
+                                <Button type="ghost" @click="handleComponentDisplay">
+                                    {{ drag.display['target-list'] ? '收起' : '展开' }}
+                                </Button>
+                            </Row>
                         </div>
                         <Row>
                             <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
@@ -160,13 +164,17 @@
     let bus = new Vue();
 
     Vue.component('recommend-row', {
-        template: `<Card class="mt20" :id="'target-list-' + row">
+        template: `<Card class="fl-drag-container mt20" :id="'target-list-' + row">
     <div slot="title" class="fl-drag-title flex">
         <span>第 {{ row + 1 }} 行推荐</span>
-        <Row><Button type="ghost">收起</Button></Row>
+        <Row>
+            <Button type="ghost" @click="handleComponentDisplay">
+                {{ display['target-list-' + row] ? '收起' : '展开' }}
+            </Button>
+        </Row>
     </div>
     <Row>
-        <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
+        <div class="fl-drag-box fl-drag-target-box flex" :data-name="'target-' + row">
             <div class="fl-drag-prev disabled" @click="handleComponentPrev">
                 <Icon type="arrow-left-b"></Icon>
             </div>
@@ -179,6 +187,11 @@
         </div>
     </Row>
 </Card>`,
+        data() {
+            return {
+                display: {}
+            }
+        },
         props: {
             row: {type: Number}
         },
@@ -191,10 +204,17 @@
             },
             initComponentTargetDraggable(id) {
                 bus.$emit('init-target-draggable', id);
+            },
+            handleComponentDisplay(event) {
+                bus.$emit('init-target-display', event);
             }
         },
         mounted() {
-            this.initComponentTargetDraggable('target-' + this.row);
+            let vm = this;
+            vm.initComponentTargetDraggable('target-' + this.row);
+            bus.$on('send-display-data', function(display){
+                vm.$set(vm, 'display', display);
+            });
         }
     });
 
@@ -225,19 +245,24 @@
                 ratio: 0.5,
                 margin: 17,
                 drag: {
-                    row: 1,
-                    num: 0,
-                    nums: {target: 0},
+                    container: 'fl-drag-container',
+                    body: 'ivu-card-body',
                     disabled: 'disabled',
+                    hide: 'fl-drag-body-hide',
                     box: 'fl-drag-box',
                     prev: 'fl-drag-prev',
                     next: 'fl-drag-next',
                     content: 'fl-drag-cont',
                     list: 'fl-drag-list',
-                    item: 'fl-drag-item',
-                    margin: 40,
                     source: 'source-list',
-                    elements: []
+                    item: 'fl-drag-item',
+                    row: 1,
+                    num: 0,
+                    nums: {target: 0},
+                    margin: 40,
+                    elements: [],
+                    height: {},
+                    display: {}
                 }
             }
         },
@@ -298,6 +323,12 @@
                 }
                 this.$set(vm, 'component', list);
             },
+
+            /**
+             * get component node's client width
+             * @param node currently clicked object
+             * @param name class' name
+             */
             getComponentNodeWidth(node, name) {
                 let $dom = node.getElementsByClassName(name);
                 if($dom.length > 0){
@@ -305,6 +336,12 @@
                 }
                 return 0;
             },
+
+            /**
+             * Calculating the page's number based on the number of component.
+             * @param node currently clicked object
+             * @param num component's number
+             */
             getComponentPagesNumber(node, num) {
                 let vm = this,
                     number = num ? parseInt(num) : vm.component.length,
@@ -313,6 +350,46 @@
                     totalWidth = itemWidth * number + vm.margin * (number - 1);
                 return Math.ceil(totalWidth / contentWidth);
             },
+
+            /**
+             * get parent's node via class name.
+             * @param event `event object`
+             * @param name class name
+             */
+            getParentsNodeByClassName(event, name) {
+                let vm = this, paths = event.path,
+                    i = 0, node = null;
+                for(; i < paths.length; i++){
+                    if(paths.hasOwnProperty(i)){
+                        if(vm.hasClass(paths[i], name)){
+                            node = paths[i];
+                            break;
+                        }
+                    }
+                }
+                return node;
+            },
+
+            /**
+             * setting the height of the recommend's body
+             * @param id
+             */
+            setComponentBodyHeight(id) {
+                let vm = this, container = document.getElementById(id),
+                    body = container.getElementsByClassName(vm.drag.body)[0];
+                body.removeAttribute('style');
+                let height = body.clientHeight;
+                body.style.height = height + 'px';
+                vm.$set(vm.drag.height, id, height);
+                if(height > 0) vm.$set(vm.drag.display, id, true);
+                else vm.$set(vm.drag.display, id, false);
+                bus.$emit('send-display-data', vm.drag.display);
+            },
+
+            /**
+             * switch on the previous page
+             * @param event
+             */
             handleComponentPrev(event) {
                 let vm = this,
                     parentNode = event.currentTarget.parentNode,
@@ -338,6 +415,11 @@
                     vm.handleComponentSourceSwitch(parentNode, 'prev');
                 }
             },
+
+            /**
+             * switch on the next page
+             * @param event
+             */
             handleComponentNext(event) {
                 let vm = this,
                     parentNode = event.currentTarget.parentNode,
@@ -347,7 +429,7 @@
                 if(isTarget){
                     let num = listNode.children.length,
                         number = vm.getComponentPagesNumber(parentNode, num),
-                        targetNum = vm.drag.nums[name];
+                        targetNum = vm.drag.nums[name] ? vm.drag.nums[name] : 0;
                     if(targetNum < (number - 1) * 100){
                         targetNum += 100;
                         vm.$set(vm.drag.nums, name, targetNum);
@@ -365,6 +447,13 @@
                     vm.handleComponentSourceSwitch(parentNode, 'next', number);
                 }
             },
+
+            /**
+             * `source-list` switcher state
+             * @param node
+             * @param action
+             * @param number
+             */
             handleComponentSourceSwitch(node, action, number) {
                 let vm = this,
                     disabled = vm.drag.disabled,
@@ -386,6 +475,13 @@
                     }
                 }
             },
+
+            /**
+             * `target-list` switcher state
+             * @param node parent's node
+             * @param number page's number
+             * @param dest target's name
+             */
             handleComponentTargetSwitch(node, number, dest) {
                 let vm = this, disabled = vm.drag.disabled,
                     num = vm.drag.nums[dest] ? vm.drag.nums[dest] : 0,
@@ -395,6 +491,8 @@
                     vm.removeClass(prev, disabled);
                     if(num === (number - 1) * 100){
                         vm.addClass(next, disabled);
+                    }else{
+                        vm.removeClass(next, disabled);
                     }
                 }else{
                     vm.addClass(prev, disabled);
@@ -403,6 +501,72 @@
                     }
                 }
             },
+
+            /**
+             * Control the recommend row is showing up or hidding.
+             * @paran event
+             */
+            handleComponentDisplay(event) {
+                let vm = this,
+                    node = vm.getParentsNodeByClassName(event, vm.drag.container);
+                if(node !== null){
+                    vm.addClass(node, '');
+                    let id = node.getAttribute('id'),
+                        body = node.getElementsByClassName(vm.drag.body)[0],
+                        height = body.clientHeight;
+                    if(height > 0){
+                        body.style.height = 0;
+                        vm.$set(vm.drag.display, id, false);
+                        vm.addClass(node, vm.drag.hide);
+                    }else{
+                        let ids = id.split('-'),
+                            row = parseInt(ids[ids.length - 1]),
+                            isNotNum = isNaN(row);
+                        if(isNotNum) row = 0;
+                        vm.handleComponentOneShow(row + 1);
+                        body.style.height = vm.drag.height[id] + 'px';
+                        vm.$set(vm.drag.display, id, true);
+                        vm.removeClass(node, vm.drag.hide);
+                    }
+                }
+            },
+
+            /**
+             * Only one recommend row is shown at a time.
+             * @param row `row number`
+             * @param execute set height of the current body or not.
+             */
+            handleComponentOneShow(row, execute) {
+                let vm = this, id = row < 2 ? 'target-list' : 'target-list-' + (row - 1);
+                vm.$nextTick(() => {
+                    let container = document.getElementsByClassName(vm.drag.container),
+                        length = container.length, i = 0, cur, body;
+                    for(; i < length; i++){
+                        if(container.hasOwnProperty(i)){
+                            cur = container[i];
+                            let rowId = cur.getAttribute('id');
+                            if(rowId !== id){
+                                vm.addClass(cur, vm.drag.hide);
+                                body = cur.getElementsByClassName(vm.drag.body)[0];
+                                body.style.height = 0;
+                                vm.$set(vm.drag.display, rowId, false);
+                            }
+                        }
+                    }
+                    if(execute){
+                        let current = document.getElementById(id);
+                        if(current){
+                            vm.removeClass(current, vm.drag.hide);
+                            vm.setComponentBodyHeight(id);
+                        }
+                    }
+                });
+            },
+
+            /**
+             * Initilize the original drag list
+             * Contains `source-list` and `container (mainly use to delete.)`
+             */
             initComponentSourceDraggable() {
                 let vm = this;
                 document.body.ondrop = function (event) {
@@ -444,31 +608,72 @@
                     }
                 });
             },
+
+            /**
+             * Initilize the target drag list
+             * Control of the switcher when the list is adding or removing.
+             * @param id dom's id
+             */
             initComponentTargetDraggable(id) {
                 id = id ? id : 'target';
-                let vm = this, target = document.getElementById(id);
+                let vm = this, target = document.getElementById(id),
+                    add = function(event){
+                        let parentNode = target.parentNode.parentNode,
+                            num = target.children.length,
+                            number = vm.getComponentPagesNumber(parentNode, num);
+                        vm.handleComponentTargetSwitch(parentNode, number, id);
+                        let node = vm.getParentsNodeByClassName(event, vm.drag.container),
+                            tid = node.getAttribute('id');
+                        vm.setComponentBodyHeight(tid);
+                    },
+                    update = function(event){
+                        let parentNode = target.parentNode.parentNode,
+                            num = target.children.length,
+                            number = vm.getComponentPagesNumber(parentNode, num),
+                            pageNum = vm.drag.nums[id] ? vm.drag.nums[id] : 0,
+                            newNum = (number - 1) * 100;
+                        if(pageNum > newNum){
+                            target.style.transform = 'translateX(-' + newNum + '%) translateZ(0px)';
+                            vm.$set(vm.drag.nums, id, newNum);
+                        }
+                        vm.handleComponentTargetSwitch(parentNode, number, id);
+                        let node = vm.getParentsNodeByClassName(event, vm.drag.container),
+                            tid = node.getAttribute('id');
+                        vm.setComponentBodyHeight(tid);
+                    };
                 Sortable.create(target, {
                     group: {
-                        name: 'target',
+                        name: id,
                         pull: true,
                         put: ['source']
                     },
                     animation: 120,
                     ghostClass: 'fl-dragging',
                     onAdd(event) {
-                        let parentNode = target.parentNode.parentNode,
-                            num = target.children.length,
-                            number = vm.getComponentPagesNumber(parentNode, num);
-                        vm.handleComponentTargetSwitch(parentNode, number, 'target');
+                        add(event);
                         event.item.style = 'margin-right: ' + vm.margin + 'px';
+                    },
+                    onRemove(event) {
+                        update(event);
                     }
                 });
             },
+
+            /**
+             * create recommend's row
+             * via update the `elements` variable ( insert in the queue head )
+             */
             createComponentRow() {
                 let vm = this;
                 vm.drag.elements.unshift({component: 'recommend-row', props: {row: vm.drag.row}});
                 vm.drag.row++;
+                vm.handleComponentOneShow(vm.drag.row, true);
             },
+
+            /**
+             * Communication between components.
+             * via the common Vue object called `bus`
+             */
             handleBroadcast() {
                 let vm = this;
                 bus.$on('prev-action', function(event){
@@ -480,6 +685,10 @@
                 bus.$on('init-target-draggable', function(id){
                     vm.initComponentTargetDraggable(id);
                 });
+                bus.$on('init-target-display', function(event){
+                    vm.handleComponentDisplay(event);
+                    bus.$emit('send-display-data', vm.drag.display);
+                });
             }
         },
         mounted () {
@@ -487,6 +696,7 @@
             this.getComponentData();
             this.initComponentSourceDraggable();
             this.initComponentTargetDraggable();
+            this.setComponentBodyHeight('target-list');
             this.handleBroadcast();
         }
     };
