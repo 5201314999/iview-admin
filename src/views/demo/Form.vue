@@ -86,73 +86,75 @@
                         <img :src="imgUrl" v-if="visible" style="width: 100%">
                     </Modal>
                 </FormItem>
-                <Row class="fl-draggable mb20">
-                    <Card id="source-list">
-                        <div class="fl-search clearfix">
-                            <div class="search-input left">
-                                <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" />
-                            </div>
-                            <div class="search-button left">
-                                <div class="fl-select">
-                                    <Select placeholder="请选择" value="movie" :style="{width: '60px'}">
-                                        <Option value="movie">100</Option>
-                                        <Option value="app1">256</Option>
-                                        <Option value="app2">366</Option>
-                                        <Option value="app3">400</Option>
-                                    </Select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="fl-drag-box flex" data-name="source">
-                            <div class="fl-drag-prev disabled" @click="handleComponentPrev">
-                                <Icon type="arrow-left-b"></Icon>
-                            </div>
-                            <div class="fl-drag-cont clearfix">
-                                <div class="fl-drag-list" id="source">
-                                    <div class="fl-drag-item" v-for="(item, index) in component" :key="index" :data-index="index" :style="{'margin-right': index === component.length - 1 ? '0' : margin + 'px'}">
-                                        <span v-for="(box, k) in item" :style="{width: box.width + 'px', height: box.height + 'px', 'margin-bottom': box.space + 'px'}" :key="k">{{ box.sourceWidth + ' * ' + box.sourceHeight }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="fl-drag-next" @click="handleComponentNext">
-                                <Icon type="arrow-right-b"></Icon>
-                            </div>
-                        </div>
-                    </Card>
-                    <div :is="element.component" v-for="element in drag.elements" v-bind="element.props"></div>
-                    <Card class="fl-drag-container mt20" id="target-list">
-                        <div slot="title" class="fl-drag-title flex">
-                            <span>第 1 行推荐</span>
-                            <Row>
-                                <Button type="ghost" @click="handleComponentDisplay">
-                                    {{ drag.display['target-list'] ? '收起' : '展开' }}
-                                </Button>
-                            </Row>
-                        </div>
-                        <Row>
-                            <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
-                                <div class="fl-drag-prev disabled" @click="handleComponentPrev">
-                                    <Icon type="arrow-left-b"></Icon>
-                                </div>
-                                <div class="fl-drag-cont clearfix">
-                                    <div class="fl-drag-list" id="target"></div>
-                                </div>
-                                <div class="fl-drag-next disabled" @click="handleComponentNext">
-                                    <Icon type="arrow-right-b"></Icon>
-                                </div>
-                            </div>
-                        </Row>
-                    </Card>
-                    <div class="fl-drag-btn flex flex-center" @click="createComponentRow">
-                        <Icon type="ios-plus-empty" class="mr10"></Icon>添加推荐行
-                    </div>
-                </Row>
                 <FormItem label=" " class="fl-btn">
                     <Button type="primary" size="large">提交</Button>
                     <Button size="large" type="ghost">返回</Button>
                 </FormItem>
             </Form>
         </div>
+        <Card class="mt20">
+            <Row class="fl-draggable">
+                <Card id="source-list">
+                    <div class="fl-search clearfix">
+                        <div class="search-input left">
+                            <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" />
+                        </div>
+                        <div class="search-button left">
+                            <div class="fl-select">
+                                <Select placeholder="请选择" value="movie" :style="{width: '60px'}">
+                                    <Option value="movie">100</Option>
+                                    <Option value="app1">256</Option>
+                                    <Option value="app2">366</Option>
+                                    <Option value="app3">400</Option>
+                                </Select>
+                            </div>
+                        </div>
+                        <div class="search-button right">
+                            <Button type="primary" size="large" @click="createComponentRow">
+                                <icon type="plus-round" class="mr5"></icon>添加推荐行
+                            </Button>
+                        </div>
+                    </div>
+                    <div class="fl-drag-box flex" data-name="source">
+                        <div class="fl-drag-prev disabled" @click="handleComponentPrev">
+                            <Icon type="arrow-left-b"></Icon>
+                        </div>
+                        <div class="fl-drag-cont clearfix">
+                            <div class="fl-drag-list" id="source">
+                                <div class="fl-drag-item" v-for="(item, index) in component" :key="index" :data-index="index" :style="{'margin-right': index === component.length - 1 ? '0' : margin + 'px'}">
+                                    <span v-for="(box, k) in item" :style="{width: box.width + 'px', height: box.height + 'px', 'margin-bottom': box.space + 'px'}" :key="k">{{ box.sourceWidth + ' * ' + box.sourceHeight }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fl-drag-next" @click="handleComponentNext">
+                            <Icon type="arrow-right-b"></Icon>
+                        </div>
+                    </div>
+                </Card>
+                <Row class="fl-tabs mt20">
+                    <Tabs name="recommend">
+                        <TabPane label="第 1 行推荐" data-row="0">
+                            <div class="fl-drag-container" id="target-list">
+                                <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
+                                    <div class="fl-drag-prev disabled" @click="handleComponentPrev">
+                                        <Icon type="arrow-left-b"></Icon>
+                                    </div>
+                                    <div class="fl-drag-cont clearfix">
+                                        <div class="fl-drag-list" id="target"></div>
+                                    </div>
+                                    <div class="fl-drag-next disabled" @click="handleComponentNext">
+                                        <Icon type="arrow-right-b"></Icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </TabPane>
+                        <TabPane :label="drag.tabs.label" :data-row="element.props.row" v-for="(element, index) in drag.elements" :key="index">
+                            <div :is="element.component" v-bind="element.props" :ref="'tab-' + element.props.row"></div>
+                        </TabPane>
+                    </Tabs>
+                </Row>
+            </Row>
+        </Card>
     </div>
 </template>
 
@@ -164,16 +166,8 @@
     let bus = new Vue();
 
     Vue.component('recommend-row', {
-        template: `<Card class="fl-drag-container mt20" :id="'target-list-' + row">
-    <div slot="title" class="fl-drag-title flex">
-        <span>第 {{ row + 1 }} 行推荐</span>
-        <Row>
-            <Button type="ghost" @click="handleComponentDisplay">
-                {{ display['target-list-' + row] ? '收起' : '展开' }}
-            </Button>
-        </Row>
-    </div>
-    <Row>
+        template: `<Row>
+    <div class="fl-drag-container" :id="'target-list-' + row">
         <div class="fl-drag-box fl-drag-target-box flex" :data-name="'target-' + row">
             <div class="fl-drag-prev disabled" @click="handleComponentPrev">
                 <Icon type="arrow-left-b"></Icon>
@@ -185,8 +179,8 @@
                 <Icon type="arrow-right-b"></Icon>
             </div>
         </div>
-    </Row>
-</Card>`,
+    </div>
+</Row>`,
         data() {
             return {
                 display: {}
@@ -202,19 +196,13 @@
             handleComponentNext(event) {
                 bus.$emit('next-action', event);
             },
-            initComponentTargetDraggable(id) {
-                bus.$emit('init-target-draggable', id);
-            },
-            handleComponentDisplay(event) {
-                bus.$emit('init-target-display', event);
+            initComponentTargetDraggable() {
+                bus.$emit('init-target-draggable');
             }
         },
         mounted() {
             let vm = this;
-            vm.initComponentTargetDraggable('target-' + this.row);
-            bus.$on('send-display-data', function(display){
-                vm.$set(vm, 'display', display);
-            });
+            vm.initComponentTargetDraggable();
         }
     });
 
@@ -245,10 +233,9 @@
                 ratio: 0.5,
                 margin: 17,
                 drag: {
+                    layout: 'layout',
                     container: 'fl-drag-container',
-                    body: 'ivu-card-body',
                     disabled: 'disabled',
-                    hide: 'fl-drag-body-hide',
                     box: 'fl-drag-box',
                     prev: 'fl-drag-prev',
                     next: 'fl-drag-next',
@@ -262,8 +249,34 @@
                     margin: 40,
                     elements: [],
                     height: {},
-                    display: {}
+                    display: {},
+                    body: {},
+                    target: [],
+                    tabs: {
+                        i: 0,
+                        label: (h) => {
+                            return h('div', [
+                                h('span', '第 ' + this.drag.tabs.i + ' 行推荐'),
+                                h('icon', {
+                                    props: {type: 'ios-close-outline'},
+                                    title: '删除',
+                                    on: {
+                                        click: (event) => {
+                                            this.deleteComponentRow(event);
+                                        }
+                                    }
+                                })
+                            ]);
+                        },
+                        content: 'ivu-tabs-content',
+                        row: []
+                    }
                 }
+            }
+        },
+        watch: {
+            '$route': () => {
+                if(Object.keys(this.drag.body).length > 0) this.drag.body.destroy();
             }
         },
         methods: {
@@ -371,12 +384,31 @@
             },
 
             /**
+             * get the draggable list's id in recommend row.
+             * `container list (mainly use to delete.)`
+             */
+            getComponentTargetIds() {
+                let vm = this, target, ids = [];
+                target = document.getElementsByClassName(vm.drag.container);
+                if(target.length > 0){
+                    for(let i = 0; i < target.length; i++){
+                        if(target.hasOwnProperty(i)){
+                            let cur = target[i],
+                                node = cur.getElementsByClassName(vm.drag.list)[0];
+                            ids.push(node.getAttribute('id'));
+                        }
+                    }
+                }
+                return ids;
+            },
+
+            /**
              * setting the height of the recommend's body
              * @param id
+             * @param init {Boolean|*} whether is first time.
              */
-            setComponentBodyHeight(id) {
-                let vm = this, container = document.getElementById(id),
-                    body = container.getElementsByClassName(vm.drag.body)[0];
+            setComponentBodyHeight(id, init) {
+                let vm = this, body = document.getElementById(id);
                 body.removeAttribute('style');
                 let height = body.clientHeight;
                 body.style.height = height + 'px';
@@ -503,93 +535,19 @@
             },
 
             /**
-             * Control the recommend row is showing up or hidding.
-             * @paran event
+             * init component container(draggable)
+             * mainly use to delete for all target-list
              */
-            handleComponentDisplay(event) {
+            initComponentBodyDraggable() {
                 let vm = this,
-                    node = vm.getParentsNodeByClassName(event, vm.drag.container);
-                if(node !== null){
-                    vm.addClass(node, '');
-                    let id = node.getAttribute('id'),
-                        body = node.getElementsByClassName(vm.drag.body)[0],
-                        height = body.clientHeight;
-                    if(height > 0){
-                        body.style.height = 0;
-                        vm.$set(vm.drag.display, id, false);
-                        vm.addClass(node, vm.drag.hide);
-                    }else{
-                        let ids = id.split('-'),
-                            row = parseInt(ids[ids.length - 1]),
-                            isNotNum = isNaN(row);
-                        if(isNotNum) row = 0;
-                        vm.handleComponentOneShow(row + 1);
-                        body.style.height = vm.drag.height[id] + 'px';
-                        vm.$set(vm.drag.display, id, true);
-                        vm.removeClass(node, vm.drag.hide);
-                    }
-                }
-            },
-
-            /**
-             * Only one recommend row is shown at a time.
-             * @param row `row number`
-             * @param execute set height of the current body or not.
-             */
-            handleComponentOneShow(row, execute) {
-                let vm = this, id = row < 2 ? 'target-list' : 'target-list-' + (row - 1);
-                vm.$nextTick(() => {
-                    let container = document.getElementsByClassName(vm.drag.container),
-                        length = container.length, i = 0, cur, body;
-                    for(; i < length; i++){
-                        if(container.hasOwnProperty(i)){
-                            cur = container[i];
-                            let rowId = cur.getAttribute('id');
-                            if(rowId !== id){
-                                vm.addClass(cur, vm.drag.hide);
-                                body = cur.getElementsByClassName(vm.drag.body)[0];
-                                body.style.height = 0;
-                                vm.$set(vm.drag.display, rowId, false);
-                            }
-                        }
-                    }
-                    if(execute){
-                        let current = document.getElementById(id);
-                        if(current){
-                            vm.removeClass(current, vm.drag.hide);
-                            vm.setComponentBodyHeight(id);
-                        }
-                    }
-                });
-            },
-
-            /**
-             * Initilize the original drag list
-             * Contains `source-list` and `container (mainly use to delete.)`
-             */
-            initComponentSourceDraggable() {
-                let vm = this;
-                document.body.ondrop = function (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                };
-                let source = document.getElementById('source');
-                Sortable.create(source, {
+                    container = document.getElementsByClassName(vm.drag.layout)[0],
+                    target = vm.getComponentTargetIds();
+                if(Object.keys(vm.drag.body).length > 0) vm.drag.body.destroy();
+                vm.drag.body = Sortable.create(container, {
                     group: {
-                        name: 'source',
-                        pull: 'clone',
-                        put: ['none']
-                    },
-                    animation: 120,
-                    ghostClass: 'fl-dragging',
-                    sort: false
-                });
-                let container = document.getElementsByClassName('fl-container')[0];
-                Sortable.create(container, {
-                    group: {
-                        name: 'body',
+                        name: 'container',
                         pull: true,
-                        put: ['target']
+                        put: target
                     },
                     animation: 120,
                     ghostClass: 'fl-dragging',
@@ -610,12 +568,34 @@
             },
 
             /**
+             * Initilize the original drag list
+             * Contains `source-list`
+             */
+            initComponentSourceDraggable() {
+                document.body.ondrop = function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                };
+                let source = document.getElementById('source');
+                Sortable.create(source, {
+                    group: {
+                        name: 'source',
+                        pull: 'clone',
+                        put: ['none']
+                    },
+                    animation: 120,
+                    ghostClass: 'fl-dragging',
+                    sort: false
+                });
+            },
+
+            /**
              * Initilize the target drag list
              * Control of the switcher when the list is adding or removing.
              * @param id dom's id
              */
             initComponentTargetDraggable(id) {
-                id = id ? id : 'target';
+                id = id ? 'target-' + id : 'target';
                 let vm = this, target = document.getElementById(id),
                     add = function(event){
                         let parentNode = target.parentNode.parentNode,
@@ -641,9 +621,9 @@
                             tid = node.getAttribute('id');
                         vm.setComponentBodyHeight(tid);
                     };
-                Sortable.create(target, {
+                vm.drag.target[id] = Sortable.create(target, {
                     group: {
-                        name: id,
+                        name: target,
                         pull: true,
                         put: ['source']
                     },
@@ -665,9 +645,21 @@
              */
             createComponentRow() {
                 let vm = this;
-                vm.drag.elements.unshift({component: 'recommend-row', props: {row: vm.drag.row}});
-                vm.drag.row++;
-                vm.handleComponentOneShow(vm.drag.row, true);
+                vm.drag.elements.push({component: 'recommend-row', props: {row: vm.drag.row}});
+                let num = vm.drag.row + 1;
+                vm.drag.tabs.row.push(num);
+                vm.$set(vm.drag, 'row', num);
+            },
+
+            /**
+             * delete recommend's row
+             * remove the `tab-nav` & `tab-content`
+             */
+            deleteComponentRow(event){
+                let parent = event.currentTarget.parentNode.parentNode,
+                    brother = parent.previousSibling;
+                parent.remove();
+                brother.click();
             },
 
             /**
@@ -682,18 +674,19 @@
                 bus.$on('next-action', function(event){
                     vm.handleComponentNext(event);
                 });
-                bus.$on('init-target-draggable', function(id){
-                    vm.initComponentTargetDraggable(id);
-                });
-                bus.$on('init-target-display', function(event){
-                    vm.handleComponentDisplay(event);
-                    bus.$emit('send-display-data', vm.drag.display);
+                bus.$on('init-target-draggable', function(){
+                    vm.$nextTick(() => {
+                        let row = vm.drag.row - 1;
+                        vm.initComponentTargetDraggable(row);
+                        vm.initComponentBodyDraggable();
+                    });
                 });
             }
         },
         mounted () {
             this.uploadList = this.$refs.upload.fileList;
             this.getComponentData();
+            this.initComponentBodyDraggable();
             this.initComponentSourceDraggable();
             this.initComponentTargetDraggable();
             this.setComponentBodyHeight('target-list');
