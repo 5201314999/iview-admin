@@ -371,7 +371,10 @@
             setComponentBodyHeight(id) {
                 let vm = this, body = document.getElementById(id);
                 body.removeAttribute('style');
-                let height = body.clientHeight;
+                let height = body.clientHeight,
+                    parent = body.parentNode.parentNode,
+                    num = body.children.length,
+                    pages = vm.getComponentPagesNumber(parent, num);
                 body.style.height = height + 'px';
                 vm.$set(vm.drag.height, id, height);
             },
@@ -552,6 +555,8 @@
                     vm.addClass(prev, disabled);
                     if(number > 1){
                         vm.removeClass(next, disabled);
+                    }else{
+                        vm.addClass(next, disabled);
                     }
                 }
             },

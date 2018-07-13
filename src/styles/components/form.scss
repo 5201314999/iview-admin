@@ -348,7 +348,7 @@
                     background: #F2F2F2;
                 }
                 i{
-                    font-size: 50px;
+                    font-size: 30px;
                     color: #FFF;
                 }
             }
@@ -435,6 +435,7 @@
                 .fl-drag-cont{
                     .fl-drag-list{
                         //display: block;
+                        //position: relative;
                         .fl-drag-item{
                             //float: left;
                             span{
