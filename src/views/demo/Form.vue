@@ -131,16 +131,16 @@
                         </div>
                     </div>
                 </Card>
-                <Row class="fl-tabs mt20">
+                <Row class="fl-tabs fl-recommend-tab mt20">
                     <Tabs name="recommend">
-                        <TabPane label="第 1 行推荐" data-row="0">
+                        <TabPane label="第 1 行推荐" name="tab">
                             <div class="fl-drag-container" id="target-list">
                                 <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
                                     <div class="fl-drag-prev disabled" @click="handleComponentPrev">
-                                        <Icon type="arrow-left-b"></Icon>
+                                        <icon type="arrow-left-b"></icon>
                                     </div>
-                                    <div class="fl-drag-cont clearfix">
-                                        <div class="fl-drag-list" id="target"></div>
+                                    <div class="fl-drag-cont">
+                                        <div class="fl-drag-list clearfix" id="target"></div>
                                     </div>
                                     <div class="fl-drag-next disabled" @click="handleComponentNext">
                                         <Icon type="arrow-right-b"></Icon>
@@ -148,8 +148,8 @@
                                 </div>
                             </div>
                         </TabPane>
-                        <TabPane :label="drag.tabs.label" :data-row="element.props.row" v-for="(element, index) in drag.elements" :key="index">
-                            <div :is="element.component" v-bind="element.props" :ref="'tab-' + element.props.row"></div>
+                        <TabPane :label="setComponentTabLabel(element.id)" v-for="(element, index) in drag.elements" :ref="'tab-' + element.props.row" :key="index">
+                            <div :is="element.component" v-bind="element.props"></div>
                         </TabPane>
                     </Tabs>
                 </Row>
@@ -172,8 +172,8 @@
             <div class="fl-drag-prev disabled" @click="handleComponentPrev">
                 <Icon type="arrow-left-b"></Icon>
             </div>
-            <div class="fl-drag-cont clearfix">
-                <div class="fl-drag-list" :id="'target-' + row"></div>
+            <div class="fl-drag-cont">
+                <div class="fl-drag-list clearfix" :id="'target-' + row"></div>
             </div>
             <div class="fl-drag-next disabled" @click="handleComponentNext">
                 <Icon type="arrow-right-b"></Icon>
@@ -233,7 +233,7 @@
                 ratio: 0.5,
                 margin: 17,
                 drag: {
-                    layout: 'layout',
+                    layout: 'fl-container',
                     container: 'fl-drag-container',
                     disabled: 'disabled',
                     box: 'fl-drag-box',
@@ -243,40 +243,20 @@
                     list: 'fl-drag-list',
                     source: 'source-list',
                     item: 'fl-drag-item',
-                    row: 1,
-                    num: 0,
-                    nums: {target: 0},
-                    margin: 40,
-                    elements: [],
-                    height: {},
-                    display: {},
-                    body: {},
-                    target: [],
+                    row: 1,                     // row number.
+                    num: 0,                     // page's number ( source ).
+                    nums: {target: 0},          // page's number ( target ).
+                    elements: [],               // component elements.
+                    width: {},                  // row width.
+                    height: {},                 // row height.
+                    target: {},                 // sortable object.
                     tabs: {
-                        i: 0,
-                        label: (h) => {
-                            return h('div', [
-                                h('span', '第 ' + this.drag.tabs.i + ' 行推荐'),
-                                h('icon', {
-                                    props: {type: 'ios-close-outline'},
-                                    title: '删除',
-                                    on: {
-                                        click: (event) => {
-                                            this.deleteComponentRow(event);
-                                        }
-                                    }
-                                })
-                            ]);
-                        },
-                        content: 'ivu-tabs-content',
-                        row: []
+                        container: 'fl-recommend-tab',
+                        row: [],
+                        icon: 'ios-close-outline',
+                        id: 1
                     }
                 }
-            }
-        },
-        watch: {
-            '$route': () => {
-                if(Object.keys(this.drag.body).length > 0) this.drag.body.destroy();
             }
         },
         methods: {
@@ -310,8 +290,9 @@
                 return check;
             },
             handleView(url) {
-                this.imgUrl = url;
-                this.visible = true;
+                let vm = this;
+                vm.imgUrl = url;
+                vm.visible = true;
             },
             getComponentData() {
                 let vm = this, width = 570, height = 368, space = 34,
@@ -384,38 +365,79 @@
             },
 
             /**
-             * get the draggable list's id in recommend row.
-             * `container list (mainly use to delete.)`
-             */
-            getComponentTargetIds() {
-                let vm = this, target, ids = [];
-                target = document.getElementsByClassName(vm.drag.container);
-                if(target.length > 0){
-                    for(let i = 0; i < target.length; i++){
-                        if(target.hasOwnProperty(i)){
-                            let cur = target[i],
-                                node = cur.getElementsByClassName(vm.drag.list)[0];
-                            ids.push(node.getAttribute('id'));
-                        }
-                    }
-                }
-                return ids;
-            },
-
-            /**
              * setting the height of the recommend's body
              * @param id
-             * @param init {Boolean|*} whether is first time.
              */
-            setComponentBodyHeight(id, init) {
+            setComponentBodyHeight(id) {
                 let vm = this, body = document.getElementById(id);
                 body.removeAttribute('style');
                 let height = body.clientHeight;
                 body.style.height = height + 'px';
                 vm.$set(vm.drag.height, id, height);
-                if(height > 0) vm.$set(vm.drag.display, id, true);
-                else vm.$set(vm.drag.display, id, false);
-                bus.$emit('send-display-data', vm.drag.display);
+            },
+
+            /**
+             * setting the width of the recommend's body
+             * @param id {*} `dom` id
+             */
+            setComponentBodyWidth(id) {
+                id = id ? 'target-' + id : 'target';
+                let vm = this, body = document.getElementById(id);
+                if(body){
+                    let width = body.scrollWidth;
+                    body.style.width = width + 'px';
+                    vm.$set(vm.drag.width, id, {width: width});
+                }
+            },
+
+            /**
+             * set the recommend row's label
+             */
+            setComponentTabLabel(row) {
+                let vm = this, num = row + 1,
+                    label = '第 ' + num + ' 行推荐';
+                return (h) => {
+                    return h('div', [
+                        h('span', label),
+                        h('icon', {
+                            props: {type: vm.drag.tabs.icon},
+                            attrs: {
+                                'data-row': row,
+                                title: '删除'
+                            },
+                            on: {
+                                click: (event) => {
+                                    let parent = event.currentTarget.parentNode.parentNode,
+                                        brother = parent.previousSibling, id = -1,
+                                        number = event.currentTarget.getAttribute('data-row'),
+                                        elements = JSON.parse(JSON.stringify(vm.drag.elements));
+                                    brother.click();
+                                    for(let i = 0; i < elements.length; i++){
+                                        let temp = parseInt(elements[i].id);
+                                        if(temp === parseInt(number)){
+                                            let name = 'target-' + elements[i].props.row;
+                                            vm.drag.target[name].destroy();
+                                            delete vm.drag.target[name];
+                                            elements.splice(i, 1);
+                                            id = temp;
+                                            break;
+                                        }
+                                    }
+                                    if(elements.length > 0){
+                                        for(let n = 0; n < elements.length; n++){
+                                            let temp = parseInt(elements[n].id);
+                                            if(temp > id){
+                                                elements[n].id = temp - 1;
+                                            }
+                                        }
+                                    }
+                                    vm.$set(vm.drag, 'elements', elements);
+                                    vm.$set(vm.drag.tabs, 'id', vm.drag.tabs.id - 1);
+                                }
+                            }
+                        })
+                    ]);
+                }
             },
 
             /**
@@ -540,14 +562,12 @@
              */
             initComponentBodyDraggable() {
                 let vm = this,
-                    container = document.getElementsByClassName(vm.drag.layout)[0],
-                    target = vm.getComponentTargetIds();
-                if(Object.keys(vm.drag.body).length > 0) vm.drag.body.destroy();
-                vm.drag.body = Sortable.create(container, {
+                    container = document.getElementsByClassName(vm.drag.layout)[0];
+                Sortable.create(container, {
                     group: {
                         name: 'container',
                         pull: true,
-                        put: target
+                        put: ['target']
                     },
                     animation: 120,
                     ghostClass: 'fl-dragging',
@@ -621,9 +641,10 @@
                             tid = node.getAttribute('id');
                         vm.setComponentBodyHeight(tid);
                     };
+                //vm.setComponentBodyWidth(id);
                 vm.drag.target[id] = Sortable.create(target, {
                     group: {
-                        name: target,
+                        name: 'target',
                         pull: true,
                         put: ['source']
                     },
@@ -645,21 +666,12 @@
              */
             createComponentRow() {
                 let vm = this;
-                vm.drag.elements.push({component: 'recommend-row', props: {row: vm.drag.row}});
-                let num = vm.drag.row + 1;
-                vm.drag.tabs.row.push(num);
-                vm.$set(vm.drag, 'row', num);
-            },
-
-            /**
-             * delete recommend's row
-             * remove the `tab-nav` & `tab-content`
-             */
-            deleteComponentRow(event){
-                let parent = event.currentTarget.parentNode.parentNode,
-                    brother = parent.previousSibling;
-                parent.remove();
-                brother.click();
+                vm.drag.elements.push({id: vm.drag.tabs.id, component: 'recommend-row', props: {row: vm.drag.row}});
+                let row = vm.drag.row + 1,
+                    num = vm.drag.tabs.id + 1;
+                vm.drag.tabs.row.push(row);
+                vm.$set(vm.drag, 'row', row);
+                vm.$set(vm.drag.tabs, 'id', num);
             },
 
             /**
@@ -684,13 +696,15 @@
             }
         },
         mounted () {
-            this.uploadList = this.$refs.upload.fileList;
-            this.getComponentData();
-            this.initComponentBodyDraggable();
-            this.initComponentSourceDraggable();
-            this.initComponentTargetDraggable();
-            this.setComponentBodyHeight('target-list');
-            this.handleBroadcast();
+            let vm = this;
+            vm.uploadList = this.$refs.upload.fileList;
+            vm.getComponentData();
+            vm.initComponentBodyDraggable();
+            vm.initComponentSourceDraggable();
+            vm.initComponentTargetDraggable();
+            vm.setComponentBodyHeight('target-list');
+            //vm.setComponentBodyWidth();
+            vm.handleBroadcast();
         }
     };
     export default FormComponent;

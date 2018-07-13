@@ -434,7 +434,9 @@
                 padding: 16px;
                 .fl-drag-cont{
                     .fl-drag-list{
+                        //display: block;
                         .fl-drag-item{
+                            //float: left;
                             span{
                                 color: #FFF;
                                 background: $themeColor;
@@ -480,6 +482,10 @@
                         margin-right: 0;
                         margin-left: 15px;
                         font-size: 18px;
+                        line-height: 22px;
+                        width: 18px;
+                        height: 18px;
+                        float: right;
                         vertical-align: -1px;
                         display: none;
                     }
