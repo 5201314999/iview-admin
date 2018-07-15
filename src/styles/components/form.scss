@@ -368,7 +368,7 @@
                     display: flex;
                     flex-direction: row;
                     will-change: transform;
-                    transition: transform .3s ease-in-out,-webkit-transform .3s ease-in-out;
+                    transition: transform .3s ease-in-out;
                     .fl-drag-item{
                         margin-right: 17px;
                         cursor: move;
@@ -434,10 +434,12 @@
                 padding: 16px;
                 .fl-drag-cont{
                     .fl-drag-list{
-                        //display: block;
-                        //position: relative;
+                        display: block;
+                        position: relative;
+                        will-change: margin;
+                        transition: margin .4s ease-in-out;
                         .fl-drag-item{
-                            //float: left;
+                            float: left;
                             span{
                                 color: #FFF;
                                 background: $themeColor;
