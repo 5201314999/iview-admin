@@ -13,7 +13,7 @@
                 <icon type="code" class="mr5"></icon>代码
             </Row>
             <Row v-highlight>
-                <pre><code lang="html">{{ content }}</code></pre>
+                <pre><code lang="html">{{ html }}</code></pre>
             </Row>
         </Card>
     </div>
@@ -154,7 +154,7 @@
                 list: [],
                 loading: true,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'},
-                content: '<div class="fl-container">\n' +
+                html: '<div class="fl-container">\n' +
                 '    <div class="fl-content">\n' +
                 '        <Row class="fl-table">\n' +
                 '            <Table :columns="columns" :data="list" :loading="loading" size="large" stripe></Table>\n' +
