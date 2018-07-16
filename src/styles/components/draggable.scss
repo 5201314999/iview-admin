@@ -1,0 +1,185 @@
+.fl-container{
+    .fl-draggable{
+        overflow: hidden;
+        .fl-drag-box{
+            padding: 15px 0 0;
+            margin: 20px 0 0;
+            border-top: 1px solid #F1F1F1;
+            position: relative;
+            overflow: hidden;
+            .fl-drag-prev,
+            .fl-drag-next{
+                padding: 20px 5px;
+                background: #DADADA;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                &.disabled{
+                    cursor: not-allowed;
+                    background: #F2F2F2;
+                }
+                i{
+                    font-size: 30px;
+                    color: #FFF;
+                }
+            }
+            .fl-drag-prev{
+                float: left;
+            }
+            .fl-drag-next{
+                float: right;
+            }
+            .fl-drag-cont{
+                width: 100%;
+                overflow: hidden;
+                margin: 0 20px;
+                position: relative;
+                .fl-drag-list{
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: row;
+                    will-change: transform;
+                    transition: transform .3s ease-in-out;
+                    .fl-drag-item{
+                        margin-right: 17px;
+                        cursor: move;
+                        display: block;
+                        flex-shrink: 0;
+                        transition: opacity .3s;
+                        opacity: 1;
+                        outline: 0;
+                        span{
+                            background: #DADADA;
+                            margin-bottom: 10px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        span:last-child{
+                            margin-bottom: 0;
+                        }
+                    }
+                    .fl-box-drag:last-child{
+                        margin-right: 0;
+                    }
+                }
+                .fl-screen-line{
+                    position: absolute;
+                    height: 1000px;
+                    display: block;
+                    border-left: 1px solid #f00;
+                    top: 0;
+                }
+            }
+        }
+        .fl-drag-title{
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-between;
+            button{
+                outline: none;
+                &:focus{
+                    box-shadow: none;
+                }
+            }
+        }
+        .fl-dragging{
+            opacity: 0.5;
+        }
+        .fl-drag-target-box{
+            margin: 0;
+            padding: 0;
+            border-top: none;
+        }
+        .fl-drag-btn{
+            padding: 10px 0;
+            border: 1px solid #e9eaec;
+            margin-top: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-direction: row;
+            .ivu-icon{
+                font-size: 24px;
+            }
+            &:hover{
+                border-color: $themeColor;
+                color: $themeColor;
+            }
+        }
+        .fl-drag-container{
+            .fl-drag-box{
+                padding: 16px;
+                .fl-drag-cont{
+                    .fl-drag-list{
+                        display: block;
+                        position: relative;
+                        will-change: margin;
+                        transition: margin .4s ease-in-out;
+                        .fl-drag-item{
+                            float: left;
+                            span{
+                                color: #FFF;
+                                background: $themeColor;
+                            }
+                        }
+                    }
+                }
+                .fl-drag-prev,
+                .fl-drag-next{
+                    background: $themeColor;
+                    &.disabled{
+                        opacity: .3;
+                    }
+                }
+            }
+        }
+        .fl-tabs{
+            > .ivu-tabs{
+                border: 1px solid #e9eaec;
+                border-radius: 4px;
+                > .ivu-tabs-bar{
+                    margin-bottom: 0;
+                    .ivu-tabs-nav-scrollable{
+                        padding: 0 25px;
+                        .ivu-tabs-nav-prev,
+                        .ivu-tabs-nav-next{
+                            line-height: 52px;
+                            padding-left: 10px;
+                        }
+                        .ivu-tabs-nav-next{
+                            padding-right: 10px;
+                        }
+                    }
+                    .ivu-tabs-nav .ivu-tabs-tab{
+                        padding: 16px;
+                    }
+                }
+                > .ivu-tabs-content{
+                    align-items: center;
+                }
+                .ivu-tabs-tab{
+                    .ivu-icon.ivu-icon-ios-close-outline{
+                        margin-right: 0;
+                        margin-left: 15px;
+                        font-size: 18px;
+                        line-height: 22px;
+                        width: 18px;
+                        height: 18px;
+                        float: right;
+                        vertical-align: -1px;
+                        display: none;
+                    }
+                    &.ivu-tabs-tab-active{
+                        .ivu-icon.ivu-icon-ios-close-outline{
+                            display: inline-block;
+                            color: $redColor;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

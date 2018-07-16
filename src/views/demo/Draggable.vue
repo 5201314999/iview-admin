@@ -49,6 +49,7 @@
                                     </div>
                                     <div class="fl-drag-cont">
                                         <div class="fl-drag-list clearfix" id="target"></div>
+                                        <span class="fl-screen-line" :style="{left: ((ratio * 1920) + 20) + 'px'}"></span>
                                     </div>
                                     <div class="fl-drag-next disabled" @click="handleComponentNext">
                                         <Icon type="arrow-right-b"></Icon>
@@ -80,6 +81,7 @@
         </div>
         <div class="fl-drag-cont">
             <div class="fl-drag-list clearfix" :id="'target-' + row"></div>
+            <span class="fl-screen-line" :style="{left: ((ratio * 1920) + 20) + 'px'}"></span>
         </div>
         <div class="fl-drag-next disabled" @click="handleComponentNext">
             <Icon type="arrow-right-b"></Icon>
@@ -88,7 +90,7 @@
 </Row>`,
         data() {
             return {
-                display: {}
+                ratio: 0.5
             }
         },
         props: {
@@ -108,6 +110,9 @@
         mounted() {
             let vm = this;
             vm.initComponentTargetDraggable();
+            vm.$on('set-ratio', function(ratio){
+                vm.ratio = ratio;
+            });
         }
     });
     const DragComponent = {
@@ -160,6 +165,7 @@
             getComponentData() {
                 let vm = this, width = 570, height = 368, space = 34,
                     num = [1, 2, 3], ratio = vm.ratio, list = [];
+                vm.setComponentRatio();
                 for(let i = 0; i < 10; i++){
                     let n = num[Math.round(Math.random() * (num.length - 1))],
                         data = [], h;
@@ -225,6 +231,15 @@
                     }
                 }
                 return node;
+            },
+
+            /**
+             * set ratio.
+             * being use in bro component.
+             */
+            setComponentRatio() {
+                let vm = this;
+                vm.$emit('set-ratio', vm.ratio);
             },
 
             /**
@@ -368,15 +383,34 @@
                 let vm = this, current, list,
                     container = document.getElementsByClassName(vm.drag.container),
                     values = JSON.parse(JSON.stringify(vm.drag.tabs.value)).split('-'),
-                    value = parseInt(values[values.length - 1]);
+                    value = parseInt(values[values.length - 1]),
+                    oldWidth, newWidth, num, number, curNum, listId;
                 if(isNaN(value)) current = container[0];
                 else current = container[value];
                 vm.setComponentBodyHeight(current.getAttribute('id'));
                 list = current.getElementsByClassName(vm.drag.list)[0];
+                oldWidth = list.clientWidth;
                 list.removeAttribute('style');
-                let id = list.getAttribute('id'),
-                    width = list.scrollWidth;
-                list.style.width = width * vm.drag.width.nums[id] + 'px';
+                listId = list.getAttribute('id');
+                newWidth = list.clientWidth;
+                number = vm.drag.width.nums[listId];
+                num = vm.getComponentPagesNumber(current, list.children.length);
+                if(newWidth !== vm.drag.width.width){
+                    vm.$set(vm.drag.width, 'width', newWidth);
+                    vm.$set(vm.drag.width.nums, listId, num);
+                    let targetNum = vm.drag.nums[listId];
+                    if(targetNum > 0){
+                        if(num < number) curNum = 0;
+                        else curNum = (oldWidth / targetNum) - 1;
+                        let left = newWidth * curNum;
+                        vm.$set(vm.drag.nums, listId, left);
+                    }
+                }
+                list.style.width = vm.drag.width.width * vm.drag.width.nums[listId] + 'px';
+                if(vm.drag.nums[listId] > 0){
+                    list.style.marginLeft = '-' + vm.drag.nums[listId] + 'px';
+                }
+                vm.handleComponentTargetSwitch(current, num, listId);
             },
 
             /**
