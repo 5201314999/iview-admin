@@ -44,6 +44,11 @@ const menu = {
                     title: '详情（Detail）',
                     name: 'detail',
                     path: '/detail'
+                },
+                {
+                    title: '拖拽（Draggable）',
+                    name: 'draggable',
+                    path: '/draggable'
                 }
             ]
         }
