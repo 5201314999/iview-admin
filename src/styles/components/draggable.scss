@@ -1,6 +1,6 @@
 .fl-container{
     .fl-draggable{
-        overflow: hidden;
+        //overflow: hidden;
         .fl-drag-box{
             padding: 15px 0 0;
             margin: 20px 0 0;
@@ -67,7 +67,6 @@
                 }
                 .fl-screen-line{
                     position: absolute;
-                    height: 1000px;
                     display: block;
                     border-left: 1px solid #f00;
                     top: 0;

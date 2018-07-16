@@ -1,8 +1,7 @@
 <template>
     <div class="fl-container">
-        <div class="fl-detail">
-            <Card>
-                <Row slot="title"><icon type="wand" class="mr5"></icon>效果</Row>
+        <Row class="fl-content pt0">
+            <Row class="fl-detail">
                 <Row>
                     <Col span="12">
                         <div class="fl-item clearfix">
@@ -60,8 +59,8 @@
                         </div>
                     </Col>
                 </Row>
-            </Card>
-        </div>
+            </Row>
+        </Row>
         <Card class="mt20">
             <Row slot="title">
                 <icon type="code" class="mr5"></icon>代码

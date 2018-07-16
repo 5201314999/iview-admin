@@ -5,15 +5,12 @@
                 <Card id="source-list">
                     <div class="fl-search clearfix">
                         <div class="search-input left">
-                            <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" />
+                            <Input icon="ios-search" size="large" placeholder="搜索组件ID或组件标题" @keyup.native="handleComponentSearch" v-model="search.idOrName" />
                         </div>
                         <div class="search-button left">
                             <div class="fl-select">
-                                <Select placeholder="请选择" value="movie" :style="{width: '60px'}">
-                                    <Option value="movie">100</Option>
-                                    <Option value="app1">256</Option>
-                                    <Option value="app2">366</Option>
-                                    <Option value="app3">400</Option>
+                                <Select v-model="search.height" :style="{width: '80px'}" @on-change="handleComponentSearch">
+                                    <Option :value="item" v-for="(item, index) in height" :key="index"></Option>
                                 </Select>
                             </div>
                         </div>
@@ -49,7 +46,7 @@
                                     </div>
                                     <div class="fl-drag-cont">
                                         <div class="fl-drag-list clearfix" id="target"></div>
-                                        <span class="fl-screen-line" :style="{left: ((ratio * 1920) + 20) + 'px'}"></span>
+                                        <span class="fl-screen-line" :style="{left: (1920 * ratio + base.left) + 'px', height: drag.height['target'] + 'px'}"></span>
                                     </div>
                                     <div class="fl-drag-next disabled" @click="handleComponentNext">
                                         <Icon type="arrow-right-b"></Icon>
@@ -76,6 +73,7 @@
 </template>
 
 <script>
+
     import Vue from 'vue';
     import Sortable from 'sortablejs';
 
@@ -89,7 +87,6 @@
         </div>
         <div class="fl-drag-cont">
             <div class="fl-drag-list clearfix" :id="'target-' + row"></div>
-            <span class="fl-screen-line" :style="{left: ((ratio * 1920) + 20) + 'px'}"></span>
         </div>
         <div class="fl-drag-next disabled" @click="handleComponentNext">
             <Icon type="arrow-right-b"></Icon>
@@ -123,9 +120,19 @@
             });
         }
     });
+
     const DragComponent = {
         data() {
             return {
+                search: {
+                    idOrName: '',
+                    height: 0
+                },
+                base: {
+                    left: '',
+                    margin: 0
+                },
+                height: [],
                 component: [],
                 ratio: 0.5,
                 margin: 17,
@@ -854,6 +861,22 @@
             }
         },
         methods: {
+            getBaseData() {
+                let vm = this;
+                vm.$api.get(vm.G.api.recommend.base, {}, function(res){
+                    if(res['ret']['retCode'].toString() === '0'){
+                        let left = res.data['leftMargin'] * vm.ratio,
+                            space = res.data['recModuleInterval'] * vm.ratio,
+                            list = document.getElementById('target'),
+                            style = 'margin: 0;padding: 0 ' + left + 'px;';
+                        vm.$set(vm.base, 'left', left);
+                        vm.$set(vm.base, 'margin', space);
+                        list.parentNode.setAttribute('style', style);
+                    }
+                }, function(err){
+
+                });
+            },
             /**
              * get component data.
              * calculating: ((height - space * (total - 1)) / total) * ratio = position height.
@@ -867,7 +890,13 @@
              * object: {width, height, space, sourceWidth, sourceHeight}.
              */
             getComponentData() {
-                let vm = this, width = 570, height = 368, space = 34,
+                let vm = this;
+                vm.$api.post(vm.G.api.recommend.group.list, vm.search, function(res){
+
+                }, function(err){
+
+                });
+                let width = 570, height = 368, space = 34,
                     num = [1, 2, 3], ratio = vm.ratio, list = [];
                 vm.setComponentRatio();
                 for(let i = 0; i < 10; i++){
@@ -889,6 +918,24 @@
                     list.push(data);
                 }
                 this.$set(vm, 'component', list);
+            },
+
+            /**
+             * get component `height` type.
+             */
+            getComponentHeightData() {
+                let vm = this;
+                vm.$api.get(vm.G.api.recommend.group.height, {}, function(res){
+                    if(res['ret']['retCode'].toString() === '0'){
+                        vm.$set(vm.search, 'height', res.data[0]);
+                        vm.$set(vm, 'height', res.data);
+                        vm.getComponentData();
+                    }else{
+
+                    }
+                }, function(err){
+
+                });
             },
 
             /**
@@ -948,7 +995,7 @@
 
             /**
              * setting the height of the recommend's body
-             * @param id {string} dom id
+             * @param id {*} dom id
              * @param init {*} init or not.
              */
             setComponentBodyHeight(id, init) {
@@ -1243,6 +1290,11 @@
                 }
             },
 
+            handleComponentSearch() {
+                let vm = this;
+                console.log(vm.search.idOrName);
+            },
+
             /**
              * init component container(draggable)
              * mainly use to delete for all target-list
@@ -1316,6 +1368,7 @@
                             number = vm.getComponentPagesNumber(parentNode, num);
                         vm.handleComponentTargetSwitch(parentNode, number, id);
                         vm.updateComponentBodyWidth();
+                        vm.setComponentBodyHeight(id, true);
                         let node = vm.getParentsNodeByClassName(event, vm.drag.container),
                             tid = node.getAttribute('id');
                         vm.setComponentBodyHeight(tid);
@@ -1335,12 +1388,14 @@
                         }
                         vm.handleComponentTargetSwitch(parentNode, number, id);
                         vm.updateComponentBodyWidth();
+                        vm.setComponentBodyHeight(id, true);
                         let node = vm.getParentsNodeByClassName(event, vm.drag.container),
                             tid = node.getAttribute('id');
                         vm.setComponentBodyHeight(tid);
                     };
                 vm.setComponentBodyWidth(id);
                 vm.setComponentBodyHeight(id, true);
+                if(vm.base.left) target.style.paddingLeft = vm.base.left + 'px';
                 vm.drag.target[id] = Sortable.create(target, {
                     group: {
                         name: 'target',
@@ -1397,11 +1452,12 @@
         },
         mounted () {
             let vm = this;
-            vm.getComponentData();
+            vm.getBaseData();
+            vm.getComponentHeightData();
             vm.initComponentBodyDraggable();
             vm.initComponentSourceDraggable();
             vm.initComponentTargetDraggable();
-            vm.setComponentBodyHeight();
+            vm.setComponentBodyHeight('target', true);
             vm.handleBroadcast();
             window.onresize = function(){
                 vm.handleWindowResize();
@@ -1409,4 +1465,5 @@
         }
     };
     export default DragComponent;
+
 </script>

@@ -18,7 +18,8 @@
             'fl-layout': Layout
         },
         mounted() {
-            this.loading = false;
+            let vm = this;
+            vm.loading = false;
         }
     };
 

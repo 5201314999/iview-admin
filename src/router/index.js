@@ -31,6 +31,7 @@ const router = new VueRouter({
         path: '/',
         name: '首页',
         component: Home,
+        redirect: '/table',
         children: [...childrenRouter]
     }]
 });

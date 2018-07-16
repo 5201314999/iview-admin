@@ -185,10 +185,12 @@
         .ivu-select-selection{
             min-width: 50px;
             height: 36px;
-            .ivu-select-selected-value{
+            .ivu-select-placeholder,
+            .ivu-select-selected-value,
+            .ivu-select-input{
                 font-size: 14px;
                 height: 36px;
-                line-height: 36px;
+                line-height: 34px;
             }
         }
         .ivu-select-dropdown{
