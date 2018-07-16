@@ -8,13 +8,13 @@
     * 2.1 [目录结构](#21-目录结构)
     * 2.2 [开始使用](#22-开始使用)
     * 2.3 [常用组件](#23-常用组件)
-        * 2.3.1 [Table 表格](#231-Table表格)
-        * 2.3.2 [Page 分页](#232-Page分页)
-        * 2.3.3 [Upload 上传](#233-Upload上传)
-        * 2.3.4 [Carousel 轮播](#234-Carousel轮播)
-        * 2.3.5 [Form 表单](#235-Form表单)
-        * 2.3.6 [Modal 弹窗](#236-Modal弹窗)
-        * 2.3.7 [Draggable 拖拽](#237-Draggable拖拽)
+        * 2.3.1 [Table 表格](#231-table-表格)
+        * 2.3.2 [Page 分页](#232-page-分页)
+        * 2.3.3 [Upload 上传](#233-upload-上传)
+        * 2.3.4 [Carousel 轮播](#234-carousel-轮播)
+        * 2.3.5 [Form 表单](#235-form-表单)
+        * 2.3.6 [Modal 弹窗](#236-modal-弹窗)
+        * 2.3.7 [Draggable 拖拽](#237-draggable-拖拽)
 
 
 ## 1. 开发流程
