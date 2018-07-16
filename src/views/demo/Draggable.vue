@@ -948,10 +948,18 @@
 
             /**
              * setting the height of the recommend's body
-             * @param id
+             * @param id {string} dom id
+             * @param init {*} init or not.
              */
-            setComponentBodyHeight(id) {
+            setComponentBodyHeight(id, init) {
                 id = id ? id : 'target-list';
+                if(init){
+                    let ids = id.split('-'),
+                        num = parseInt(ids[1]);
+                    if(!isNaN(num)){
+                        id = 'target-list-' + num;
+                    }
+                }
                 let vm = this, body = document.getElementById(id);
                 body.style.height = '';
                 let height = body.scrollHeight;
@@ -1332,6 +1340,7 @@
                         vm.setComponentBodyHeight(tid);
                     };
                 vm.setComponentBodyWidth(id);
+                vm.setComponentBodyHeight(id, true);
                 vm.drag.target[id] = Sortable.create(target, {
                     group: {
                         name: 'target',
