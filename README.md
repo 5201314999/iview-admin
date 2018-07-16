@@ -21,7 +21,7 @@
 
 ### 1.1 基础框架
 
-    从 [GOGS](http://gogs.tvflnet.com/flw_tv/Vue-BasicFrame.git) 拉取至本地，独立一个文件夹，每次项目开发前先更新基础框架代码
+    从 http://gogs.tvflnet.com/flw_tv/Vue-BasicFrame.git 拉取至本地，独立一个文件夹，每次项目开发前先更新基础框架代码
 
 ### 1.2 开发分支
 
@@ -35,7 +35,7 @@
 ## 2. 框架基础
 
     说明：该部分内容持续更新，主要更新基础框架，常用组件等内容
-    通过 [GOGS](http://gogs.tvflnet.com/flw_tv/Vue-BasicFrame.git) 拉取最新基础框架代码
+    通过 http://gogs.tvflnet.com/flw_tv/Vue-BasicFrame.git 拉取最新基础框架代码
 
 ### 2.1 目录结构
 
@@ -93,7 +93,7 @@
 ### 2.3 常用组件
 
     说明：主要是以 iview 框架为基础，进行定制的一系列公司内部常用的组件样式
-    具体查看 iview 官网 [iview](https://www.iviewui.com/docs/guide/install)
+    具体查看 iview 官网 https://www.iviewui.com/docs/guide/install
 
 #### 2.3.1 `Table` 表格
 
