@@ -81,7 +81,7 @@ const api = {
         state: '/page-manager/page/{page-id}/change-state/{state}'
     },
     recommend: {
-        base: '/rec-basic-attribute/rec-basicAtteibute',
+        base: '/basic-attribute/get-attribute',
         group: {
             height: '/rec-module-manager/rec-module/module-height',
             list: '/rec-module-manager/rec-module/module-list'

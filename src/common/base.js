@@ -11,11 +11,11 @@ exports.install = function(Vue){
      * @returns {null}
      */
     Vue.prototype.getUserInfo = function(){
-        let that = this;
-        that.$api.get(this.G.api.user, {}, function(res){
+        let vm = this;
+        vm.$api.get(this.G.api.user, {}, function(res){
             if(res['ret']['retCode'].toString() === '0'){
-                that.$set(that.G, 'user', res.data);
-                that.$emit('get-user-success');
+                vm.$set(vm.G, 'user', res.data);
+                vm.$emit('get-user-success');
             }
         });
     };
@@ -116,6 +116,52 @@ exports.install = function(Vue){
     };
 
     /**
+     * random.
+     * @returns {string}
+     */
+    Vue.prototype.$random = function(){
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+
+    /**
+     * generate unique key.
+     * @returns {string}
+     */
+    Vue.prototype.$unique = function(){
+        let vm = this;
+        return (vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random()).toLocaleUpperCase();
+    };
+
+    /**
+     * clear space (left and right or all).
+     * @param string
+     * @param all
+     * @returns {*}
+     */
+    Vue.prototype.trim = function(string, all){
+        if(all) return string.replace(/\s+/g, '');
+        else return string.replace(/^\s+|\s+$/g, '');
+    };
+
+    /**
+     * clear left space.
+     * @param string
+     * @returns {*}
+     */
+    Vue.prototype.ltrim = function(string){
+        return string.replace( /^\s*/, '');
+    };
+
+    /**
+     * clear right space.
+     * @param string
+     * @returns {*}
+     */
+    Vue.prototype.rtrim = function(string){
+        return string.replace(/(\s*$)/g, '');
+    };
+
+    /**
      * confirm
      * @param content
      * @param ok
@@ -126,15 +172,15 @@ exports.install = function(Vue){
     Vue.prototype.$confirm = function(content, ok, cancel, width, title){
         title = title ? title : '温馨提示';
         width = width ? width : 360;
-        let that = this;
-        this.$Modal.confirm({
+        let vm = this;
+        vm.$Modal.confirm({
             title: title,
             content: content,
             width: width,
             closable: true,
             loading: true,
             onOk: function(){
-                that.$Modal.remove();
+                vm.$Modal.remove();
                 if((typeof ok).toLowerCase() === 'function'){
                     ok.call();
                 }
@@ -148,25 +194,117 @@ exports.install = function(Vue){
     };
 
     /**
-     * success
-     * @param content
-     * @param ok
-     * @param width
-     * @param title
+     * receiving event.
+     * @param event
+     * @param unique
      */
-    Vue.prototype.$success = function(content, ok, width, title){
-        title = title ? title : '温馨提示';
-        width = width ? width : 360;
-        this.$Modal.success({
-            title: title,
-            content: content,
-            width: width,
-            closable: true,
-            onOk: function(){
-                setTimeout(function(){
-                    ok.call();
-                }, 300)
+    Vue.prototype.$onPopup = function(event, unique){
+        let vm = this,
+            classes = {
+                wrap: 'ivu-modal-wrap',
+                title: 'ivu-modal-confirm-head-title',
+                footer: 'ivu-modal-confirm-footer',
+                close: 'ivu-modal-close'
+            };
+        vm.$on(event, function(){
+            let modals = document.getElementsByClassName(classes.wrap),
+                length = modals.length, i = 0;
+            if(length > 0){
+                for(; i < length; i++){
+                    let cur = modals[i],
+                        title = cur.getElementsByClassName(classes.title)[0],
+                        parent = title.parentNode,
+                        text = vm.trim(title.innerText);
+                    if(text === vm.trim(unique)){
+                        vm.addClass(cur, event);
+                        parent.remove();
+                        cur.getElementsByClassName(classes.footer)[0].remove();
+                        let close = cur.getElementsByClassName(classes.close)[0];
+                        close.onclick = function(){
+                            vm.$Modal.remove();
+                        };
+                        break;
+                    }
+                }
             }
         });
+    };
+
+    /**
+     * emit event & close popup.
+     * @param event {*}
+     * @param time
+     */
+    Vue.prototype.$emitPopup = function(event, time){
+        let vm = this;
+        time = typeof time !== 'undefined' ? time : 2;
+        vm.$nextTick(() => {
+            vm.$emit(event);
+            if(time && time > 0){
+                setTimeout(() => {
+                    vm.$Modal.remove();
+                }, time * 1000);
+            }
+        });
+    };
+
+    /**
+     * success
+     * @param content
+     * @param width
+     * @param time
+     */
+    Vue.prototype.$success = function(content, width, time){
+        let vm = this, title = vm.$unique(),
+            success = 'fl-modal-success';
+        width = width ? width : 300;
+        vm.$onPopup(success, title);
+        vm.$Modal.success({
+            content: content,
+            width: width,
+            title: title,
+            closable: true
+        });
+        vm.$emitPopup(success, time);
+    };
+
+    /**
+     * error
+     * @param content
+     * @param width
+     * @param time
+     */
+    Vue.prototype.$error = function(content, width, time){
+        let vm = this, title = vm.$unique(),
+            error = 'fl-modal-error';
+        width = width ? width : 300;
+        vm.$onPopup(error, title);
+        vm.$Modal.error({
+            content: content,
+            width: width,
+            title: title,
+            closable: true
+        });
+        vm.$emitPopup(error, time);
+    };
+
+    /**
+     * warning
+     * @param content
+     * @param width
+     * @param time
+     */
+    Vue.prototype.$warning = function(content, width, time){
+        let vm = this, title = vm.$unique(),
+            warning = 'fl-modal-warning';
+        width = width ? width : 300;
+        vm.$onPopup(warning, title);
+        vm.$Modal.warning({
+            content: content,
+            width: width,
+            title: title,
+            closable: true
+        });
+        vm.$emitPopup(warning, time);
     };
 };

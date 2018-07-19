@@ -63,8 +63,9 @@ img{
     clear: both;
     height: 0;
 }
-.red{color: $redColor;}
-.green{color: $greemColor;}
+.red, a.red{color: $redColor;}
+.green, a.green{color: $greemColor;}
+.theme, a.theme{color: $themeColor;}
 .ivu-btn-large{padding: 7px 22px;}
 pre{margin: 0}
 .mt0{margin-top: 0 !important;}  .mt5{margin-top: 5px;}  .mt10{margin-top: 10px;}
