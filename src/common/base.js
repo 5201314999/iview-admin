@@ -25,12 +25,13 @@ exports.install = function(Vue){
      * @returns {null}
      */
     Vue.prototype.logout = function(){
-        this.$api.get(this.G.api.logout, {}, function(res){
+        let vm = this;
+        vm.$api.get(vm.G.api.logout, {}, function(res){
             if(res['ret']['retCode'].toString() === '0'){
-                alert('退出成功');
+                vm.$success('退出成功');
             }
         }, function(err){
-            alert(err['ret']['retMsg']);
+            vm.$error(err['ret']['retMsg']);
         });
     };
 
@@ -141,24 +142,6 @@ exports.install = function(Vue){
     Vue.prototype.trim = function(string, all){
         if(all) return string.replace(/\s+/g, '');
         else return string.replace(/^\s+|\s+$/g, '');
-    };
-
-    /**
-     * clear left space.
-     * @param string
-     * @returns {*}
-     */
-    Vue.prototype.ltrim = function(string){
-        return string.replace( /^\s*/, '');
-    };
-
-    /**
-     * clear right space.
-     * @param string
-     * @returns {*}
-     */
-    Vue.prototype.rtrim = function(string){
-        return string.replace(/(\s*$)/g, '');
     };
 
     /**

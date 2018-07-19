@@ -15,17 +15,19 @@
 <script>
 
     const HeaderComponent = {
-        mounted(){
-            this.setTitle();
-            this.getUserInfo();
-            this.$on('get-user-success', function(){
-                this.$set(this, 'name', this.G.user.name);
+        mounted() {
+            let vm = this;
+            vm.setTitle();
+            vm.getUserInfo();
+            vm.$on('get-user-success', function(){
+                this.$set(vm, 'name', vm.G.user.name);
             })
         },
         methods: {
             collapsedMenu() {
-                this.G.menu.collapsed = !this.G.menu.collapsed;
-                this.$emit('collapsed');
+                let vm = this;
+                vm.G.menu.collapsed = !vm.G.menu.collapsed;
+                vm.$emit('collapsed');
             },
             logoutUser() {
                 this.logout();

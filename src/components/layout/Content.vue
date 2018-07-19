@@ -24,9 +24,9 @@
         },
         methods: {
             getBreadcrumb() {
-                let match = this.$route.matched,
-                    breadcrumb = [],
-                    i = 0,
+                let vm = this,
+                    match = vm.$route.matched,
+                    breadcrumb = [], i = 0,
                     icon = 'ios-home-outline';
                 if(match.length <= 1){
                     breadcrumb.push({title: match[i].name, icon: icon});
@@ -49,11 +49,11 @@
                         }
                     }
                 }
-                this.breadcrumb = breadcrumb;
+                vm.breadcrumb = breadcrumb;
             }
         },
         watch: {
-            $route: function(){
+            '$route': function(){
                 this.getBreadcrumb();
             }
         }

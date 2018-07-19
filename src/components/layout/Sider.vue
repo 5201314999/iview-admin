@@ -80,13 +80,15 @@
             }
         },
         mounted() {
-            this.getMenuName(this.menu.items);
-            this.setMenuActive();
+            let vm = this;
+            vm.getMenuName(vm.menu.items);
+            vm.setMenuActive();
         },
         watch: {
             '$route': function(){
-                if(this.$route.path === '/' || this.$route.path === ''){
-                    this.setMenuActiveDef();
+                let vm = this;
+                if(vm.$route.path === '/' || vm.$route.path === ''){
+                    vm.setMenuActiveDef();
                 }
                 document.body.scrollTop = document.documentElement.scrollTop = 0;
             }
@@ -113,36 +115,37 @@
                 }
             },
             setMenuActive() {
-                let route = this.$route,
+                let vm = this,
+                    route = vm.$route,
                     path = route.path.substring(1);
                 if(path !== ''){
                     let name = path.replace(/\//, '-'),
-                        has = this.inArray(name, this.names) !== -1;
+                        has = vm.inArray(name, vm.names) !== -1;
                     if(!has){
-                        name = this.getRootName(path);
+                        name = vm.getRootName(path);
                     }
-                    if(this.inArray(name, this.names) !== -1){
-                        this.$set(this.menu, 'active', name);
-                        for(let i in this.nameObj){
-                            if(this.nameObj.hasOwnProperty(i)){
-                                if(this.nameObj[i][name]){
-                                    if(this.inArray(i.toString(), this.menu.open) === -1){
-                                        this.menu.open.push(i.toString());
+                    if(vm.inArray(name, vm.names) !== -1){
+                        vm.$set(vm.menu, 'active', name);
+                        for(let i in vm.nameObj){
+                            if(vm.nameObj.hasOwnProperty(i)){
+                                if(vm.nameObj[i][name]){
+                                    if(vm.inArray(i.toString(), vm.menu.open) === -1){
+                                        vm.menu.open.push(i.toString());
                                     }
                                 }
                             }
                         }
                     }
-                    this.updateMenuActive();
+                    vm.updateMenuActive();
                 }
             },
             getRootName(path) {
                 let paths = path.split('/'),
-                    name = '';
+                    name = '', vm = this;
                 if(paths.length > 1){
                     for(let i in paths){
                         if(paths.hasOwnProperty(i)){
-                            if(this.inArray(paths[i], this.names) !== -1){
+                            if(vm.inArray(paths[i], vm.names) !== -1){
                                 name = paths[i];
                             }
                         }
@@ -151,14 +154,16 @@
                 return name ? name : path;
             },
             setMenuActiveDef() {
-                this.$set(this.menu, 'active', this.G.menu.active);
-                this.$set(this.menu, 'open', this.G.menu.open);
-                this.updateMenuActive();
+                let vm = this;
+                vm.$set(vm.menu, 'active', vm.G.menu.active);
+                vm.$set(vm.menu, 'open', vm.G.menu.open);
+                vm.updateMenuActive();
             },
             updateMenuActive() {
-                this.$nextTick(() => {
-                    this.$refs.menu.updateOpened();
-                    this.$refs.menu.updateActiveName();
+                let vm = this;
+                vm.$nextTick(() => {
+                    vm.$refs.menu.updateOpened();
+                    vm.$refs.menu.updateActiveName();
                 });
             }
         }
