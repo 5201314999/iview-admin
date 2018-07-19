@@ -499,6 +499,9 @@
                             vm.$set(vm.drag.width.nums, id, num);
                         }
                     }
+                    if(vm.drag.width.width !== contentWidth){
+                        vm.$set(vm.drag.width, 'width', contentWidth);
+                    }
                     if(num > 0) list.style.width = vm.drag.width.width * num + 'px';
                     else list.style.width = vm.drag.width.width + 'px';
                 }
@@ -795,13 +798,13 @@
                             children = target.children,
                             num = children.length,
                             number = vm.getComponentPagesNumber(parentNode, num);
+                        updateObj(event, children);
                         vm.handleComponentTargetSwitch(parentNode, number, id);
                         vm.updateComponentBodyWidth();
                         vm.setComponentBodyHeight(id, true);
                         let node = vm.getParentsNodeByClassName(event, vm.drag.container),
                             tid = node.getAttribute('id');
                         vm.setComponentBodyHeight(tid);
-                        updateObj(event, children);
                     },
                     update = function(event){
                         let parentNode = target.parentNode.parentNode,
