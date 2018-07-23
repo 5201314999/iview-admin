@@ -498,6 +498,9 @@
                             num = parseInt(vm.drag.width.nums[id]) + 1;
                             vm.$set(vm.drag.width.nums, id, num);
                         }
+                        if(vm.drag.width.width !== contentWidth){
+                            vm.$set(vm.drag.width, 'width', contentWidth);
+                        }
                     }
                     if(num > 0) list.style.width = vm.drag.width.width * num + 'px';
                     else list.style.width = vm.drag.width.width + 'px';
