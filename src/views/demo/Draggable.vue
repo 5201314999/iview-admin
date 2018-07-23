@@ -268,10 +268,12 @@
                         vm.$set(vm, 'height', res.data);
                         vm.getComponentData();
                     }else{
-
+                        vm.$error(res['ret']['retMsg']);
+                        return false;
                     }
                 }, function(err){
-
+                    vm.$error(err.msg);
+                    return false;
                 });
             },
 
