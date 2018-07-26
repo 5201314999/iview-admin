@@ -75,8 +75,8 @@ exports.install = function(Vue){
         if(Object.keys(params).length > 0){
             for(let i in params){
                 if(params.hasOwnProperty(i)){
-                    let reg = '/\{' + i + '\}/g';
-                    url.replace(eval(reg), params[i]);
+                    let reg = new RegExp('\{' + i + '\}', 'gi');
+                    url = url.replace(reg, params[i]);
                 }
             }
         }
@@ -189,24 +189,27 @@ exports.install = function(Vue){
                 footer: 'ivu-modal-confirm-footer',
                 close: 'ivu-modal-close'
             };
-        vm.$on(event, function(){
+        vm.$on(event, function(fn){
             let modals = document.getElementsByClassName(classes.wrap),
                 length = modals.length, i = 0;
             if(length > 0){
                 for(; i < length; i++){
                     let cur = modals[i],
-                        title = cur.getElementsByClassName(classes.title)[0],
-                        parent = title.parentNode,
-                        text = vm.trim(title.innerText);
-                    if(text === vm.trim(unique)){
-                        vm.addClass(cur, event);
-                        parent.remove();
-                        cur.getElementsByClassName(classes.footer)[0].remove();
-                        let close = cur.getElementsByClassName(classes.close)[0];
-                        close.onclick = function(){
-                            vm.$Modal.remove();
-                        };
-                        break;
+                        title = cur.getElementsByClassName(classes.title)[0];
+                    if(title){
+                        let parent = title.parentNode,
+                            text = vm.trim(title.innerText);
+                        if(text === vm.trim(unique)){
+                            vm.addClass(cur, event);
+                            parent.remove();
+                            cur.getElementsByClassName(classes.footer)[0].remove();
+                            let close = cur.getElementsByClassName(classes.close)[0];
+                            close.onclick = function(){
+                                vm.$Modal.remove();
+                            };
+                            if(typeof fn === 'function') fn.call(vm);
+                            break;
+                        }
                     }
                 }
             }
@@ -222,12 +225,13 @@ exports.install = function(Vue){
         let vm = this;
         time = typeof time !== 'undefined' ? time : 2;
         vm.$nextTick(() => {
-            vm.$emit(event);
-            if(time && time > 0){
-                setTimeout(() => {
-                    vm.$Modal.remove();
-                }, time * 1000);
-            }
+            vm.$emit(event, function(){
+                if(time && time > 0){
+                    setTimeout(() => {
+                        vm.$Modal.remove();
+                    }, time * 1000);
+                }
+            });
         });
     };
 
