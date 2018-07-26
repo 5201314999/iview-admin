@@ -110,9 +110,19 @@ exports.install = function(Vue){
      * @param cls
      */
     Vue.prototype.removeClass = function(obj, cls){
-        if(this.hasClass(obj, cls)){
-            let reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
-            obj.className = obj.className.replace(reg, '');
+        let vm = this,
+            reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
+        if(obj.length && obj.length > 0){
+            let i = 0, len = obj.length;
+            for(; i < len; i++){
+                if(vm.hasClass(obj[i], cls)){
+                    obj[i].className = obj[i].className.replace(reg, '');
+                }
+            }
+        }else{
+            if(vm.hasClass(obj, cls)){
+                obj.className = obj.className.replace(reg, '');
+            }
         }
     };
 

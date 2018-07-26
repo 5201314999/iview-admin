@@ -1,5 +1,5 @@
-<template ref="draggable">
-    <Card :class="only ? 'fl-draggable-only-target' : ''">
+<template>
+    <Card ref="draggable" :class="only ? 'fl-draggable-only-target' : ''">
         <Row class="fl-draggable">
             <Card id="source-list" v-if="!only">
                 <div class="fl-search clearfix">
@@ -70,15 +70,18 @@
      *  2. 页面初始化
      *      ```
      *      <draggable :index="index" v-on:get-data="getComponentData" :init="true"
-     *      :rows="rows" :id="key" :only="true"></draggable>
+     *      :rows="rows" :id="key" :only="true" :click="true"
+     *      v-on:callback="handleClick"></draggable>
      *      ```
      *      参数说明:
-     *      [ index ]: 动态变更, 触发获取最新推荐行数据动作, 可调用 vm.$unique() 进行赋值变更.
-     *      [ get-data ]: `index`变更后的回调, 携带推荐行数据返回.
-     *      [ init ]: 是否执行初始化操作 ( 注: 需配合`rows`参数使用, 即初始化数据 )
-     *      [ rows ]: 初始化数据 (推荐行数据)
-     *      [ d ]: 动态变更, 与`index`参数同理, 变更后执行数据初始化动作
-     *      [ only ]: 是否仅显示推荐行列表, 不显示原始拖拽数据
+     *      [index]: 动态变更, 触发获取最新推荐行数据动作, 可调用 vm.$unique() 进行赋值变更.
+     *      [get-data]: `index`变更后的回调, 携带推荐行数据返回.
+     *      [init]: 是否执行初始化操作 ( 注: 需配合`rows`参数使用, 即初始化数据 ).
+     *      [rows]: 初始化数据 (推荐行数据).
+     *      [id]: 动态变更, 与`index`参数同理, 变更后执行数据初始化动作.
+     *      [only]: 是否仅显示推荐行列表, 不显示原始拖拽数据.
+     *      [click]: 推荐位是否支持点击.
+     *      [callback]: 点击回调 {@return: {recRowId, recModuleId, recPositionId}}
      */
 
     import Vue from 'vue';
@@ -154,6 +157,10 @@
             init: {
                 type: Boolean,
                 default: false
+            },
+            click: {
+                type: Boolean,
+                defalut: false
             }
         },
         data() {
@@ -181,6 +188,8 @@
                     list: 'fl-drag-list',
                     source: 'source',
                     item: 'fl-drag-item',
+                    span: 'fl-drag-item-span',
+                    active: 'fl-drag-item-active',
                     row: 1,                     // row number.
                     num: 0,                     // page's number ( source ).
                     nums: {target: 0},          // page's number ( target ).
@@ -267,9 +276,10 @@
             /**
              * parse component data.
              * @param datas
+             * @param row {*}
              * @returns {Object}
              */
-            parseComponentData(datas) {
+            parseComponentData(datas, row) {
                 let vm = this, ratio = vm.ratio, list = [],
                     tempWidth = 0, tempSpace = 0, tempHeight = 0;
                 for(let i = 0; i < datas.length; i++){
@@ -277,7 +287,8 @@
                         num = parseInt(cur['recPositionNum']),
                         width = cur['recModuleWidth'],
                         height = cur['recModuleHeight'],
-                        space = cur['rowSpacing'];
+                        space = cur['rowSpacing'],
+                        position = cur['recPositionIds'] ? cur['recPositionIds'] : [];
                     if(tempWidth <= 0) tempWidth = width * ratio;
                     if(tempSpace <= 0) tempSpace = space * ratio;
                     tempHeight = height * ratio > tempHeight ? height * ratio : tempHeight;
@@ -285,13 +296,13 @@
                         for(let n = 0; n < num; n++){
                             let oneHeight = (height - space * (num - 1)) / num;
                             h = Math.round((oneHeight * ratio) * 10) / 10;
-                            let temp = {width: width * ratio, space: space * ratio, height: h, sourceWidth: width, sourceHeight: oneHeight};
+                            let temp = {width: width * ratio, space: space * ratio, height: h, sourceWidth: width, sourceHeight: oneHeight, position: position[n]};
                             if(n === num - 1) temp['space'] = 0;
                             data.push(temp);
                         }
                     }else{
                         h = Math.round(height * ratio * 10) / 10;
-                        let temp = {width: width * ratio, height: h, space: 0, sourceWidth: width, sourceHeight: height};
+                        let temp = {width: width * ratio, height: h, space: 0, sourceWidth: width, sourceHeight: height, position: position[0]};
                         data.push(temp);
                     }
                     list.push({id: cur['recModuleId'], data: data});
@@ -300,7 +311,8 @@
                     list: list,
                     width: tempWidth,
                     height: tempHeight,
-                    space: tempSpace
+                    space: tempSpace,
+                    row: row ? row : null
                 };
             },
 
@@ -361,25 +373,6 @@
             },
 
             /**
-             * get parent's node via class name.
-             * @param event `event object`
-             * @param name class name
-             */
-            getParentsNodeByClassName(event, name) {
-                let vm = this, paths = event.path,
-                    i = 0, node = null;
-                for(; i < paths.length; i++){
-                    if(paths.hasOwnProperty(i)){
-                        if(vm.hasClass(paths[i], name)){
-                            node = paths[i];
-                            break;
-                        }
-                    }
-                }
-                return node;
-            },
-
-            /**
              * current tab container.
              * via `this.drag.tabs.value` variable.
              */
@@ -414,22 +407,13 @@
             /**
              * setting the height of the recommend's body
              * @param id {*} dom id
-             * @param init {*} init or not.
              */
-            setComponentBodyHeight(id, init) {
-                id = id ? id : 'target-list';
-                if(init){
-                    let ids = id.split('-'),
-                        num = parseInt(ids[1]);
-                    if(!isNaN(num)){
-                        id = 'target-list-' + num;
-                    }
-                }
+            setComponentBodyHeight(id) {
+                id = id ? id : 'target';
                 let vm = this, body = document.getElementById(id);
                 if(body){
                     body.style.height = '';
                     let height = body.scrollHeight;
-                    body.style.height = height + 'px';
                     vm.$set(vm.drag.height, id, height);
                     vm.setComponentDragData();
                 }
@@ -440,27 +424,12 @@
              * @param id {*} `dom` id.
              */
             setComponentBodyWidth(id) {
-                let vm = this, body = document.getElementById(id);
+                let vm = this, body = document.getElementById(id).parentNode;
                 if(body){
-                    let width = body.scrollWidth,
-                        temp = vm.drag.width.width;
-                    if(typeof temp !== 'undefined'){
-                        if(temp !== width){
-                            vm.$set(vm.drag.width, 'width', width);
-                            let nums = vm.drag.width.nums, i;
-                            for(i in nums){
-                                if(nums.hasOwnProperty(i)){
-                                    let list = document.getElementById(i);
-                                    list.style.width = width * nums[i] + 'px';
-                                    vm.$set(vm.drag.width.nums, id, 1);
-                                }
-                            }
-                        }
-                    }else{
-                        vm.$set(vm.drag.width, 'width', width);
-                        vm.$set(vm.drag.width, 'nums', []);
-                        vm.$set(vm.drag.width.nums, id, 1);
-                    }
+                    let width = body.clientWidth;
+                    vm.$set(vm.drag.width, 'width', width);
+                    vm.$set(vm.drag.width, 'nums', []);
+                    vm.$set(vm.drag.width.nums, id, 1);
                 }
             },
 
@@ -517,7 +486,7 @@
             },
 
             /**
-             * update list's height.
+             * update list's width.
              * when you choose item in the source list (mouse enter - the start),
              * and dragging the item to target list until the mouse leave (the end), updated it
              * @param type {*} `onStrat` or `onEnd` action.
@@ -600,7 +569,6 @@
                     oldWidth, newWidth, num,
                     number, curNum, listId;
                 current = vm.getCurrentTabContainer();
-                vm.setComponentBodyHeight(current.getAttribute('id'));
                 list = current.getElementsByClassName(vm.drag.list)[0];
                 oldWidth = list.clientWidth;
                 list.removeAttribute('style');
@@ -853,20 +821,19 @@
                         event.clone.remove();
                     },
                     add = function(event){
-                        let parentNode = target.parentNode.parentNode,
+                        let node = target.parentNode,
+                            parentNode = node.parentNode,
                             children = target.children,
                             num = children.length,
                             number = vm.getComponentPagesNumber(parentNode, num);
                         updateObj(event, children);
                         vm.handleComponentTargetSwitch(parentNode, number, id);
-                        vm.updateComponentBodyWidth();
-                        vm.setComponentBodyHeight(id, true);
-                        let node = vm.getParentsNodeByClassName(event, vm.drag.container),
-                            tid = node.getAttribute('id');
-                        vm.setComponentBodyHeight(tid);
+                        node.scrollLeft = 0;
+                        vm.setComponentBodyHeight(id);
                     },
-                    update = function(event){
-                        let parentNode = target.parentNode.parentNode,
+                    update = function(){
+                        let node = target.parentNode,
+                            parentNode = node.parentNode,
                             num = target.children.length,
                             number = vm.getComponentPagesNumber(parentNode, num),
                             oldWidth = vm.drag.nums[id] ? vm.drag.nums[id] : 0,
@@ -879,32 +846,29 @@
                             vm.$set(vm.drag.nums, id, newWidth);
                         }
                         vm.handleComponentTargetSwitch(parentNode, number, id);
-                        vm.updateComponentBodyWidth();
-                        vm.setComponentBodyHeight(id, true);
-                        let node = vm.getParentsNodeByClassName(event, vm.drag.container),
-                            tid = node.getAttribute('id');
-                        vm.setComponentBodyHeight(tid);
+                        node.scrollLeft = 0;
                     };
                 vm.setComponentBodyWidth(id);
-                vm.setComponentBodyHeight(id, true);
+                vm.setComponentBodyHeight(id);
                 vm.$set(vm.drag.nums, id, 0);
                 vm.setComponentBaseData();
-                vm.drag.target[id] = Sortable.create(target, {
-                    group: {
-                        name: 'target',
-                        pull: true,
-                        put: ['source']
-                    },
-                    animation: 120,
-                    ghostClass: 'fl-dragging',
-                    onAdd(event) {
-                        add(event);
-                        event.item.style = 'margin-right: ' + (vm.base.margin * vm.ratio) + 'px';
-                    },
-                    onRemove(event) {
-                        update(event);
-                    }
-                });
+                if(target) {
+                    vm.drag.target[id] = Sortable.create(target, {
+                        group: {
+                            name: 'target',
+                            pull: true,
+                            put: ['source']
+                        },
+                        animation: 120,
+                        ghostClass: 'fl-dragging',
+                        onAdd(event) {
+                            add(event);
+                            event.item.style = 'margin-right: ' + (vm.base.margin * vm.ratio) + 'px';
+                        },
+                        onRemove() {update();}
+                    });
+                    if(vm.click) vm.drag.target[id].destroy();
+                }
             },
 
             /**
@@ -941,6 +905,9 @@
                         if(!vm.only) vm.initComponentBodyDraggable();
                     });
                 });
+                vm.$on('init-finish', function(){
+                    vm.initDraggableShapeClick();
+                });
             },
 
             /**
@@ -957,25 +924,24 @@
                                 let tempCur = data[d];
                                 if(tempCur.data.length > 0){
                                     for(let x = 0; x < tempCur.data.length; x++){
-                                        tempWidth += tempCur.data[x].width + space;
+                                        tempWidth += (tempCur.data[x].width + space);
                                     }
                                 }
                             }
                         }
+                        tempWidth -= space;
                         return tempWidth;
                     };
                     for(; i < vm.rows.length; i++){
                         let cur = vm.rows[i],
                             data = cur['recRowModules'],
-                            temp = vm.parseComponentData(data);
+                            temp = vm.parseComponentData(data, cur['recRowId']);
                         if(i > 0) vm.createComponentRow();
                         let id = i <= 0 ? 'target' : 'target-' + i,
-                            width = temp.width,
                             totalWidth = getTotalWidth(temp.list, temp.space);
                         height = temp.height > height ? temp.height : height;
                         template[id] = {
                             template: vm.initDraggableShape(temp),
-                            width: totalWidth,
                             height: temp.height,
                             pages: Math.ceil(totalWidth / vm.drag.width.width)
                         };
@@ -990,17 +956,17 @@
                                     vm.$set(vm.drag.nums, k, 0);
                                     vm.$set(vm.drag.width.nums, k, 1);
                                     container.innerHTML = current.template;
-                                    container.style.height = current.height + 'px';
-                                    container.style.width = (current.pages * vm.drag.width.width) + 'px';
                                     /** re initialization */
                                     if(typeof vm.drag.target[k] === 'undefined'){
                                         let ks = k.split('-'),
                                             row = parseInt(ks[1]);
-                                        if(!isNaN(row)) vm.initComponentTargetDraggable(row);
+                                        if(row !== 'null' && row !== '' && !isNaN(row))
+                                            vm.initComponentTargetDraggable(row);
                                     }
                                     vm.handleComponentTargetSwitch(container.parentNode.parentNode, current.pages, k);
                                 }
                             }
+                            if(vm.click) vm.$emit('init-finish');
                         }else{
                             vm.$error('组件初始化失败，请刷新后再试');
                             return false;
@@ -1016,21 +982,74 @@
              */
             initDraggableShape(data) {
                 let vm = this, list = data.list,
-                    i = 0, length = list.length, template = '';
+                    i = 0, length = list.length, template = '',
+                    cls = vm.drag.span,
+                    icon = `<i class="ivu-icon ivu-icon-ios-plus-outline"></i>`;
                 for(; i < length; i++){
                     let cur = list[i], items = cur.data,
                         right = vm.base.margin * vm.ratio + 'px',
-                        span = '';
-                    template += `<div class="${vm.drag.item}" data-index="${cur.id}" style="margin-right: ${right}">`;
+                        span = '', params = '';
+                    template += `<div data-index="${cur.id}" class="${vm.drag.item}" style="margin-right: ${right}">`;
                     for(let n = 0; n < items.length; n++){
                         let item = items[n],
-                            text = item.sourceWidth + ' * ' + item.sourceHeight;
-                        span += `<span data-index="${n}" style="width: ${item.width}px;height: ${item.height}px;margin-bottom: ${item.space}px;">${text}</span>`;
+                            text = item.sourceWidth + ' * ' + item.sourceHeight,
+                            style = `width: ${item.width}px;height: ${item.height}px;margin-bottom: ${item.space}px;`,
+                            content = vm.click ? icon : text;
+                        if(vm.click){
+                            params += `data-pos="${item.position}" data-row="${data.row}" data-id="${cur.id}" class="${cls}"`;
+                            style += `font-size: ${item.height}px;`;
+                        }
+                        span += `<span ${params} style="${style}">${content}</span>`;
                     }
                     template += span + '</div>';
                 }
                 return template;
-            }
+            },
+
+            /**
+             * add event listener.
+             * @param elem
+             * @param type
+             * @param fn
+             * @param useCapture
+             * @returns {*}
+             */
+            initDraggableShapeListener(elem, type, fn, useCapture) {
+                if(elem.addEventListener){
+                    elem.addEventListener(type, fn, useCapture);
+                    return true;
+                }else if(elem.attachEvent){
+                    return elem.attachEvent('on' + type, fn);
+                }else{
+                    elem['on' + type] = fn;
+                }
+            },
+
+            /**
+             * init click event.
+             * emit `callback` function.
+             */
+            initDraggableShapeClick() {
+                let vm = this,
+                    container = vm.$refs.draggable.$el,
+                    items = container.getElementsByClassName(vm.drag.span),
+                    length = items.length, i = 0;
+                if(length > 0){
+                    for(; i < length; i++){
+                        let cur = items[i];
+                        vm.initDraggableShapeListener(cur, 'click', function(){
+                            if(!vm.hasClass(cur, vm.drag.active)){
+                                vm.removeClass(items, vm.drag.active);
+                                vm.addClass(cur, vm.drag.active);
+                                let row = cur.getAttribute('data-row'),
+                                    pos = cur.getAttribute('data-pos'),
+                                    id = cur.getAttribute('data-id');
+                                vm.$emit('callback', {recRowId: row, recModuleId: id, recPositionId: pos});
+                            }
+                        });
+                    }
+                }
+            },
         },
         watch: {
             index: function(){
@@ -1052,7 +1071,6 @@
                 vm.initComponentSourceDraggable();
             }
             vm.initComponentTargetDraggable();
-            vm.setComponentBodyHeight('target', true);
             vm.handleBroadcast();
             window.onresize = function(){
                 vm.handleWindowResize();
