@@ -81,7 +81,8 @@
      *      [id]: 动态变更, 与`index`参数同理, 变更后执行数据初始化动作.
      *      [only]: 是否仅显示推荐行列表, 不显示原始拖拽数据.
      *      [click]: 推荐位是否支持点击.
-     *      [callback]: 点击回调 {@return: {recRowId, recModuleId, recPositionId}}
+     *      [callback]: 点击回调 {@return: {recRowId, recModuleId, recRowModuleId,
+     *      recPositionId}}
      */
 
     import Vue from 'vue';
@@ -249,7 +250,7 @@
                     if(res['ret']['retCode'].toString() === '0'){
                         vm.$set(vm, 'items', list);
                         let tempWidth, tempSpace,
-                            tempData = vm.parseComponentData(res.data);
+                            tempData = vm.parseComponentData(res.data, false);
                         list = tempData.list;
                         tempSpace = tempData.space;
                         tempWidth = tempData.width;
@@ -288,6 +289,7 @@
                         width = cur['recModuleWidth'],
                         height = cur['recModuleHeight'],
                         space = cur['rowSpacing'],
+                        mid = cur['recRowModuleId'],
                         position = cur['recPositionIds'] ? cur['recPositionIds'] : [];
                     if(tempWidth <= 0) tempWidth = width * ratio;
                     if(tempSpace <= 0) tempSpace = space * ratio;
@@ -296,13 +298,13 @@
                         for(let n = 0; n < num; n++){
                             let oneHeight = (height - space * (num - 1)) / num;
                             h = Math.round((oneHeight * ratio) * 10) / 10;
-                            let temp = {width: width * ratio, space: space * ratio, height: h, sourceWidth: width, sourceHeight: oneHeight, position: position[n]};
+                            let temp = {mid: mid, width: width * ratio, space: space * ratio, height: h, sourceWidth: width, sourceHeight: oneHeight, position: position[n]};
                             if(n === num - 1) temp['space'] = 0;
                             data.push(temp);
                         }
                     }else{
                         h = Math.round(height * ratio * 10) / 10;
-                        let temp = {width: width * ratio, height: h, space: 0, sourceWidth: width, sourceHeight: height, position: position[0]};
+                        let temp = {mid: mid, width: width * ratio, height: h, space: 0, sourceWidth: width, sourceHeight: height, position: position[0]};
                         data.push(temp);
                     }
                     list.push({id: cur['recModuleId'], data: data});
@@ -853,21 +855,24 @@
                 vm.$set(vm.drag.nums, id, 0);
                 vm.setComponentBaseData();
                 if(target) {
-                    vm.drag.target[id] = Sortable.create(target, {
-                        group: {
-                            name: 'target',
-                            pull: true,
-                            put: ['source']
-                        },
-                        animation: 120,
-                        ghostClass: 'fl-dragging',
-                        onAdd(event) {
-                            add(event);
-                            event.item.style = 'margin-right: ' + (vm.base.margin * vm.ratio) + 'px';
-                        },
-                        onRemove() {update();}
-                    });
-                    if(vm.click) vm.drag.target[id].destroy();
+                    if(vm.click || vm.only){
+                        vm.drag.target[id] = {};
+                    }else{
+                        vm.drag.target[id] = Sortable.create(target, {
+                            group: {
+                                name: 'target',
+                                pull: true,
+                                put: ['source']
+                            },
+                            animation: 120,
+                            ghostClass: 'fl-dragging',
+                            onAdd(event) {
+                                add(event);
+                                event.item.style = 'margin-right: ' + (vm.base.margin * vm.ratio) + 'px';
+                            },
+                            onRemove() {update();}
+                        });
+                    }
                 }
             },
 
@@ -996,7 +1001,7 @@
                             style = `width: ${item.width}px;height: ${item.height}px;margin-bottom: ${item.space}px;`,
                             content = vm.click ? icon : text;
                         if(vm.click){
-                            params += `data-pos="${item.position}" data-row="${data.row}" data-id="${cur.id}" class="${cls}"`;
+                            params += `data-pos="${item.position}" data-row="${data.row}" data-id="${cur.id}" data-mid="${item.mid}" class="${cls}"`;
                             style += `font-size: ${item.height}px;`;
                         }
                         span += `<span ${params} style="${style}">${content}</span>`;
@@ -1043,8 +1048,9 @@
                                 vm.addClass(cur, vm.drag.active);
                                 let row = cur.getAttribute('data-row'),
                                     pos = cur.getAttribute('data-pos'),
-                                    id = cur.getAttribute('data-id');
-                                vm.$emit('callback', {recRowId: row, recModuleId: id, recPositionId: pos});
+                                    id = cur.getAttribute('data-id'),
+                                    mid = cur.getAttribute('data-mid');
+                                vm.$emit('callback', {recRowId: row, recModuleId: id, recRowModuleId: mid, recPositionId: pos});
                             }
                         });
                     }
