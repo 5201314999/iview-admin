@@ -115,8 +115,7 @@
                 }
             },
             setMenuActive() {
-                let vm = this,
-                    route = vm.$route,
+                let vm = this, route = vm.$route,
                     path = route.path.substring(1);
                 if(path !== ''){
                     let name = path.replace(/\//, '-'),
@@ -124,6 +123,7 @@
                     if(!has){
                         name = vm.getRootName(path);
                     }
+                    vm.$set(vm.menu, 'open', []);
                     if(vm.inArray(name, vm.names) !== -1){
                         vm.$set(vm.menu, 'active', name);
                         for(let i in vm.nameObj){
@@ -140,8 +140,9 @@
                 }
             },
             getRootName(path) {
-                let paths = path.split('/'),
-                    name = '', vm = this;
+                let vm = this,
+                    paths = path.split('/'),
+                    name = '';
                 if(paths.length > 1){
                     for(let i in paths){
                         if(paths.hasOwnProperty(i)){
