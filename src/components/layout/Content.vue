@@ -44,10 +44,10 @@
                                 let path = match[i].path === '' ? '/' : match[i].path;
                                 breadcrumb.push({path: path, title: match[i].name, icon: icon});
                             }else{
-                                let temp = match[i].meta.name
-                                    ? match[i].meta.name
-                                    : (match[i].name ? match[i].name : '');
-                                if(match[i].name !== ''){
+                                let temp = match[i].name
+                                    ? match[i].name
+                                    : (match[i].meta.name ? match[i].meta.name : '');
+                                if(temp !== ''){
                                     breadcrumb.push({path: match[i].path, title: temp});
                                 }
                             }
