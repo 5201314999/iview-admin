@@ -51,7 +51,7 @@ function filter_trim(o){
  */
 function _base(method, url, params, success, failure, _config){
     if(params){
-        params = filter_trim(params);
+        params = (typeof params).toUpperCase() === 'OBJECT' ? filter_trim(params) : params;
     }else{
         params = {};
     }
