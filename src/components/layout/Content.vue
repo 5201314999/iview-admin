@@ -24,10 +24,10 @@
         },
         methods: {
             getBreadcrumb() {
-                let vm = this,
+                const vm = this,
                     match = vm.$route.matched,
-                    breadcrumb = [], i = 0,
-                    icon = 'ios-home-outline';
+                    breadcrumb = [], icon = 'ios-home-outline';
+                let i = 0;
                 if(match.length <= 1){
                     breadcrumb.push({title: match[i].name, icon: icon});
                 }else{

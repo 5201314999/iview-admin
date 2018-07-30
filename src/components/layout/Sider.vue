@@ -80,13 +80,13 @@
             }
         },
         mounted() {
-            let vm = this;
+            const vm = this;
             vm.getMenuName(vm.menu.items);
             vm.setMenuActive();
         },
         watch: {
             '$route': function(){
-                let vm = this;
+                const vm = this;
                 if(vm.$route.path === '/' || vm.$route.path === ''){
                     vm.setMenuActiveDef();
                 }
@@ -95,7 +95,7 @@
         },
         methods: {
             getMenuName(data, name, isChild) {
-                let vm = this;
+                const vm = this;
                 if(isChild) vm.nameObj[name] = {};
                 for(let i in data){
                     if(data.hasOwnProperty(i)){
@@ -115,7 +115,7 @@
                 }
             },
             setMenuActive() {
-                let vm = this, route = vm.$route,
+                const vm = this, route = vm.$route,
                     path = route.path.substring(1);
                 if(path !== ''){
                     let name = path.replace(/\//, '-'),
@@ -140,9 +140,9 @@
                 }
             },
             getRootName(path) {
-                let vm = this,
-                    paths = path.split('/'),
-                    name = '';
+                const vm = this,
+                    paths = path.split('/');
+                let name = '';
                 if(paths.length > 1){
                     for(let i in paths){
                         if(paths.hasOwnProperty(i)){
@@ -155,13 +155,13 @@
                 return name ? name : path;
             },
             setMenuActiveDef() {
-                let vm = this;
+                const vm = this;
                 vm.$set(vm.menu, 'active', vm.G.menu.active);
                 vm.$set(vm.menu, 'open', vm.G.menu.open);
                 vm.updateMenuActive();
             },
             updateMenuActive() {
-                let vm = this;
+                const vm = this;
                 vm.$nextTick(() => {
                     vm.$refs.menu.updateOpened();
                     vm.$refs.menu.updateActiveName();

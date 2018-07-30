@@ -46,9 +46,10 @@ function filter_trim(o){
  * @param params
  * @param success
  * @param failure
+ * @param _config
  * @private
  */
-function _base(method, url, params, success, failure){
+function _base(method, url, params, success, failure, _config){
     if(params){
         params = filter_trim(params);
     }else{
@@ -62,6 +63,13 @@ function _base(method, url, params, success, failure){
         headers: {'Content-Type': 'application/json;charset=utf-8'},
         timeout: 3000
     };
+    if(_config && Object.keys(_config).length > 0){
+        for(let i in _config){
+            if(_config.hasOwnProperty(i)){
+                config[i] = _config[i];
+            }
+        }
+    }
     axios(config).then(function(response){
         if((typeof success).toLowerCase() === 'function'){
             success(response.data);
@@ -74,22 +82,76 @@ function _base(method, url, params, success, failure){
 }
 
 export default {
-    get: function(url, params, success, failure){
-        return _base('GET', url, params, success, failure);
+    /**
+     * GET
+     * @param url
+     * @param params
+     * @param success
+     * @param failure
+     * @param config
+     */
+    get: function(url, params, success, failure, config){
+        return _base('GET', url, params, success, failure, config);
     },
-    post: function(url, params, success, failure){
-        return _base('POST', url, params, success, failure);
+
+    /**
+     * POST
+     * @param url
+     * @param params
+     * @param success
+     * @param failure
+     * @param config
+     */
+    post: function(url, params, success, failure, config){
+        return _base('POST', url, params, success, failure, config);
     },
-    put: function(url, params, success, failure){
-        return _base('PUT', url, params, success, failure);
+
+    /**
+     * PUT
+     * @param url
+     * @param params
+     * @param success
+     * @param failure
+     * @param config
+     */
+    put: function(url, params, success, failure, config){
+        return _base('PUT', url, params, success, failure, config);
     },
-    delete: function(url, params, success, failure){
-        return _base('DELETE', url, params, success, failure);
+
+    /**
+     * DELETE
+     * @param url
+     * @param params
+     * @param success
+     * @param failure
+     * @param config
+     */
+    delete: function(url, params, success, failure, config){
+        return _base('DELETE', url, params, success, failure, config);
     },
-    patch: function(url, params, success, failure){
-        return _base('PATCH', url, params, success, failure);
+
+    /**
+     * PATCH
+     * @param url
+     * @param params
+     * @param success
+     * @param failure
+     * @param config
+     */
+    patch: function(url, params, success, failure, config){
+        return _base('PATCH', url, params, success, failure, config);
     },
-    custom: function(url, method, params, config, success, failure){
-        return _base(method, url, config, params, success, failure);
+
+    /**
+     * CUSTOM
+     * @param url
+     * @param method
+     * @param params
+     * @param success
+     * @param failure
+     * @param config
+     */
+    custom: function(url, method, params, success, failure, config){
+        return _base(method, url, params, success, failure, config);
     }
 };

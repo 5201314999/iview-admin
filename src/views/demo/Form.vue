@@ -71,7 +71,7 @@
                             :on-format-error="handleFormatError"
                             :on-exceeded-size="handleMaxSize"
                             :before-upload="handleBeforeUpload"
-                            :accept="G.accept.images"
+                            :accept="G.files.accept.images"
                             multiple
                             type="drag">
                         <div class="fl-upload-btn flex flex-center">

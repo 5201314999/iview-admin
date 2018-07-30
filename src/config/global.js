@@ -12,13 +12,13 @@ const title = '基础框架DEMO';
  * 用户信息(初始化后覆盖)
  * @type {{name: string}}
  */
-const user = {};
+let user = {};
 
 /**
  * 左侧菜单
  * @type {{items: *[], active: string, open: string[], collapsed: boolean}}
  */
-const menu = {
+let menu = {
     items: [
         {
             title: '首页',
@@ -58,10 +58,6 @@ const menu = {
     collapsed: false
 };
 
-const accept = {
-    images: 'image/gif, image/jpeg, image/png, image/jpeg'
-};
-
 /**
  * API
  * @type {*}
@@ -90,6 +86,20 @@ const api = {
 };
 
 /**
+ * files config
+ * @type {Object}
+ */
+const files = {
+    server: {
+        upload: process.env.UPLOAD_SERVER,
+        download: process.env.FILE_SERVER
+    },
+    accept: {
+        image: 'image/gif, image/jpeg, image/png, image/jpeg'
+    }
+};
+
+/**
  * footer content
  * @type {string}
  */
@@ -101,5 +111,5 @@ export default {
     menu,
     api,
     footer,
-    accept
+    files
 }
