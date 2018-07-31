@@ -50,14 +50,20 @@
                         transition: opacity .3s;
                         opacity: 1;
                         outline: 0;
-                        span{
+                        .fl-drag-item-one{
                             background: #DADADA;
                             margin-bottom: 10px;
+                            overflow: hidden;
                             display: flex;
                             align-items: center;
                             justify-content: center;
+                            img{
+                                width: 100%;
+                                height: 100%;
+                                overflow: hidden;
+                            }
                         }
-                        span:last-child{
+                        .fl-drag-item-one:last-child{
                             margin-bottom: 0;
                         }
                     }
@@ -120,7 +126,7 @@
                         .fl-drag-item{
                             float: left;
                             margin-right: 17px;
-                            span{
+                            .fl-drag-item-one{
                                 color: #FFF;
                                 background: $themeColor;
                             }
@@ -198,16 +204,58 @@
                     .fl-drag-cont{
                         .fl-drag-list{
                             .fl-drag-item{
-                                span{
+                                .fl-drag-item-one{
                                     cursor: pointer;
                                     background: #DADADA;
-                                    i{
-                                        font-size: 0.3em;
+                                    .ivu-carousel{
+                                        width: 100%;
+                                        height: 100%;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        .ivu-carousel-arrow{
+                                            width: 0;
+                                            height: 0;
+                                        }
+                                        i{
+                                            font-size: .1em;
+                                        }
+                                        .ivu-carousel-list,
+                                        .ivu-carousel-track,
+                                        .ivu-carousel-item{
+                                            width: 100%;
+                                            height: 100% !important;
+                                        }
+                                        .ivu-carousel-item{
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                        }
+                                        .ivu-carousel-dots-inside{
+                                            text-align: right;
+                                            padding-right: 10px;
+                                        }
+                                        .ivu-carousel-dots li{
+                                            padding: 3px 0;
+                                            button{
+                                                width: 10px;
+                                                height: 10px;
+                                                border-radius: 10px;
+                                            }
+                                            &.ivu-carousel-active{
+                                                button{
+                                                    background: $themeColor;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    i.ivu-icon-ios-plus-outline{
+                                        font-size: 0.35em;
                                     }
                                     &.fl-drag-item-active{
                                         box-shadow: inset 0 0 3px 3px $themeColor;
                                         background: #FFF;
-                                        i{
+                                        i.ivu-icon-ios-plus-outline{
                                             color: $themeColor;
                                         }
                                     }

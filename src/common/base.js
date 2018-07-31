@@ -131,7 +131,7 @@ exports.install = function(Vue){
      * @returns {string}
      */
     Vue.prototype.$random = function(){
-        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     };
 
     /**
@@ -139,7 +139,7 @@ exports.install = function(Vue){
      * @returns {string}
      */
     Vue.prototype.$unique = function(){
-        let vm = this;
+        const vm = this;
         return (vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random()).toLocaleUpperCase();
     };
 
@@ -165,7 +165,7 @@ exports.install = function(Vue){
     Vue.prototype.$confirm = function(content, ok, cancel, width, title){
         title = title ? title : '温馨提示';
         width = width ? width : 360;
-        let vm = this;
+        const vm = this;
         vm.$Modal.confirm({
             title: title,
             content: content,
@@ -192,7 +192,7 @@ exports.install = function(Vue){
      * @param unique
      */
     Vue.prototype.$onPopup = function(event, unique){
-        let vm = this,
+        const vm = this,
             classes = {
                 wrap: 'ivu-modal-wrap',
                 title: 'ivu-modal-confirm-head-title',
@@ -200,8 +200,9 @@ exports.install = function(Vue){
                 close: 'ivu-modal-close'
             };
         vm.$on(event, function(fn){
-            let modals = document.getElementsByClassName(classes.wrap),
-                length = modals.length, i = 0;
+            const modals = document.getElementsByClassName(classes.wrap),
+                length = modals.length;
+            let i = 0;
             if(length > 0){
                 for(; i < length; i++){
                     let cur = modals[i],
@@ -232,7 +233,7 @@ exports.install = function(Vue){
      * @param time
      */
     Vue.prototype.$emitPopup = function(event, time){
-        let vm = this;
+        const vm = this;
         time = typeof time !== 'undefined' ? time : 2;
         vm.$nextTick(() => {
             vm.$emit(event, function(){
@@ -252,7 +253,7 @@ exports.install = function(Vue){
      * @param time
      */
     Vue.prototype.$success = function(content, width, time){
-        let vm = this, title = vm.$unique(),
+        const vm = this, title = vm.$unique(),
             success = 'fl-modal-success';
         width = width ? width : 300;
         vm.$onPopup(success, title);
@@ -272,7 +273,7 @@ exports.install = function(Vue){
      * @param time
      */
     Vue.prototype.$error = function(content, width, time){
-        let vm = this, title = vm.$unique(),
+        const vm = this, title = vm.$unique(),
             error = 'fl-modal-error';
         width = width ? width : 300;
         vm.$onPopup(error, title);
@@ -292,7 +293,7 @@ exports.install = function(Vue){
      * @param time
      */
     Vue.prototype.$warning = function(content, width, time){
-        let vm = this, title = vm.$unique(),
+        const vm = this, title = vm.$unique(),
             warning = 'fl-modal-warning';
         width = width ? width : 300;
         vm.$onPopup(warning, title);
