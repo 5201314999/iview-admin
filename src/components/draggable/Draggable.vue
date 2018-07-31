@@ -1126,7 +1126,7 @@
                             string.params = params.join('');
                             string.style = style.join('');
                             div.push(
-                                `<div ${string.params} style="${string.style}">${content}</div>`
+                                `<div class="${vm.drag.div}" ${string.params} style="${string.style}">${content}</div>`
                             );
                         }
                     }
