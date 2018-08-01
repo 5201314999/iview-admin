@@ -1,0 +1,66 @@
+.timeout-modal{
+    z-index: 19900417;
+    top: 0;
+    left: 0;
+    width: 350px;
+    height: 190px;
+    border-radius: 4px;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    box-shadow: 1px 1px 50px rgba(0,0,0,.3);
+    position: fixed;
+    .timeout-modal-title{
+        padding: 0 80px 0 20px;
+        height: 46px;
+        line-height: 46px;
+        border-bottom: 1px solid #F7F7F7;
+        font-size: 14px;
+        color: #333;
+        overflow: hidden;
+        background-color: #F7F7F7;
+        border-radius: 2px 2px 0 0;
+    }
+    .timeout-modal-content{
+        position: relative;
+        line-height: 24px;
+        word-break: break-all;
+        overflow: hidden;
+        font-size: 14px;
+        padding: 30px 60px 30px 95px;
+        text-align: left;
+        i{
+            position: absolute;
+            top: 26px;
+            left: 55px;
+            _left: -40px;
+            width: 30px;
+            height: 30px;
+            font-size: 32px;
+            color: red;
+            display: inline-block;
+            vertical-align: top;
+            &:before{
+                content: '\F128';
+            }
+        }
+    }
+    .timeout-modal-btn{
+        text-align: center;
+        pointer-events: auto;
+        user-select: none;
+        -webkit-user-select: none;
+        a{
+            height: 34px;
+            line-height: 34px;
+            padding: 0 25px;
+            background-color: $themeColor;
+            color: #FFF;
+            font-weight: 400;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+        }
+    }
+}

@@ -63,6 +63,7 @@ let menu = {
  * @type {*}
  */
 const api = {
+    login: 'user/login/{sid}',
     user: 'user/getLoginUser',
     logout: 'user/logout',
     getRecModuleList:'/rec-module-manager/rec-module-list',

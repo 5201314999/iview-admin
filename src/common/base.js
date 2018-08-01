@@ -11,12 +11,18 @@ exports.install = function(Vue){
      * @returns {null}
      */
     Vue.prototype.getUserInfo = function(){
-        let vm = this;
-        vm.$api.get(this.G.api.user, {}, function(res){
+        const vm = this;
+        vm.$api.get(vm.G.api.user, {}, function(res){
             if(res['ret']['retCode'].toString() === '0'){
                 vm.$set(vm.G, 'user', res.data);
-                vm.$emit('get-user-success');
+                vm.$emit('get-user-success', res.data);
+            }else{
+                vm.$error(res['ret']['retMsg']);
+                return false;
             }
+        }, function(err){
+            vm.$error(err);
+            return false;
         });
     };
 
@@ -25,13 +31,17 @@ exports.install = function(Vue){
      * @returns {null}
      */
     Vue.prototype.logout = function(){
-        let vm = this;
+        const vm = this;
         vm.$api.get(vm.G.api.logout, {}, function(res){
             if(res['ret']['retCode'].toString() === '0'){
                 vm.$success('退出成功');
+            }else{
+                vm.$error(res['ret']['retMsg']);
+                return false;
             }
         }, function(err){
-            vm.$error(err['ret']['retMsg']);
+            vm.$error(err);
+            return false;
         });
     };
 
@@ -41,6 +51,19 @@ exports.install = function(Vue){
      */
     Vue.prototype.setTitle = function(title){
         document.title = (title ? title : this.G.title) + ' - 后台管理';
+    };
+
+    /**
+     * get params.
+     * @param name
+     * @returns {*}
+     */
+    Vue.prototype.getQueryString = function(name){
+        const reg = new RegExp('(^|\\?|&)' + name + '=([^&]*)(\\s|&|$)', 'i');
+        if(reg.test(window.location.href)){
+            return unescape(RegExp.$2.replace(/\+/g, ' '))
+        }
+        return null;
     };
 
     /**
@@ -73,9 +96,9 @@ exports.install = function(Vue){
     Vue.prototype.parseUrl = function(url, params){
         params = params ? params : {};
         if(Object.keys(params).length > 0){
-            for(let i in params){
+            for(const i in params){
                 if(params.hasOwnProperty(i)){
-                    let reg = new RegExp('\{' + i + '\}', 'gi');
+                    const reg = new RegExp('\{' + i + '\}', 'gi');
                     url = url.replace(reg, params[i]);
                 }
             }
@@ -99,7 +122,8 @@ exports.install = function(Vue){
      * @param cls
      */
     Vue.prototype.addClass = function(obj, cls){
-        if(!this.hasClass(obj, cls)){
+        const vm = this;
+        if(!vm.hasClass(obj, cls)){
             obj.className += ' ' + cls;
         }
     };
@@ -110,11 +134,11 @@ exports.install = function(Vue){
      * @param cls
      */
     Vue.prototype.removeClass = function(obj, cls){
-        let vm = this,
+        const vm = this,
             reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
         if(obj.length && obj.length > 0){
-            let i = 0, len = obj.length;
-            for(; i < len; i++){
+            const len = obj.length;
+            for(let i = 0; i < len; i++){
                 if(vm.hasClass(obj[i], cls)){
                     obj[i].className = obj[i].className.replace(reg, '');
                 }
@@ -304,5 +328,47 @@ exports.install = function(Vue){
             closable: true
         });
         vm.$emitPopup(warning, time);
+    };
+
+    /**
+     * get cookie.
+     * @param cname
+     * @returns {string}
+     */
+    Vue.prototype.getCookie = function(cname){
+        const name = cname + '=',
+            ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while(c.charAt(0) === ' ') c = c.substring(1);
+            if(c.indexOf(name) !== -1){
+                return c.substring(name.length, c.length);
+            }
+        }
+        return '';
+    };
+
+    /**
+     * set cookie.
+     * @param name
+     * @param value
+     * @param expire
+     */
+    Vue.prototype.setCookie = function(name, value, expire){
+        const d = new Date();
+        d.setTime(d.getTime() + (expire * 24 * 60 * 60 * 1000));
+        const expires = 'expires=' + d.toUTCString();
+        document.cookie = name + '=' + value + ';' + expires;
+    };
+
+    /**
+     * del cookie.
+     * @param name
+     */
+    Vue.prototype.delCookie = function(name){
+        const d = new Date();
+        d.setTime(d.getTime() - (24 * 60 * 60 * 1000));
+        const expire = 'expires=' + d.toUTCString();
+        document.cookie = name + '="";' + expire;
     };
 };

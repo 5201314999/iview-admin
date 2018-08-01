@@ -6,8 +6,18 @@
         <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <title>后台管理</title>
+        <style>.timeout-hide{visibility: hidden;}</style>
     </head>
     <body>
         <div id="tvflnet"></div>
+        <div id="timeout-modal" class="timeout-modal timeout-hide">
+            <div class="timeout-modal-title">温馨提示</div>
+            <div class="timeout-modal-content">
+                <i class="ivu-icon"></i>登录已失效，请重新登录
+            </div>
+            <div class="timeout-modal-btn">
+                <a href="" id="timeout-modal-link" target="_self">确定</a>
+            </div>
+        </div>
     </body>
 </html>

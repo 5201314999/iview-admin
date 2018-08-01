@@ -1,9 +1,9 @@
 <template>
     <div class="layout has-sider">
         <layout>
-            <fl-sider :collapse="collapse"></fl-sider>
+            <fl-sider :collapse="collapse" @username="username = G.user.name"></fl-sider>
             <layout>
-                <fl-header @collapsed="collapse = G.menu.collapsed"></fl-header>
+                <fl-header @collapsed="collapse = G.menu.collapsed" :username="username"></fl-header>
                 <fl-content></fl-content>
                 <fl-footer></fl-footer>
             </layout>
@@ -26,8 +26,10 @@
             'fl-footer': Footer
         },
         data() {
+            const vm = this;
             return {
-                collapse: this.G.menu.collapsed
+                collapse: vm.G.menu.collapsed,
+                username: vm.G.user.name
             }
         }
     };
