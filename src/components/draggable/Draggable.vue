@@ -83,7 +83,7 @@
      *      [fill]: 填充数据 ( 初始化为数组, 填充或删除时，为对象 ) 如下所示:
      *      ```
      *      // 默认初始化数据 ( array )
-     *      this.fill = [
+     *      const data = [
      *          {
      *              index: 1,   // 添加成功后, 接口返回的`id` 或 待删除的`id` ( 推荐内容`id`, 唯一标识 )
      *              link: 'http://dev-file.tvflnet.com/example.jpg' // 图片地址
@@ -95,10 +95,10 @@
      *      ];
      *
      *      // 填充/删除数据 (删除数据多一个判断参数: action, 该值为 `delete`)
-     *      this.fill = {
+     *      const data = {
      *          id: 'fl-shape-5628043B92A64EEBB46474A9C9344583', // 推荐位id, 该值在点击推荐位时返回
      *          index: 1,
-     *          action: 'delete',   // 非删除时, 不携带该字段
+     *          action: 'delete',   // 非删除时, 不要携带该字段及内容
      *          link: 'http://dev-file.tvflnet.com/example.jpg'
      *      };
      *      ```
@@ -318,21 +318,32 @@
                 const vm = this, ratio = vm.ratio, list = [];
                 let tempWidth = 0, tempSpace = 0, tempHeight = 0;
                 for(let i = 0; i < datas.length; i++){
-                    let cur = datas[i], data = [], h,
+                    const cur = datas[i], data = [],
                         num = parseInt(cur['recPositionNum']),
                         width = cur['recModuleWidth'],
                         height = cur['recModuleHeight'],
                         space = cur['rowSpacing'],
                         mid = cur['recRowModuleId'],
-                        position = cur['recPositionIds'] ? cur['recPositionIds'] : [];
+                        position = cur['recPositionIds'] ? cur['recPositionIds'] : [],
+                        initData = cur['recInitData'] ? cur['recInitData'] : [];
+                    let h;
                     if(tempWidth <= 0) tempWidth = width * ratio;
                     if(tempSpace <= 0) tempSpace = space * ratio;
                     tempHeight = height * ratio > tempHeight ? height * ratio : tempHeight;
                     if(num > 1){
                         for(let n = 0; n < num; n++){
-                            let oneHeight = (height - space * (num - 1)) / num;
+                            const oneHeight = (height - space * (num - 1)) / num;
                             h = Math.round((oneHeight * ratio) * 10) / 10;
-                            let temp = {mid: mid, width: width * ratio, space: space * ratio, height: h, sourceWidth: width, sourceHeight: oneHeight, position: position[n]};
+                            const temp = {
+                                mid: mid,
+                                width: width * ratio,
+                                space: space * ratio,
+                                height: h,
+                                sourceWidth: width,
+                                sourceHeight: oneHeight,
+                                position: position[n],
+                                initData: initData[position[n]] ? initData[position[n]] : []
+                            };
                             if(n === num - 1){
                                 temp['space'] = 0;
                             }
@@ -340,7 +351,16 @@
                         }
                     }else{
                         h = Math.round(height * ratio * 10) / 10;
-                        let temp = {mid: mid, width: width * ratio, height: h, space: 0, sourceWidth: width, sourceHeight: height, position: position[0]};
+                        const temp = {
+                            mid: mid,
+                            width: width * ratio,
+                            height: h,
+                            space: 0,
+                            sourceWidth: width,
+                            sourceHeight: height,
+                            position: position[0],
+                            initData: initData[position[0]] ? initData[position[0]] : []
+                        };
                         data.push(temp);
                     }
                     list.push({id: cur['recModuleId'], data: data});
@@ -496,9 +516,9 @@
                                         elements = JSON.parse(JSON.stringify(vm.drag.elements));
                                     let id = -1;
                                     brother.click();
-                                    for(let i in elements){
+                                    for(const i in elements){
                                         if(elements.hasOwnProperty(i)){
-                                            let temp = parseInt(elements[i].id);
+                                            const temp = parseInt(elements[i].id);
                                             if(temp === parseInt(number)){
                                                 id = temp;
                                                 delete elements[i];
@@ -507,9 +527,9 @@
                                         }
                                     }
                                     if(Object.keys(elements).length > 0){
-                                        for(let n in elements){
+                                        for(const n in elements){
                                             if(elements.hasOwnProperty(n)){
-                                                let temp = parseInt(elements[n].id);
+                                                const temp = parseInt(elements[n].id);
                                                 if(temp > id){
                                                     elements[n].id = temp - 1;
                                                 }
@@ -556,7 +576,7 @@
                         vm.$set(vm.drag.width.nums, id, num);
                     }
                     if(type === 'start'){
-                        let curWidth = event.item.clientWidth,
+                        const curWidth = event.item.clientWidth,
                             countWidth = totalWidth + curWidth + (vm.base.margin * vm.ratio);
                         if(countWidth > vm.drag.width.width){
                             num = parseInt(vm.drag.width.nums[id]) + 1;
@@ -584,11 +604,11 @@
                     length = tabs.length;
                     if(length > 0){
                         for(; i < length; i++){
-                            let curTab = tabs[i], temp = [],
+                            const curTab = tabs[i], temp = [],
                                 items = curTab.getElementsByClassName(vm.drag.item);
                             if(items.length > 0){
                                 for(let n = 0; n < items.length; n++){
-                                    let cur = items[n],
+                                    const cur = items[n],
                                         id = cur.getAttribute('data-index');
                                     temp.push(id);
                                 }
@@ -605,17 +625,16 @@
              * updated the list height and width.
              */
             handleWindowResize() {
-                const vm = this;
-                let current, list, oldWidth,
-                    newWidth, num, number, curNum, listId;
-                current = vm.getCurrentTabContainer();
-                list = current.getElementsByClassName(vm.drag.list)[0];
-                oldWidth = list.clientWidth;
+                const vm = this,
+                    current = vm.getCurrentTabContainer(),
+                    list = current.getElementsByClassName(vm.drag.list)[0],
+                    oldWidth = list.clientWidth,
+                    num = vm.getComponentPagesNumber(current, list.children.length),
+                    listId = list.getAttribute('id'),
+                    number = vm.drag.width.nums[listId];
+                let newWidth, curNum;
                 list.removeAttribute('style');
-                listId = list.getAttribute('id');
                 newWidth = list.clientWidth;
-                number = vm.drag.width.nums[listId];
-                num = vm.getComponentPagesNumber(current, list.children.length);
                 if(newWidth !== vm.drag.width.width){
                     vm.$set(vm.drag.width, 'width', newWidth);
                     vm.$set(vm.drag.width.nums, listId, num);
@@ -661,7 +680,7 @@
                         vm.$set(vm.drag.nums, name, num);
                     }
                     listNode.style.marginLeft = '-' + num + 'px';
-                    let number = vm.getComponentPagesNumber(parentNode, listNode.children.length);
+                    const number = vm.getComponentPagesNumber(parentNode, listNode.children.length);
                     vm.handleComponentTargetSwitch(parentNode, number, name);
                     vm.setComponentDragData();
                 }else{
@@ -685,10 +704,10 @@
                     name = parentNode.getAttribute('data-name'),
                     isTarget = name.indexOf('target') > -1;
                 if(isTarget){
-                    let num = listNode.children.length,
+                    const num = listNode.children.length,
                         number = vm.getComponentPagesNumber(parentNode, num),
-                        targetNum = vm.drag.nums[name] ? vm.drag.nums[name] : 0,
                         tempWidth = listNode.parentNode.clientWidth;
+                    let targetNum = vm.drag.nums[name] ? vm.drag.nums[name] : 0;
                     if(tempWidth > 0 && tempWidth !== vm.drag.width.width){
                         vm.$set(vm.drag.width, 'width', tempWidth);
                     }
@@ -700,8 +719,8 @@
                     vm.handleComponentTargetSwitch(parentNode, number, name);
                     vm.setComponentDragData();
                 }else{
-                    let num = vm.drag.num,
-                        number = vm.getComponentPagesNumber(parentNode);
+                    const number = vm.getComponentPagesNumber(parentNode);
+                    let num = vm.drag.num;
                     if(num < (number - 1) * 100){
                         num += 100;
                         vm.$set(vm.drag, 'num', num);
@@ -723,7 +742,7 @@
                     next = node.getElementsByClassName(vm.drag.next)[0],
                     prev = node.getElementsByClassName(vm.drag.prev)[0];
                 if(action === 'prev'){
-                    let listNode = node.getElementsByClassName(vm.drag.list)[0],
+                    const listNode = node.getElementsByClassName(vm.drag.list)[0],
                         num = vm.getComponentPagesNumber(node, listNode.children.length);
                     if(num > 1) vm.removeClass(next, disabled);
                     else vm.addClass(next, disabled);
@@ -736,7 +755,7 @@
                     }else{
                         vm.addClass(prev, disabled);
                     }
-                    if(this.drag.num === (number - 1) * 100){
+                    if(vm.drag.num === (number - 1) * 100){
                         vm.addClass(next, disabled);
                     }
                 }
@@ -791,7 +810,7 @@
                         if(length > 1){
                             for(let i = 0; i < length; i++){
                                 if(children.hasOwnProperty(i)){
-                                    let cur = children[i];
+                                    const cur = children[i];
                                     if(vm.hasClass(cur, vm.drag.item)){
                                         cur.remove();
                                     }
@@ -823,7 +842,7 @@
                     sort: false,
                     onStart(event) {
                         vm.updateComponentBodyWidth('start', event);
-                        let current = vm.getCurrentTabContainer(),
+                        const current = vm.getCurrentTabContainer(),
                             list = current.getElementsByClassName(vm.drag.list)[0],
                             length = list.children.length,
                             height = list.clientHeight;
@@ -883,7 +902,7 @@
                             first = oldWidth === 0 && newWidth === 0;
                         if(first || oldWidth > newWidth){
                             target.style.marginLeft = '-' + newWidth + 'px';
-                            let width = newWidth <= 0 ? vm.drag.width.width : newWidth;
+                            const width = newWidth <= 0 ? vm.drag.width.width : newWidth;
                             target.style.width = width + 'px';
                             vm.$set(vm.drag.nums, id, newWidth);
                         }
@@ -967,7 +986,7 @@
                         let tempWidth = 0;
                         if(data.length > 0){
                             for(let d = 0; d < data.length; d++){
-                                let tempCur = data[d];
+                                const tempCur = data[d];
                                 if(tempCur.data.length > 0){
                                     for(let x = 0; x < tempCur.data.length; x++){
                                         tempWidth += (tempCur.data[x].width + space);
@@ -979,12 +998,12 @@
                         return tempWidth;
                     };
                     for(; i < vm.rows.length; i++){
-                        let cur = vm.rows[i],
+                        const cur = vm.rows[i],
                             data = cur['recRowModules'],
-                            temp = vm.parseComponentData(data, cur['recRowId']);
-                        if(i > 0) vm.createComponentRow();
-                        let id = i <= 0 ? 'target' : 'target-' + i,
+                            temp = vm.parseComponentData(data, cur['recRowId']),
+                            id = i <= 0 ? 'target' : 'target-' + i,
                             totalWidth = getTotalWidth(temp.list, temp.space);
+                        if(i > 0) vm.createComponentRow();
                         height = temp.height > height ? temp.height : height;
                         template[id] = {
                             template: vm.initDraggableShape(temp, id),
@@ -994,9 +1013,9 @@
                     }
                     vm.$nextTick(() => {
                         if(Object.keys(template).length > 0){
-                            for(let k in template){
+                            for(const k in template){
                                 if(template.hasOwnProperty(k)){
-                                    let current = template[k],
+                                    const current = template[k],
                                         container = document.getElementById(k);
                                     vm.$set(vm.drag.height, k, current.height);
                                     vm.$set(vm.drag.nums, k, 0);
@@ -1004,19 +1023,20 @@
                                     container.innerHTML = current.template;
                                     /** re initialization */
                                     if(typeof vm.drag.target[k] === 'undefined'){
-                                        let ks = k.split('-'),
+                                        const ks = k.split('-'),
                                             row = parseInt(ks[1]);
-                                        if(row !== 'null' && row !== '' && !isNaN(row))
+                                        if(row !== 'null' && row !== '' && !isNaN(row)){
                                             vm.initComponentTargetDraggable(row);
+                                        }
                                     }
                                     vm.handleComponentTargetSwitch(container.parentNode.parentNode, current.pages, k);
                                 }
                             }
                             if(vm.click){
                                 if(vm.drag.shape.template.length > 0){
-                                    for(let n in vm.drag.shape.template){
+                                    for(const n in vm.drag.shape.template){
                                         if(vm.drag.shape.template.hasOwnProperty(n)){
-                                            let cur = vm.drag.shape.template[n];
+                                            const cur = vm.drag.shape.template[n];
                                             vm.drag.shape.instance.push(new Vue({
                                                 el: '#' + cur.id,
                                                 data() {
@@ -1078,7 +1098,7 @@
                         /** whether can click or not. */
                         if(vm.click){
                             /** attributes data */
-                            let attrs = [
+                            const attrs = [
                                 `id="${vm.drag.shape.prefix}-${id}"`,
                                 `data-id="${cur.id}"`,
                                 `data-mid="${item.mid}"`,
@@ -1094,7 +1114,7 @@
                             string.params = params.join('');
                             string.style = style.join('');
                             /** node */
-                            const initData = Array.isArray(vm.fill) ? vm.fill : [],
+                            const initData = item.initData,
                                 ilen = initData.length,
                                 items = [];
                             if(ilen <= 0){
@@ -1110,7 +1130,7 @@
                             }else if(ilen > 1){
                                 /** carousel */
                                 vm.$set(vm.drag.shape.setting, 'auto', true);
-                                for(let k in initData){
+                                for(const k in initData){
                                     if(initData.hasOwnProperty(k)){
                                         items.push(
                                             `<CarouselItem><img src="${initData[k].link}" class="${vm.drag.shape.image}" data-index="${initData[k].index}" /></CarouselItem>`
@@ -1160,7 +1180,7 @@
                                 if(!vm.hasClass(cur, vm.drag.active)){
                                     vm.removeClass(items, vm.drag.active);
                                     vm.addClass(cur, vm.drag.active);
-                                    let row = cur.getAttribute('data-row'),
+                                    const row = cur.getAttribute('data-row'),
                                         pos = cur.getAttribute('data-pos'),
                                         id = cur.getAttribute('data-id'),
                                         mid = cur.getAttribute('data-mid'),
@@ -1216,10 +1236,10 @@
                                 `<Carousel :autoplay="${vm.drag.shape.setting.auto}" :autoplay-speed="${vm.drag.shape.setting.speed}" :radius-dot="${vm.drag.shape.setting.radiuDot}" loop>`
                             );
                             for(let i = 0; i < ilen; i++){
-                                let cur = images[i];
+                                const cur = images[i];
                                 list.push(cur.getAttribute('data-index'));
                             }
-                            for(let x in list){
+                            for(const x in list){
                                 if(list.hasOwnProperty(x)){
                                     if(vm.trim(list[x]) !== vm.trim(vm.file.index)){
                                         list.splice(x, 1);
@@ -1253,7 +1273,7 @@
                                 /** get existing images */
                                 list.push({index: vm.fill.index, link: vm.fill.link});
                                 for(let i = 0; i < ilen; i++){
-                                    let cur = images[i];
+                                    const cur = images[i];
                                     list.push({
                                         index: cur.getAttribute('data-index'),
                                         link: cur.getAttribute('src')
@@ -1265,7 +1285,7 @@
                                     `<div ${attrs.join(' ')}>`,
                                     `<Carousel :autoplay="${vm.drag.shape.setting.auto}" :autoplay-speed="${vm.drag.shape.setting.speed}" :radius-dot="${vm.drag.shape.setting.radiuDot}" loop>`
                                 );
-                                for(let n in list){
+                                for(const n in list){
                                     if(list.hasOwnProperty(n)){
                                         template.push(`<CarouselItem>`);
                                         template.push(`<img src="${list[n].link}" class="${cls}" data-index="${list[n].index}" />`);

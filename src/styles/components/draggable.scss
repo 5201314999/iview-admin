@@ -253,8 +253,8 @@
                                         font-size: 0.35em;
                                     }
                                     &.fl-drag-item-active{
-                                        box-shadow: inset 0 0 3px 3px $themeColor;
                                         background: #FFF;
+                                        box-shadow: inset 0 0 3px 3px $themeColor;
                                         i.ivu-icon-ios-plus-outline{
                                             color: $themeColor;
                                         }

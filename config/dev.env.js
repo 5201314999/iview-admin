@@ -6,5 +6,6 @@ module.exports = merge(prodEnv, {
     NODE_ENV: '"development"',
     SERVER_NAME: '"https://dev-cms-operation.tvflnet.com"',
     UPLOAD_SERVER: '"https://dev-web-services.tvflnet.com"',
-    FILE_SERVER: '"http://dev-file.tvflnet.com"'
+    FILE_SERVER: '"http://dev-file.tvflnet.com"',
+    WEB_SERVICES: '"https://dev-authority-service.tvflnet.com"'
 });

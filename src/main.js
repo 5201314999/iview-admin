@@ -27,16 +27,7 @@ sid = Vue.prototype.getCookie('sid');
 if(!sid){
     sid = Vue.prototype.getQueryString('sid');
 }
-const getBackUrl = function(){
-    let url = 'authority-service.tvflnet.com',
-        link = window.location.hostname, links;
-    links = link.split('-');
-    const env = Vue.prototype.trim(links[0]).toLowerCase();
-    if(env === 'dev' || env === 'test'){
-        url = env + '.' + url;
-    }
-    return 'https://' + url;
-}, timeoutTip = function(){
+const timeoutTip = function(){
     const id = 'timeout-modal',
         cls = 'timeout-hide',
         link = document.getElementById('timeout-modal-link'),
@@ -48,8 +39,7 @@ const getBackUrl = function(){
     elem.style.left = left + 'px';
     elem.style.top = top + 'px';
     Vue.prototype.removeClass(elem, cls);
-    const url = getBackUrl();
-    link.setAttribute('href', url);
+    link.setAttribute('href', process.env.WEB_SERVICES);
 };
 if(sid != null && sid !== ''){
     api.get(Vue.prototype.parseUrl(_global.api.login, {sid: sid}), {}, function(res){
