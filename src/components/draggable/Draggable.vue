@@ -69,7 +69,7 @@
      *  1. `import` 引入该组件 eg. `import draggable from '@/components/draggable/Draggable'`;
      *  2. 页面初始化
      *      ```
-     *      <draggable :index="index" v-on:get-data="getComponentData" :init="true" :rows="rows" :id="key" :only="true" :click="true" v-on:callback="handleClick"></draggable>
+     *      <draggable :index="index" v-on:get-data="getComponentData" :init="true" :rows="rows" :id="key" :only="true" :click="true" v-on:callback="handleClick" :fill="fillData"></draggable>
      *      ```
      *      参数说明:
      *      [index]: 动态变更, 触发获取最新推荐行数据动作, 可调用 vm.$unique() 进行赋值变更.
@@ -970,7 +970,9 @@
                     });
                 });
                 vm.$on('init-finish', function(){
-                    vm.initDraggableShapeClick();
+                    if(vm.click){
+                        vm.initDraggableShapeClick();
+                    }
                 });
             },
 
@@ -1032,7 +1034,7 @@
                                     vm.handleComponentTargetSwitch(container.parentNode.parentNode, current.pages, k);
                                 }
                             }
-                            if(vm.click){
+                            if(vm.click || vm.init){
                                 if(vm.drag.shape.template.length > 0){
                                     for(const n in vm.drag.shape.template){
                                         if(vm.drag.shape.template.hasOwnProperty(n)){
@@ -1088,15 +1090,19 @@
                         const item = items[n],
                             text = item.sourceWidth + ' * ' + item.sourceHeight,
                             style = [
-                                `width: ${item.width}px;height: ${item.height}px;margin-bottom: ${item.space}px;`
+                                `width: ${item.width}px;`,
+                                `height: ${item.height}px;`,
+                                `margin-bottom: ${item.space}px;`
                             ],
-                            content = vm.click ? icon : text,
+                            content = vm.click
+                                ? icon
+                                : (vm.init ? `<Row>${text}</Row>` : text),
                             params = [], string = {},
                             id = vm.$unique();
                         /** set `carousel v-model` values */
                         vm.$set(vm.drag.shape.values, id, 0);
                         /** whether can click or not. */
-                        if(vm.click){
+                        if(vm.init || vm.click){
                             /** attributes data */
                             const attrs = [
                                 `id="${vm.drag.shape.prefix}-${id}"`,
@@ -1108,24 +1114,26 @@
                                 `class="${cls}"`
                             ];
                             params.push(attrs.join(' '));
-                            /** style */
-                            style.push(`font-size: ${item.height}px;`);
-                            /** convert to `string` */
-                            string.params = params.join('');
-                            string.style = style.join('');
                             /** node */
                             const initData = item.initData,
                                 ilen = initData.length,
                                 items = [];
+                            /** style */
+                            if(vm.click && content === icon && ilen !== 1){
+                                style.push(`font-size: ${item.height}px;`);
+                            }
+                            /** convert to `string` */
+                            string.params = params.join('');
+                            string.style = style.join('');
                             if(ilen <= 0){
-                                /** none (add icon) */
+                                /** none (add icon or `text`) */
                                 div.push(
                                     `<div ${string.params} style="${string.style}">${content}</div>`
                                 );
                             }else if(ilen === 1){
                                 /** single image */
                                 div.push(
-                                    `<div ${string.params} style="${string.style}"><Row><img src="${initData[0].link}" class="${vm.drag.shape.image}" data-index="${initData[0].index}" /></Row></div>`
+                                    `<div ${string.params} style="${string.style}"><Row class="fl-drag-item-img"><img src="${initData[0].link}" class="${vm.drag.shape.image}" data-index="${initData[0].index}" /></Row></div>`
                                 );
                             }else if(ilen > 1){
                                 /** carousel */
@@ -1153,7 +1161,7 @@
                     template.push(div.join('') + '</div>');
                     templates.push(template.join(''));
                 }
-                if(vm.click){
+                if(vm.click || vm.init){
                     /** `template` record. */
                     vm.drag.shape.template.push({
                         id: cid,
@@ -1316,7 +1324,9 @@
                             render: Vue.compile(template.join('')).render
                         }));
                         /** re binding events */
-                        vm.initDraggableShapeClick();
+                        if(vm.click){
+                            vm.initDraggableShapeClick();
+                        }
                     }
                 }
             }
