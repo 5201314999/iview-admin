@@ -57,14 +57,14 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             template: 'index.html',
             inject: true
         }),
-        // copy custom static assets
-        /*new CopyWebpackPlugin([
+        // copy login.html
+        new CopyWebpackPlugin([
             {
-                from: path.resolve(__dirname, '../static'),
+                from: path.resolve(__dirname, '../login.html'),
                 to: config.dev.assetsSubDirectory,
                 ignore: ['.*']
             }
-        ])*/
+        ])
     ]
 });
 

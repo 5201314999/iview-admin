@@ -31,9 +31,9 @@
             }
             .fl-drag-cont{
                 width: 100%;
-                overflow: hidden;
                 margin: 0 17px;
                 position: relative;
+                overflow: hidden;
                 .fl-drag-list{
                     width: 100%;
                     min-width: 100000px;
@@ -72,11 +72,17 @@
                         margin-right: 0;
                     }
                 }
-                .fl-screen-line{
+                .fl-drag-screen-line{
                     position: absolute;
                     display: block;
                     border-left: 1px solid #f00;
                     top: 0;
+                }
+                .fl-drag-item-border-shadow{
+                    position: absolute;
+                    box-shadow: inset 0 0 2px 2px $themeColor;
+                    border-radius: 4px;
+                    display: none;
                 }
             }
         }
@@ -117,13 +123,13 @@
         }
         .fl-drag-container{
             .fl-drag-box{
-                padding: 16px;
+                margin: 17px;
                 .fl-drag-cont{
                     .fl-drag-list{
                         display: block;
                         position: relative;
                         will-change: margin;
-                        transition: margin .4s ease-in-out;
+                        transition: margin .2s ease-in-out;
                         .fl-drag-item{
                             float: left;
                             margin-right: 17px;
@@ -255,7 +261,7 @@
                                     }
                                     &.fl-drag-item-active{
                                         background: #FFF;
-                                        box-shadow: inset 0 0 3px 3px $themeColor;
+                                        color: $themeColor;
                                         i.ivu-icon-ios-plus-outline{
                                             color: $themeColor;
                                         }

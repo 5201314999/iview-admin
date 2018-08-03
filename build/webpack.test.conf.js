@@ -114,14 +114,14 @@ const webpackConfig = merge(baseWebpackConfig, {
             minChunks: 3
         }),
 
-        // copy custom static assets
-        /*new CopyWebpackPlugin([
+        // copy login.html
+        new CopyWebpackPlugin([
             {
-                from: path.resolve(__dirname, '../static'),
+                from: path.resolve(__dirname, '../login.html'),
                 to: config.build.assetsSubDirectory,
                 ignore: ['.*']
             }
-        ])*/
+        ])
     ]
 });
 

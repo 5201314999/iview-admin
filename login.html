@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <script type="text/javascript">
+        const getQueryString = function(name){
+            const reg = new RegExp('(^|\\?|&)' + name + '=([^&]*)(\\s|&|$)', 'i');
+            if(reg.test(window.location.href)){
+                return unescape(RegExp.$2.replace(/\+/g, ' '))
+            }
+            return null;
+        };
+        const sid = getQueryString('sid'),
+            ajax = new XMLHttpRequest();
+        ajax.open('get', '/user/login/' + sid);
+        ajax.send();
+        ajax.onreadystatechange = function(){
+            if(ajax.readyState === 4 && ajax.status === 200){
+                const res = JSON.parse(ajax.responseText);
+                if(res['ret']['retCode'].toString() === '0'){
+                    window.location.href = window.location.origin;
+                }else{
+                    alert(res['ret']['retMsg']);
+                    return false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

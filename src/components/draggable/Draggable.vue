@@ -45,7 +45,8 @@
                                 </div>
                                 <div class="fl-drag-cont">
                                     <div class="fl-drag-list clearfix" id="target"></div>
-                                    <span class="fl-screen-line" :style="{left: ((1920 - base.left) * ratio) + 'px', height: drag.height['target'] + 'px'}" v-if="drag.nums['target'] <= 0"></span>
+                                    <span :class="drag.line" :style="{left: ((1920 - base.left) * ratio) + 'px', height: drag.height['target'] + 'px'}" v-if="drag.nums['target'] <= 0"></span>
+                                    <span :class="drag.shadow.normal"></span>
                                 </div>
                                 <div class="fl-drag-next disabled" @click="handleComponentNext">
                                     <Icon type="arrow-right-b"></Icon>
@@ -79,6 +80,7 @@
      *      [id]: 动态变更, 与`index`参数同理, 变更后执行数据初始化动作.
      *      [only]: 是否仅显示推荐行列表, 不显示原始拖拽数据.
      *      [click]: 推荐位是否支持点击.
+     *      [detail]: 是否是详情页面 (主要针对详情页面的展示, 避免显示点击添加按钮).
      *      [callback]: 点击回调 {@return: {recRowId, recModuleId, recRowModuleId, recPositionId}}
      *      [fill]: 填充数据 ( 初始化为数组, 填充或删除时，为对象 ) 如下所示:
      *      ```
@@ -120,7 +122,9 @@
                 },
                 drag: {
                     height: {},
-                    nums: {target: 0}
+                    nums: {target: 0},
+                    line: 'fl-drag-screen-line',
+                    shadow: 'fl-drag-item-border-shadow'
                 }
             }
         },
@@ -157,7 +161,8 @@
         </div>
         <div class="fl-drag-cont">
             <div class="fl-drag-list clearfix" :id="'target-' + row"></div>
-            <span class="fl-screen-line" :style="{left: ((1920 - base.left) * ratio) + 'px', height: drag.height['target-' + row] + 'px'}" v-if="drag.nums['target-' + row] <= 0"></span>
+            <span :class="drag.line" :style="{left: ((1920 - base.left) * ratio) + 'px', height: drag.height['target-' + row] + 'px'}" v-if="drag.nums['target-' + row] <= 0"></span>
+            <span :class="drag.shadow"></span>
         </div>
         <div class="fl-drag-next disabled" @click="handleComponentNext">
             <Icon type="arrow-right-b"></Icon>
@@ -183,6 +188,10 @@
             click: {
                 type: Boolean,
                 defalut: false
+            },
+            detail: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -212,6 +221,12 @@
                     item: 'fl-drag-item',
                     div: 'fl-drag-item-one',
                     active: 'fl-drag-item-active',
+                    line: 'fl-drag-screen-line',
+                    shadow: {
+                        normal: 'fl-drag-item-border-shadow',
+                        active: 'fl-drag-item-shadow-active',
+                        data: {}
+                    },
                     row: 1,                     // row number.
                     num: 0,                     // page's number ( source ).
                     nums: {target: 0},          // page's number ( target ).
@@ -538,6 +553,7 @@
                                     }
                                     vm.$set(vm.drag, 'elements', elements);
                                     vm.$set(vm.drag.tabs, 'id', vm.drag.tabs.id - 1);
+                                    vm.handleDraggableShapeShadowActive();
                                 }
                             }
                         })
@@ -670,6 +686,7 @@
                 const vm = this,
                     parentNode = event.currentTarget.parentNode,
                     listNode = parentNode.getElementsByClassName(vm.drag.list)[0],
+                    shadowNode = parentNode.parentNode.getElementsByClassName(vm.drag.shadow.normal)[0],
                     name = parentNode.getAttribute('data-name'),
                     isTarget = name.indexOf('target') > -1;
                 let num = vm.drag.num;
@@ -678,6 +695,17 @@
                     if(num > 0){
                         num -= vm.drag.width.width;
                         vm.$set(vm.drag.nums, name, num);
+                        const shadowLeft = shadowNode.offsetLeft,
+                            shadowStyle = [
+                                `top: ${shadowNode.offsetTop}px;`,
+                                `width: ${shadowNode.clientWidth}px;`,
+                                `height: ${shadowNode.clientHeight}px;`,
+                                `display: block;`
+
+                            ];
+                        shadowNode.removeAttribute('style');
+                        shadowStyle.push(`left: ${shadowLeft + vm.drag.width.width}px;`);
+                        shadowNode.setAttribute('style', shadowStyle.join(''));
                     }
                     listNode.style.marginLeft = '-' + num + 'px';
                     const number = vm.getComponentPagesNumber(parentNode, listNode.children.length);
@@ -701,6 +729,7 @@
                 const vm = this,
                     parentNode = event.currentTarget.parentNode,
                     listNode = parentNode.getElementsByClassName(vm.drag.list)[0],
+                    shadowNode = parentNode.parentNode.getElementsByClassName(vm.drag.shadow.normal)[0],
                     name = parentNode.getAttribute('data-name'),
                     isTarget = name.indexOf('target') > -1;
                 if(isTarget){
@@ -714,6 +743,17 @@
                     if(targetNum < (number - 1) * vm.drag.width.width){
                         targetNum += vm.drag.width.width;
                         vm.$set(vm.drag.nums, name, targetNum);
+                        const shadowLeft = shadowNode.offsetLeft,
+                            shadowStyle = [
+                                `top: ${shadowNode.offsetTop}px;`,
+                                `width: ${shadowNode.clientWidth}px;`,
+                                `height: ${shadowNode.clientHeight}px;`,
+                                `display: block;`
+
+                            ];
+                        shadowNode.removeAttribute('style');
+                        shadowStyle.push(`left: ${shadowLeft - vm.drag.width.width}px;`);
+                        shadowNode.setAttribute('style', shadowStyle.join(''));
                     }
                     listNode.style.marginLeft = '-' + targetNum + 'px';
                     vm.handleComponentTargetSwitch(parentNode, number, name);
@@ -990,9 +1030,7 @@
                             for(let d = 0; d < data.length; d++){
                                 const tempCur = data[d];
                                 if(tempCur.data.length > 0){
-                                    for(let x = 0; x < tempCur.data.length; x++){
-                                        tempWidth += (tempCur.data[x].width + space);
-                                    }
+                                    tempWidth += (tempCur.data[0].width + space);
                                 }
                             }
                         }
@@ -1095,7 +1133,7 @@
                                 `margin-bottom: ${item.space}px;`
                             ],
                             content = vm.click
-                                ? icon
+                                ? (vm.detail ? `<Row>${text}</Row>` : icon)
                                 : (vm.init ? `<Row>${text}</Row>` : text),
                             params = [], string = {},
                             id = vm.$unique();
@@ -1192,15 +1230,86 @@
                                         pos = cur.getAttribute('data-pos'),
                                         id = cur.getAttribute('data-id'),
                                         mid = cur.getAttribute('data-mid'),
-                                        key = cur.getAttribute('data-key');
-                                    vm.$emit('callback', {id: key, recRowId: row, recModuleId: id, recRowModuleId: mid, recPositionId: pos});
+                                        key = cur.getAttribute('data-key'),
+                                        data = {id: key, recRowId: row, recModuleId: id, recRowModuleId: mid, recPositionId: pos};
+                                    vm.$set(vm.drag.shadow, 'data', data);
+                                    vm.setDraggableShapeShadow(cur);
+                                    return data;
+                                }
+                                return false;
+                            },
+                            click = function(){
+                                const data = eventHandle();
+                                if(data){
+                                    vm.$emit('callback', data);
                                 }
                             };
-                        off(cur, 'click', eventHandle);
-                        on(cur, 'click', eventHandle);
+                        off(cur, 'click', click);
+                        on(cur, 'click', click);
                     }
                 }
             },
+
+            /**
+             * set border shadow.
+             * add active class in current element.
+             * @param node
+             * @param data
+             */
+            setDraggableShapeShadow(node, data) {
+                const vm = this,
+                    parent = node.parentNode.parentNode,
+                    id = parent.getAttribute('id'),
+                    left = vm.drag.nums[id] > 0
+                        ? node.offsetLeft - vm.drag.nums[id]
+                        : node.offsetLeft,
+                    top = node.offsetTop,
+                    width = node.clientWidth,
+                    height = node.clientHeight,
+                    parents = parent.parentNode;
+                if(parents && vm.hasClass(parents, vm.drag.content)){
+                    const elem = parents.getElementsByClassName(vm.drag.shadow.normal)[0],
+                        style = [];
+                    if(elem){
+                        elem.removeAttribute('style');
+                        style.push(
+                            `top: ${top}px;`,
+                            `left: ${left}px;`,
+                            `width: ${width}px;`,
+                            `height: ${height}px;`,
+                            `display: block;`
+                        );
+                        elem.setAttribute('style', style.join(''));
+                        vm.addClass(elem, vm.drag.shadow.active);
+                        const click = function(){
+                            if(vm.hasClass(this, vm.drag.shadow.active)){
+                                vm.removeClass(this, vm.drag.shadow.active);
+                                this.style.display = 'none';
+                                vm.removeClass(document.getElementById(vm.drag.shadow.data.id), vm.drag.active);
+                                vm.$emit('cancel', data);
+                            }
+                        };
+                        off(elem, 'click', click);
+                        on(elem, 'click', click);
+                    }
+                }
+            },
+
+            /**
+             * remove shadow active class.
+             * add active class in current element.
+             */
+            handleDraggableShapeShadowActive() {
+                const vm = this,
+                    actives = document.getElementsByClassName(vm.drag.shadow.active),
+                    length = actives.length;
+                if(length > 0){
+                    for(let i = 0; i < length; i++){
+                        const cur = actives[i];
+                        vm.removeClass(cur, vm.drag.shadow.active);
+                    }
+                }
+            }
         },
         watch: {
             index: function(){
