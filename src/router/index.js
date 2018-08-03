@@ -7,8 +7,9 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import Home from '../views/Home'
+import Home from '../views/Home';
 
+import LogsRouter from '@/router/logs';
 import DemoTableRouter from './demo/table';
 import DemoPaginationRouter from './demo/pagination';
 import DemoFormRouter from './demo/form';
@@ -18,6 +19,7 @@ import DemoDraggableRouter from './demo/draggable';
 Vue.use(VueRouter);
 
 const childrenRouter = [
+    LogsRouter,
     DemoTableRouter,
     DemoPaginationRouter,
     DemoFormRouter,

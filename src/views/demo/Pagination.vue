@@ -2,9 +2,9 @@
     <div class="fl-container">
         <Row class="fl-content clearfix">
             <Row class="pagination mb20">
-                    <span class="pagination-total">
-                        共 {{ total }} 条记录 第 {{ pagination.pageNum }} / {{ Math.ceil(total/pagination.pageSize) }} 页
-                    </span>
+                <span class="pagination-total">
+                    共 {{ total }} 条记录 第 {{ pagination.pageNum }} / {{ Math.ceil(total / pagination.pageSize) }} 页
+                </span>
                 <Page :total="total" :current="pagination.pageNum" :page-size="pagination.pageSize" show-elevator show-sizer @on-change="setPaginationNum" @on-page-size-change="setPaginationSize"></Page>
             </Row>
         </Row>

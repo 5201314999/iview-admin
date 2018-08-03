@@ -36,7 +36,7 @@ exports.install = function(Vue){
             if(res['ret']['retCode'].toString() === '0'){
                 vm.$success('退出成功');
                 setTimeout(() => {
-                    window.location.href = process.env.WEB_SERVICES;
+                    window.location.href = process.env.AUTH_SERVICES;
                 }, 2500);
             }else{
                 vm.$error(res['ret']['retMsg']);
@@ -54,19 +54,6 @@ exports.install = function(Vue){
      */
     Vue.prototype.setTitle = function(title){
         document.title = (title ? title : this.G.title) + ' - 后台管理';
-    };
-
-    /**
-     * get params.
-     * @param name
-     * @returns {*}
-     */
-    Vue.prototype.getQueryString = function(name){
-        const reg = new RegExp('(^|\\?|&)' + name + '=([^&]*)(\\s|&|$)', 'i');
-        if(reg.test(window.location.href)){
-            return unescape(RegExp.$2.replace(/\+/g, ' '))
-        }
-        return null;
     };
 
     /**

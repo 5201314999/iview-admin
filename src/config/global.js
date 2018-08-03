@@ -8,6 +8,8 @@
  */
 const title = '基础框架DEMO';
 
+const projectId = '03';
+
 /**
  * 用户信息(初始化后覆盖)
  * @type {{name: string}}
@@ -51,6 +53,18 @@ let menu = {
                     path: '/draggable'
                 }
             ]
+        },
+        {
+            title: '操作日志',
+            name: 'log',
+            icon: 'ios-paper-outline',
+            children: [
+                {
+                    title: '操作日志（logs）',
+                    name: 'logs',
+                    path: '/logs'
+                }
+            ]
         }
     ],
     active: 'table',
@@ -66,6 +80,7 @@ const api = {
     login: 'user/login/{sid}',
     user: 'user/getLoginUser',
     logout: 'user/logout',
+    logs: process.env.WEB_SERVICES + '/log-record/list',
     getRecModuleList:'/rec-module-manager/rec-module-list',
     addStyleComponent:'/rec-module-manager/rec-module/',
     getLayoutList:'/rec-layout-manager/rec-layout-list',
@@ -108,6 +123,7 @@ const footer = 'Copyright &copy; 2018';
 
 export default {
     title,
+    projectId,
     user,
     menu,
     api,
