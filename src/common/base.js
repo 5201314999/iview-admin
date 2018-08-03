@@ -35,6 +35,9 @@ exports.install = function(Vue){
         vm.$api.get(vm.G.api.logout, {}, function(res){
             if(res['ret']['retCode'].toString() === '0'){
                 vm.$success('退出成功');
+                setTimeout(() => {
+                    window.location.href = process.env.WEB_SERVICES;
+                }, 2500);
             }else{
                 vm.$error(res['ret']['retMsg']);
                 return false;
