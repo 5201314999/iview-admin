@@ -8,6 +8,10 @@
  */
 const title = '基础框架DEMO';
 
+/**
+ * 项目ID
+ * @type {string}
+ */
 const projectId = '03';
 
 /**
