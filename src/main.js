@@ -24,7 +24,7 @@ Vue.prototype.G = _global;
 
 let app, sid;
 sid = Vue.prototype.getCookie('sid');
-if(!sid){
+if(sid !== null && sid !== '' && typeof sid !== 'undefined'){
     sid = Vue.prototype.getQueryString('sid');
 }
 const timeoutTip = function(){
