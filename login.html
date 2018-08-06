@@ -6,12 +6,29 @@
 </head>
 <body>
     <script type="text/javascript">
+        /**
+         * get url param
+         * @param name
+         * @returns {*}
+         */
         const getQueryString = function(name){
             const reg = new RegExp('(^|\\?|&)' + name + '=([^&]*)(\\s|&|$)', 'i');
             if(reg.test(window.location.href)){
-                return unescape(RegExp.$2.replace(/\+/g, ' '))
+                return unescape(RegExp.$2.replace(/\+/g, ' '));
             }
             return null;
+        };
+        /**
+         * set cookie
+         * @param name
+         * @param value
+         * @param expire
+         */
+        const setCookie = function(name, value, expire){
+            const d = new Date();
+            d.setTime(d.getTime() + expire);
+            const expires = 'expires=' + d.toUTCString();
+            document.cookie = name + '=' + value + ';' + expires;
         };
         const sid = getQueryString('sid'),
             ajax = new XMLHttpRequest();
@@ -21,7 +38,8 @@
             if(ajax.readyState === 4 && ajax.status === 200){
                 const res = JSON.parse(ajax.responseText);
                 if(res['ret']['retCode'].toString() === '0'){
-                    window.location.href = window.location.origin;
+                    setCookie('sid', sid, 31 * 60);
+                    window.location.href = window.location.origin + '/index.html';
                 }else{
                     alert(res['ret']['retMsg']);
                     return false;
