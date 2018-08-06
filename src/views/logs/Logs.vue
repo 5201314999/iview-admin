@@ -62,7 +62,7 @@
              */
             getLogList(page) {
                 const vm = this;
-                if(page !== 'undefined'){
+                if(typeof page !== 'undefined'){
                     vm.$set(vm.condition, 'page', page - 1);
                 }
                 vm.$api.post(vm.G.api.logs, vm.condition, function(res){
