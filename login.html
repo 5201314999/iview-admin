@@ -32,17 +32,21 @@
         };
         const sid = getQueryString('sid'),
             ajax = new XMLHttpRequest();
-        ajax.open('get', '/user/login/' + sid);
-        ajax.send();
-        ajax.onreadystatechange = function(){
-            if(ajax.readyState === 4 && ajax.status === 200){
-                const res = JSON.parse(ajax.responseText);
-                if(res['ret']['retCode'].toString() === '0'){
-                    setCookie('sid', sid, 31 * 60);
-                    window.location.href = window.location.origin + '/index.html';
-                }else{
-                    alert(res['ret']['retMsg']);
-                    return false;
+        if(sid === '' || sid === null || typeof sid === 'undefined'){
+            alert('URL需携带必要参数SID');
+        }else{
+            ajax.open('get', '/user/login/' + sid);
+            ajax.send();
+            ajax.onreadystatechange = function(){
+                if(ajax.readyState === 4 && ajax.status === 200){
+                    const res = JSON.parse(ajax.responseText);
+                    if(res['ret']['retCode'].toString() === '0'){
+                        setCookie('sid', sid, 31 * 60 * 1000);
+                        window.location.href = window.location.origin + '/index.html';
+                    }else{
+                        alert(res['ret']['retMsg']);
+                        return false;
+                    }
                 }
             }
         }
