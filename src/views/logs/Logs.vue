@@ -8,7 +8,7 @@
                 <span class="pagination-total">
                     共 {{ total }} 条记录 第 {{ condition.page + 1 }} / {{ Math.ceil(total / condition.pageNum) }} 页
                 </span>
-                <Page :total="total" :current="(condition.page + 1)" :page-size="condition.pageNum" show-elevator show-sizer @on-change="getLogList" @on-page-size-change="getLogList"></Page>
+                <Page :total="total" :current="(condition.page + 1)" :page-size="condition.pageNum" show-elevator show-sizer @on-change="getLogList" @on-page-size-change="setPageNumber"></Page>
             </Row>
         </Row>
     </div>
@@ -58,13 +58,18 @@
         methods: {
             /**
              * get logs list.
+             * @param page {*} current page.
              */
-            getLogList() {
+            getLogList(page) {
                 const vm = this;
+                if(page !== 'undefined'){
+                    vm.$set(vm.condition, 'page', page - 1);
+                }
                 vm.$api.post(vm.G.api.logs, vm.condition, function(res){
                     if(res['ret']['retCode'].toString() === '0'){
+                        vm.$set(vm, 'loading', false);
                         vm.$set(vm, 'list', res.data['logRecordBeanList']);
-                        vm.$set(vm, 'total', res.pagination.size);
+                        vm.$set(vm, 'total', res.data.pagination.size);
                     }else{
                         vm.$error(res['ret']['retMsg']);
                         return false;
@@ -73,6 +78,16 @@
                     vm.$error(err);
                     return false;
                 });
+            },
+
+            /**
+             * set page number.
+             * @param number {Number} page number.
+             */
+            setPageNumber(number) {
+                const vm = this;
+                vm.$set(vm.condition, 'pageNum', number);
+                vm.getLogList();
             },
 
             /**
