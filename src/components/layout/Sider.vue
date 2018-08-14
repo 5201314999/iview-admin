@@ -82,11 +82,13 @@
         mounted() {
             const vm = this;
             vm.getUserInfo();
-            vm.$on('get-user-success', function (data) {
+
+            vm.$on('get-user-success', function(data){
                 vm.$set(vm.G, 'user', data);
                 vm.$emit('username');
                 const menu = data['listResource'];
-                if (menu && menu.length > 0) {
+
+                if(menu && menu.length > 0){
                     const menus = vm.parseMenu(menu);
                     vm.$set(vm.G.menu, 'items', menus);
                     vm.$set(vm.menu, 'items', menus);
@@ -96,7 +98,7 @@
             });
         },
         watch: {
-            '$route': function () {
+            '$route': function (val) {
                 const vm = this;
                 if (vm.$route.path === '/' || vm.$route.path === '') {
                     vm.setMenuActiveDef();
@@ -139,7 +141,7 @@
                                     children = cur['listChildren'],
                                     item = {
                                         title: cur['resname'],
-                                        name: vm.$unique()
+                                        name: cur['resparam']
                                     };
                                 if (children && children.length > 0) {
                                     item.children = getChildren(children);
@@ -175,16 +177,17 @@
                 return temp;
             },
             setMenuActive() {
-                const vm = this, path = vm.$route.path;
-                let name = '';
-                path.split('/')[1] && (name += '/' + path.split('/')[1]);
-                path.split('/')[2] && (name += '/' + path.split('/')[2]);
+                const vm = this, route = vm.$route, path = route.path;
                 vm.$set(vm.menu, 'open', []);
-                if (vm.inArray(name, vm.names) !== -1) {
-                    vm.$set(vm.menu, 'active', name);
+                const targetName=vm.names.find(e=>{
+                    return path.indexOf(e)!==-1
+                });
+                if (targetName) {
+                    vm.$set(vm.menu, 'active', targetName);
                     for (let i in vm.nameObj) {
                         if (vm.nameObj.hasOwnProperty(i)) {
-                            if (vm.nameObj[i][name]) {
+                             for(let j in vm.nameObj[i])
+                                if(vm.nameObj[i].hasOwnProperty(j)&&path.indexOf(j)!==-1){
                                 if (vm.inArray(i.toString(), vm.menu.open) === -1) {
                                     vm.menu.open.push(i.toString());
                                 }
