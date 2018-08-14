@@ -44,11 +44,9 @@
                     }
                 ],
                 condition: {
-                    moduleId: '',
-                    page: 0,
-                    pageNum: 10,
-                    projectId: this.G.projectId,
-                    submoduleId: ''
+                    pageNum: 1,
+                    pageSize: 10,
+                    projectId: this.G.projectId
                 },
                 total: 0,
                 list: [],
@@ -86,7 +84,7 @@
              */
             setPageNumber(number) {
                 const vm = this;
-                vm.$set(vm.condition, 'pageNum', number);
+                vm.$set(vm.condition, 'pageSize', number);
                 vm.getLogList();
             },
 

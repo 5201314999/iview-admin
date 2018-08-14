@@ -13,10 +13,10 @@
                         <template v-for="item in menu.items">
                             <SlideMenuItem :items="item" :key="'menu-' + item.name" v-if="item.children && item.children.length > 0"></SlideMenuItem>
                             <MenuItem :name="item.name" v-else>
-                                <icon :type="item.icon" v-if="item.icon"></icon>
-                                <router-link :to="{path: item.path}">
-                                    {{ item.title }}
-                                </router-link>
+                            <icon :type="item.icon" v-if="item.icon"></icon>
+                            <router-link :to="{path: item.path}">
+                                {{ item.title }}
+                            </router-link>
                             </MenuItem>
                         </template>
                     </Menu>
@@ -25,10 +25,10 @@
                     <Menu theme="dark" :active-name="menu.active" :open-names="menu.open" :width="width.collapse">
                         <template v-for="item in menu.items">
                             <MenuItem :name="item.name">
-                                <DropdownMenuItem :items="item" :key="'menu-' + item.name" v-if="item.children && item.children.length > 0"></DropdownMenuItem>
-                                <router-link :to="{path: item.path}" v-else>
-                                    <icon :type="item.icon" v-if="item.icon"></icon>
-                                </router-link>
+                            <DropdownMenuItem :items="item" :key="'menu-' + item.name" v-if="item.children && item.children.length > 0"></DropdownMenuItem>
+                            <router-link :to="{path: item.path}" v-else>
+                                <icon :type="item.icon" v-if="item.icon"></icon>
+                            </router-link>
                             </MenuItem>
                         </template>
                     </Menu>
@@ -55,11 +55,11 @@
             }
         },
         computed: {
-            isCollapsed: function(){
+            isCollapsed: function () {
                 return this.collapse;
             },
-            collapsedState: function(){
-                if(!this.collapse) this.setMenuActive();
+            collapsedState: function () {
+                if (!this.collapse) this.setMenuActive();
                 return this.collapse ? 'sider-collapsed' : '';
             }
         },
@@ -82,11 +82,11 @@
         mounted() {
             const vm = this;
             vm.getUserInfo();
-            vm.$on('get-user-success', function(data){
+            vm.$on('get-user-success', function (data) {
                 vm.$set(vm.G, 'user', data);
                 vm.$emit('username');
                 const menu = data['listResource'];
-                if(menu && menu.length > 0){
+                if (menu && menu.length > 0) {
                     const menus = vm.parseMenu(menu);
                     vm.$set(vm.G.menu, 'items', menus);
                     vm.$set(vm.menu, 'items', menus);
@@ -96,9 +96,9 @@
             });
         },
         watch: {
-            '$route': function(){
+            '$route': function () {
                 const vm = this;
-                if(vm.$route.path === '/' || vm.$route.path === ''){
+                if (vm.$route.path === '/' || vm.$route.path === '') {
                     vm.setMenuActiveDef();
                 }
                 document.body.scrollTop = document.documentElement.scrollTop = 0;
@@ -107,18 +107,18 @@
         methods: {
             getMenuName(data, name, isChild) {
                 const vm = this;
-                if(isChild) vm.nameObj[name] = {};
-                for(let i in data){
-                    if(data.hasOwnProperty(i)){
+                if (isChild) vm.nameObj[name] = {};
+                for (let i in data) {
+                    if (data.hasOwnProperty(i)) {
                         let cur = data[i];
-                        if(cur.name){
+                        if (cur.name) {
                             vm.names.push(cur.name);
-                            if(isChild){
+                            if (isChild) {
                                 vm.nameObj[name][cur.name] = cur.name;
-                            }else{
+                            } else {
                                 vm.nameObj[cur.name] = cur.name;
                             }
-                            if(cur.children && cur.children.length > 0){
+                            if (cur.children && cur.children.length > 0) {
                                 vm.getMenuName(cur.children, cur.name, true);
                             }
                         }
@@ -130,22 +130,22 @@
                 const vm = this,
                     temp = [],
                     length = menu.length,
-                    getChildren = function(data){
+                    getChildren = function (data) {
                         const res = [], len = data.length;
                         let i = 0;
-                        if(len > 0){
-                            for(; i < len; i++){
+                        if (len > 0) {
+                            for (; i < len; i++) {
                                 let cur = data[i],
                                     children = cur['listChildren'],
                                     item = {
                                         title: cur['resname'],
                                         name: vm.$unique()
                                     };
-                                if(children && children.length > 0){
+                                if (children && children.length > 0) {
                                     item.children = getChildren(children);
-                                }else{
+                                } else {
                                     item.path = cur['resparam'];
-                                    if(flag === 0){
+                                    if (flag === 0) {
                                         vm.$set(vm.G.menu, 'active', item.path);
                                         vm.$set(vm.menu, 'active', item.path);
                                         flag++;
@@ -156,7 +156,7 @@
                         }
                         return res;
                     };
-                for(let i = 0; i < length; i++){
+                for (let i = 0; i < length; i++) {
                     const cur = menu[i],
                         children = cur['listChildren'],
                         item = {
@@ -166,7 +166,7 @@
                             children: []
                         };
                     item.children = getChildren(children);
-                    if(i === 0){
+                    if (i === 0) {
                         vm.$set(vm.G.menu, 'open', [item.name]);
                         vm.$set(vm.menu, 'open', [item.name]);
                     }
@@ -175,38 +175,33 @@
                 return temp;
             },
             setMenuActive() {
-                const vm = this, route = vm.$route,
-                    path = route.path.substring(1);
-                if(path !== ''){
-                    let name = path.replace(/\//, '-'),
-                        has = vm.inArray(name, vm.names) !== -1;
-                    if(!has){
-                        name = vm.getRootName(path);
-                    }
-                    vm.$set(vm.menu, 'open', []);
-                    if(vm.inArray(name, vm.names) !== -1){
-                        vm.$set(vm.menu, 'active', name);
-                        for(let i in vm.nameObj){
-                            if(vm.nameObj.hasOwnProperty(i)){
-                                if(vm.nameObj[i][name]){
-                                    if(vm.inArray(i.toString(), vm.menu.open) === -1){
-                                        vm.menu.open.push(i.toString());
-                                    }
+                const vm = this, path = vm.$route.path;
+                let name = '';
+                path.split('/')[1] && (name += '/' + path.split('/')[1]);
+                path.split('/')[2] && (name += '/' + path.split('/')[2]);
+                vm.$set(vm.menu, 'open', []);
+                if (vm.inArray(name, vm.names) !== -1) {
+                    vm.$set(vm.menu, 'active', name);
+                    for (let i in vm.nameObj) {
+                        if (vm.nameObj.hasOwnProperty(i)) {
+                            if (vm.nameObj[i][name]) {
+                                if (vm.inArray(i.toString(), vm.menu.open) === -1) {
+                                    vm.menu.open.push(i.toString());
                                 }
                             }
                         }
                     }
-                    vm.updateMenuActive();
                 }
+                vm.updateMenuActive();
             },
             getRootName(path) {
                 const vm = this,
                     paths = path.split('/');
                 let name = '';
-                if(paths.length > 1){
-                    for(let i in paths){
-                        if(paths.hasOwnProperty(i)){
-                            if(vm.inArray(paths[i], vm.names) !== -1){
+                if (paths.length > 1) {
+                    for (let i in paths) {
+                        if (paths.hasOwnProperty(i)) {
+                            if (vm.inArray(paths[i], vm.names) !== -1) {
                                 name = paths[i];
                             }
                         }

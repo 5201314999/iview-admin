@@ -61,7 +61,7 @@ function _base(method, url, params, success, failure, _config){
         data: params,
         baseURL: server,
         headers: {'Content-Type': 'application/json;charset=utf-8'},
-        timeout: 3000
+        timeout: 10000
     };
     if(_config && Object.keys(_config).length > 0){
         for(let i in _config){

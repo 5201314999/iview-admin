@@ -84,7 +84,7 @@ const api = {
     login: 'user/login/{sid}',
     user: 'user/getLoginUser',
     logout: 'user/logout',
-    logs: process.env.WEB_SERVICES + '/log-record/list',
+    logs: '/user/log-list',
     getRecModuleList:'/rec-module-manager/rec-module-list',
     addStyleComponent:'/rec-module-manager/rec-module/',
     getLayoutList:'/rec-layout-manager/rec-layout-list',

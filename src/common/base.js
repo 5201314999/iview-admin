@@ -248,7 +248,7 @@ exports.install = function(Vue){
      */
     Vue.prototype.$emitPopup = function(event, time){
         const vm = this;
-        time = typeof time !== 'undefined' ? time : 2;
+        time = typeof time !== 'undefined' ? time : 0;
         vm.$nextTick(() => {
             vm.$emit(event, function(){
                 if(time && time > 0){
