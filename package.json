@@ -5,8 +5,8 @@
   "author": "lirongtong <lirongtong@tvflnet.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
+    "dev": "node build/dev.js",
+    "start": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "build": "node build/build.js",
     "prod": "node build/build.js",
     "test": "node build/test.js"
