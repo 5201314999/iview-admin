@@ -1,6 +1,6 @@
 <template>
-    <Card ref="draggable" :class="only ? 'fl-draggable-only-target' : ''">
-        <Row class="fl-draggable">
+    <Card :class="only ? 'fl-draggable-only-target' : ''">
+        <Row class="fl-draggable" ref="draggable">
             <Card id="source-list" v-if="!only">
                 <div class="fl-search clearfix">
                     <div class="search-input left">
@@ -36,7 +36,7 @@
                 </div>
             </Card>
             <Row class="fl-tabs fl-recommend-tab" :class="only ? '' : 'mt20'">
-                <Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value">
+                <Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="handleComponentTabSwitch">
                     <TabPane label="第 1 行推荐" name="tab">
                         <div class="fl-drag-container" id="target-list">
                             <div class="fl-drag-box fl-drag-target-box flex" data-name="target">
@@ -62,7 +62,6 @@
         </Row>
     </Card>
 </template>
-
 <script>
 
     /**
@@ -75,6 +74,7 @@
      *      参数说明:
      *      [index]: 动态变更, 触发获取最新推荐行数据动作, 可调用 vm.$unique() 进行赋值变更.
      *      [get-data]: `index`变更后的回调, 携带推荐行数据返回.
+     *      [margin]: 距离`基准红线`的长度, 即推荐位总长度 + 该值 >= 基准红线位置, 则视为满足条件.
      *      [init]: 是否执行初始化操作 ( 注: 需配合`rows`参数使用, 即初始化数据 ).
      *      [rows]: 初始化数据 (推荐行数据).
      *      [id]: 动态变更, 与`index`参数同理, 变更后执行数据初始化动作.
@@ -112,6 +112,7 @@
 
     const bus = new Vue();
     const component = 'recommend-row';
+
     const RecommendRowComponent = Vue.extend({
         data() {
             return {
@@ -177,6 +178,7 @@
             id: {type: String},
             rows: {type: Array},
             fill: {type: [Array, Object]},
+            margin: {type: Number, default: 71},
             only: {
                 type: Boolean,
                 default: false
@@ -209,6 +211,7 @@
                 component: [],
                 ratio: 0.5,
                 drag: {
+                    body: null,
                     layout: 'fl-container',
                     container: 'fl-drag-container',
                     disabled: 'disabled',
@@ -400,7 +403,7 @@
                         if(res['ret']['retCode'].toString() === '0'){
                             vm.$set(vm.search, 'height', res.data[0]);
                             vm.$set(vm, 'height', res.data);
-                            vm.getComponentData();
+                            if(!vm.click && !vm.init) vm.getComponentData();
                         }else{
                             vm.$error(res['ret']['retMsg']);
                             return false;
@@ -608,13 +611,24 @@
             },
 
             /**
-             * get the recommend data.
-             * all of recommend rows. if nothing by default `[]`.
+             * get the recommend data. all of recommend rows.
+             * @return {Array|Boolean}
              */
             wrapComponentData() {
+                const vm = this;
+                return vm.checkComponentRowData();
+            },
+
+            /**
+             * Checked the row data.
+             * It's not empty and total width must longer than the base line.
+             * @return {Array|Boolean}
+             */
+            checkComponentRowData() {
                 const vm = this,
-                    container = document.getElementsByClassName(vm.drag.tabs.container)[0];
-                let tabs, length = 0, i = 0, data = [];
+                    container = document.getElementsByClassName(vm.drag.tabs.container)[0],
+                    baseWidth = Math.ceil((1920 - vm.base.left - vm.margin) * vm.ratio);
+                let tabs, length = 0, i = 0, data = [], valid = true;
                 if(container){
                     tabs = container.getElementsByClassName(vm.drag.tabs.tab);
                     length = tabs.length;
@@ -622,18 +636,25 @@
                         for(; i < length; i++){
                             const curTab = tabs[i], temp = [],
                                 items = curTab.getElementsByClassName(vm.drag.item);
+                            let totalWidth = 0;
                             if(items.length > 0){
                                 for(let n = 0; n < items.length; n++){
                                     const cur = items[n],
                                         id = cur.getAttribute('data-index');
                                     temp.push(id);
+                                    totalWidth += cur.clientWidth;
+                                    if(n < items.length - 1) totalWidth += vm.base.margin * vm .ratio;
                                 }
                             }
                             data.push(temp);
+                            if(totalWidth < baseWidth){
+                                valid = false;
+                                break;
+                            }
                         }
                     }
                 }
-                return data;
+                return valid ? data : valid;
             },
 
             /**
@@ -735,7 +756,7 @@
                 if(isTarget){
                     const num = listNode.children.length,
                         number = vm.getComponentPagesNumber(parentNode, num),
-                        tempWidth = listNode.parentNode.clientWidth;
+                        tempWidth = listNode.parentNode['clientWidth'];
                     let targetNum = vm.drag.nums[name] ? vm.drag.nums[name] : 0;
                     if(tempWidth > 0 && tempWidth !== vm.drag.width.width){
                         vm.$set(vm.drag.width, 'width', tempWidth);
@@ -767,6 +788,24 @@
                     }
                     listNode.style.transform = 'translateX(-' + num + '%) translateZ(0px)';
                     vm.handleComponentSourceSwitch(parentNode, 'next', number);
+                }
+            },
+
+            /**
+             * switch tab.
+             * To get datas when you click the tab.
+             * @param name {string}
+             */
+            handleComponentTabSwitch(name) {
+                const vm = this,
+                    id = name.replace('tab', 'target'),
+                    target = document.getElementById(id);
+                if(target){
+                    const height = Math.ceil(target.clientHeight / vm.ratio);
+                    if(!isNaN(height) && height > 0 && !vm.only && height !== vm.search.height){
+                        vm.$set(vm.search, 'height', height);
+                        vm.getComponentData();
+                    }
                 }
             },
 
@@ -836,7 +875,7 @@
             initComponentBodyDraggable() {
                 const vm = this,
                     container = document.getElementsByClassName(vm.drag.layout)[0];
-                Sortable.create(container, {
+                vm.drag.body = Sortable.create(container, {
                     group: {
                         name: 'container',
                         pull: true,
@@ -894,6 +933,8 @@
                         }
                     },
                     onEnd() {
+                        const data = vm.wrapComponentData();
+                        if(data) vm.$emit('get-data', data);
                         vm.updateComponentBodyWidth();
                     }
                 });
@@ -968,6 +1009,10 @@
                             onAdd(event) {
                                 add(event);
                                 event.item.style = 'margin-right: ' + (vm.base.margin * vm.ratio) + 'px';
+                            },
+                            onEnd() {
+                                const data = vm.wrapComponentData();
+                                vm.$emit('get-data', data);
                             },
                             onRemove() {update();}
                         });
@@ -1065,30 +1110,59 @@
                                     if(typeof vm.drag.target[k] === 'undefined'){
                                         const ks = k.split('-'),
                                             row = parseInt(ks[1]);
-                                        if(row !== 'null' && row !== '' && !isNaN(row)){
+                                        if(row !== null && !isNaN(row)){
                                             vm.initComponentTargetDraggable(row);
                                         }
                                     }
                                     vm.handleComponentTargetSwitch(container.parentNode.parentNode, current.pages, k);
                                 }
                             }
+                            let lastOne = '';
                             if(vm.click || vm.init){
                                 if(vm.drag.shape.template.length > 0){
                                     for(const n in vm.drag.shape.template){
                                         if(vm.drag.shape.template.hasOwnProperty(n)){
                                             const cur = vm.drag.shape.template[n];
-                                            vm.drag.shape.instance.push(new Vue({
-                                                el: '#' + cur.id,
-                                                data() {
-                                                    return {
-                                                        values: vm.drag.shape.values
-                                                    };
-                                                },
-                                                render: Vue.compile(cur.template).render
-                                            }));
+                                            if(vm.only){
+                                                vm.drag.shape.instance.push(new Vue({
+                                                    el: '#' + cur.id,
+                                                    data() {
+                                                        return {
+                                                            values: vm.drag.shape.values
+                                                        };
+                                                    },
+                                                    render: Vue.compile(cur.template).render
+                                                }));
+                                            }else{
+                                                if(n > 0){
+                                                    vm.drag.shape.instance.push(new Vue({
+                                                        el: '#' + cur.id,
+                                                        data() {
+                                                            return {
+                                                                values: vm.drag.shape.values
+                                                            };
+                                                        },
+                                                        render: Vue.compile(cur.template).render
+                                                    }));
+                                                }
+                                            }
+                                            if(parseInt(n) === vm.drag.shape.template.length - 1){
+                                                lastOne = vm.drag.shape.template[n].id;
+                                            }
                                         }
                                     }
                                 }
+                                vm.$nextTick(() => {
+                                    lastOne = lastOne ? lastOne : 'target';
+                                    const tempTarget = document.getElementById(lastOne);
+                                    if(tempTarget){
+                                        const height = Math.ceil(tempTarget.clientHeight / vm.ratio);
+                                        if(!isNaN(height) && height > 0 && !vm.only){
+                                            vm.$set(vm.search, 'height', height);
+                                            vm.getComponentData();
+                                        }
+                                    }
+                                });
                                 vm.$emit('init-finish');
                             }
                         }else{

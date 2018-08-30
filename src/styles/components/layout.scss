@@ -309,9 +309,25 @@
                 }
                 .ivu-icon{
                     font-size: 20px;
-                    line-height: 64px;
                     padding-right: 6px;
-                    vertical-align: -1px;
+                    vertical-align: -2px;
+                }
+                .header-avatar{
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 30px;
+                }
+                a{
+                    color: #111;
+                }
+                .ivu-dropdown-menu{
+                    .ivu-dropdown-item{
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 10px 15px;
+                        font-size: 14px !important;
+                    }
                 }
             }
         }
@@ -409,6 +425,9 @@ code{
         .search-input{
             width: 350px;
             margin-right: 20px;
+            .ivu-icon-ios-search{
+                cursor: pointer;
+            }
         }
         .search-button{
             button{

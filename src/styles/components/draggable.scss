@@ -221,8 +221,10 @@
                                         align-items: center;
                                         justify-content: center;
                                         .ivu-carousel-arrow{
-                                            width: 0;
-                                            height: 0;
+                                            height: 36px;
+                                            display: flex;
+                                            align-self: center;
+                                            justify-content: center;
                                         }
                                         i{
                                             font-size: .1em;

@@ -3,10 +3,19 @@
         <div class="header">
             <icon type="android-menu" class="header-trigger" @click="collapsedMenu"></icon>
             <div class="header-nav right">
-                <span class="nav-item"><icon type="android-person"></icon>{{ getUserName }}</span>
-                <span class="nav-item" @click="logoutUser">
-                    <icon type="power"></icon>退出登录
-                </span>
+                <Dropdown @on-click="logoutUser">
+                    <a href="javascript:void(0);">
+                        <img src="@/images/user.png" class="header-avatar" /> {{ getUserName }}
+                    </a>
+                    <DropdownMenu slot="list">
+                        <DropdownItem name="setting" disabled>
+                            <icon type="ios-gear-outline"></icon>设置
+                        </DropdownItem>
+                        <DropdownItem name="exit">
+                            <icon type="ios-minus-outline"></icon>退出
+                        </DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
             </div>
         </div>
     </div>
@@ -21,9 +30,9 @@
                 vm.G.menu.collapsed = !vm.G.menu.collapsed;
                 vm.$emit('collapsed');
             },
-            logoutUser() {
+            logoutUser(name) {
                 const vm = this;
-                vm.logout();
+                if(name === 'exit') vm.logout();
             }
         },
         props: {
