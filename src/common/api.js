@@ -47,6 +47,12 @@ function filter_trim(o){
  * @param success
  * @param failure
  * @param _config
+ * @see get()
+ * @see post()
+ * @see put()
+ * @see delete()
+ * @see patch()
+ * @see custom()
  * @private
  */
 function _base(method, url, params, success, failure, _config){
@@ -63,6 +69,10 @@ function _base(method, url, params, success, failure, _config){
         headers: {'Content-Type': 'application/json;charset=utf-8'},
         timeout: 10000
     };
+    if(method.toUpperCase() === 'GET' && params !== null){
+        delete config.data;
+        config.params = params;
+    }
     if(_config && Object.keys(_config).length > 0){
         for(let i in _config){
             if(_config.hasOwnProperty(i)){
@@ -71,7 +81,7 @@ function _base(method, url, params, success, failure, _config){
         }
     }
     axios(config).then(function(response){
-        if(response.data['ret']['retCode'].toUpperCase() === 'A005'){
+        if(response.data['ret']['retCode'].toUpperCase() === 'A001'){
             setTimeout(() => {
                 window.location.href = process.env.AUTH_SERVICES;
             }, 2500);
