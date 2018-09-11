@@ -18,16 +18,10 @@ exports.install = function(Vue){
                 vm.$emit('get-user-success', res.data);
             }else{
                 vm.$error(res['ret']['retMsg']);
-                setTimeout(() => {
-                    window.location.href = process.env.AUTH_SERVICES;
-                }, 2500);
                 return false;
             }
         }, function(err){
             vm.$error(err);
-            setTimeout(() => {
-                window.location.href = process.env.AUTH_SERVICES;
-            }, 2500);
             return false;
         });
     };
