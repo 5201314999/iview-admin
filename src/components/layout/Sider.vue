@@ -4,7 +4,7 @@
             <div class="sider-logo">
                 <router-link :to="{path: '/'}" :title="G.title">
                     <img v-if="G.logoIcon" :src="G.logoIcon" :alt="G.title" />
-                    <h1>{{ G.title }}</h1>
+                    <h1 style="width:180px;">{{ G.title }}</h1>
                 </router-link>
             </div>
             <div class="sider-menu">
