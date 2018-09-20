@@ -51,8 +51,14 @@
                     .get(`${server}/LoginServlet?method=getProLink&proId=${this.proId}`)
                     .then(res=>{
                         if(res.data['ret']['retCode'].toString() === '0'){
-                            if(res.data.data && res.data.data.length){
-                                this.headerTabs = res.data.data;
+                            if(res.data.data){
+                                this.headerTabs = res.data.data.menu;
+
+                                if(res.data.data.program){
+                                    this.G.title = res.data.data.program.programname ? res.data.data.program.programname : "";
+                                    this.G.logoIcon = res.data.data.program.icon;
+                                }
+
                             }
                         }
                     });

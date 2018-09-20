@@ -21,6 +21,13 @@ const projectId = '03';
 let user = {};
 
 /**
+ * logo
+ * @type {string}
+ */
+let logoIcon = null;
+
+
+/**
  * 左侧菜单
  * @type {{items: *[], active: string, open: string[], collapsed: boolean}}
  */
@@ -132,5 +139,6 @@ export default {
     menu,
     api,
     footer,
-    files
+    files,
+    logoIcon
 }

@@ -3,7 +3,7 @@
         <div class="sider-children">
             <div class="sider-logo">
                 <router-link :to="{path: '/'}" :title="G.title">
-                    <img src="../../images/logo.png" :alt="G.title" />
+                    <img v-if="G.logoIcon" :src="G.logoIcon" :alt="G.title" />
                     <h1>{{ G.title }}</h1>
                 </router-link>
             </div>
