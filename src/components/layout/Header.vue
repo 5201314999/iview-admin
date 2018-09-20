@@ -17,22 +17,86 @@
                     </DropdownMenu>
                 </Dropdown>
             </div>
+            <div class="header-nav-tabs right">
+                <Menu ref="menu" mode="horizontal" theme="light" :active-name="activeName">
+                    <MenuItem v-for="(item,index) in headerTabs" :key="item.programname" :name="item.programname"
+                              :class="{'ivu-menu-item-active':item.url && item.url.length && location.indexOf(item.url)!==-1}"
+                              @click.native="navigate(item.url)">
+                        {{item.programname}}
+                    </MenuItem>
+                </Menu>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+    import axios from 'axios';
 
     const HeaderComponent = {
+        data(){
+            return {
+                headerTabs: [],
+                location: "",
+                activeName: "",
+                proId: null
+            };
+        },
+        created() {
+            axios.defaults.withCredentials = true;
+            this.proId = this.getQueryString('proId');
+            const server = process.env.AUTH_SERVICES;
+            if(null != this.proId){
+                axios
+                    .get(`${server}/LoginServlet?method=getProLink&proId=${this.proId}`)
+                    .then(res=>{
+                        if(res.data['ret']['retCode'].toString() === '0'){
+                            if(res.data.data && res.data.data.length){
+                                this.headerTabs = res.data.data;
+                            }
+                        }
+                    });
+            }
+
+            this.location = window.location.href;
+
+        },
         methods: {
+            getQueryString(name) {
+                let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                let r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            },
             collapsedMenu() {
                 const vm = this;
                 vm.G.menu.collapsed = !vm.G.menu.collapsed;
                 vm.$emit('collapsed');
+                this.$root.$emit('resize');
             },
             logoutUser(name) {
                 const vm = this;
                 if(name === 'exit') vm.logout();
+            },
+            navigate(url){
+                const vm = this;
+                vm.activeName = '';
+                setTimeout(()=>{
+                    let activeItems = vm.$refs.menu.$el.querySelectorAll('.ivu-menu-item-active');
+                    vm.$nextTick(() => {
+                        activeItems.forEach(item => {
+                            item.classList.remove("ivu-menu-item-active");
+                        });
+                    });
+                    vm.headerTabs.map(item=>{
+                        if(item.url && item.url.length && vm.location.indexOf(item.url) !== -1){
+                            vm.activeName = item['programname'];
+                        }
+                    });
+                    if(url && url.length){
+                        window.location.href = url+`?proId=${vm.proId}`;
+                    }
+                },100);
             }
         },
         props: {
@@ -54,3 +118,23 @@
     export default HeaderComponent;
 
 </script>
+<style lang="scss" scoped>
+    .header-trigger{
+        vertical-align: top;
+    }
+    .header-nav-tabs{
+        display: inline-block;
+        height:64px;
+        margin-right: 20px;
+        ul{
+            height:100%;
+            li.ivu-menu-item{
+                height:100%;
+                line-height: 64px;
+            }
+            &::after{
+                display: none;
+            }
+        }
+    }
+</style>
