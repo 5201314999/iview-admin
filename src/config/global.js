@@ -100,8 +100,8 @@ let menu = {
  */
 const api = {
     login: 'user/login/{sid}',
-    user: 'user/getLoginUser',
-    logout: 'user/logout',
+    user: '/user',
+    logout: '/LoginServlet',
     logs: '/user/log-list',
     getRecModuleList:'/rec-module-manager/rec-module-list',
     addStyleComponent:'/rec-module-manager/rec-module/',
