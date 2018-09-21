@@ -21,7 +21,7 @@
                 <Menu ref="menu" mode="horizontal" theme="light" :active-name="activeName">
                     <MenuItem v-for="(item,index) in headerTabs" :key="item.programname" :name="item.programname"
                               :class="{'ivu-menu-item-active':item.url && item.url.length && location.indexOf(item.url)!==-1}"
-                              @click.native="navigate(item.url)">
+                              @click.native="navigate(item)">
                         {{item.programname}}
                     </MenuItem>
                 </Menu>
@@ -82,7 +82,7 @@
                 const vm = this;
                 if(name === 'exit') vm.logout();
             },
-            navigate(url){
+            navigate(data){
                 const vm = this;
                 vm.activeName = '';
                 setTimeout(()=>{
@@ -97,8 +97,9 @@
                             vm.activeName = item['programname'];
                         }
                     });
-                    if(url && url.length){
-                        window.location.href = url+`?proId=${this.G.proId}&soaProId=${this.G.soaProId}`;
+
+                    if(data.url && data.url.length){
+                        window.location.href = data.url+`?proId=${this.G.proId}&soaProId=${data.soaProjectId}`;
                     }
                 },100);
             }
