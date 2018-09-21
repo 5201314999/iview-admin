@@ -12,7 +12,12 @@ exports.install = function(Vue){
      */
     Vue.prototype.getUserInfo = function(){
         const vm = this;
-        vm.$api.get(vm.G.api.user, {}, function(res){
+
+        vm.$api.get(process.env.AUTH_SERVICES+vm.G.api.user, 
+        {
+            method :'getLoginUser',
+            soaProId:vm.G.soaProId
+        }, function(res){
             if(res['ret']['retCode'].toString() === '0'){
                 vm.$set(vm.G, 'user', res.data);
                 vm.$emit('get-user-success', res.data);
@@ -32,7 +37,10 @@ exports.install = function(Vue){
      */
     Vue.prototype.logout = function(){
         const vm = this;
-        vm.$api.get(vm.G.api.logout, {}, function(res){
+        vm.$api.get(process.env.AUTH_SERVICES+vm.G.api.logout, 
+            {
+                method:'logOutMsg'
+            }, function(res){
             if(res['ret']['retCode'].toString() === '0'){
                 window.location.href = process.env.AUTH_SERVICES;
             }else{

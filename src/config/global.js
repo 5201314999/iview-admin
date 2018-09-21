@@ -26,6 +26,17 @@ let user = {};
  */
 let logoIcon = null;
 
+/**
+ * 项目Id
+ * @type {string}
+ */
+const proId = null;
+
+/**
+ * soaProId 
+ * @type {string}
+ */
+const soaProId = null;
 
 /**
  * 左侧菜单
@@ -140,5 +151,7 @@ export default {
     api,
     footer,
     files,
-    logoIcon
+    logoIcon,
+    proId,
+    soaProId
 }

@@ -81,6 +81,8 @@
         },
         mounted() {
             const vm = this;
+            this.G.soaProId = this.getQueryString('soaProId');
+
             vm.getUserInfo();
 
             vm.$on('get-user-success', function(data){
@@ -107,6 +109,12 @@
             }
         },
         methods: {
+            getQueryString(name) {
+                let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                let r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            },
             getMenuName(data, name, isChild) {
                 const vm = this;
                 if (isChild) vm.nameObj[name] = {};
