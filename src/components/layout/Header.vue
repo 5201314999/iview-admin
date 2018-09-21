@@ -5,7 +5,7 @@
             <div class="header-nav right">
                 <Dropdown @on-click="logoutUser">
                     <a href="javascript:void(0);">
-                        <img src="@/images/user.png" class="header-avatar" /> {{ getUserName }}
+                        <img v-if="G.user && G.user.icon" :src="G.user.icon" class="header-avatar" /> {{ getUserName }}
                     </a>
                     <DropdownMenu slot="list">
                         <DropdownItem name="setting" disabled>
@@ -39,16 +39,16 @@
                 headerTabs: [],
                 location: "",
                 activeName: "",
-                proId: null
             };
         },
         created() {
             axios.defaults.withCredentials = true;
-            this.proId = this.getQueryString('proId');
+            this.G.proId = this.getQueryString('proId');
+
             const server = process.env.AUTH_SERVICES;
-            if(null != this.proId){
+            if(null != this.G.proId){
                 axios
-                    .get(`${server}/LoginServlet?method=getProLink&proId=${this.proId}`)
+                    .get(`${server}/LoginServlet?method=getProLink&proId=${this.G.proId}`)
                     .then(res=>{
                         if(res.data['ret']['retCode'].toString() === '0'){
                             if(res.data.data){
@@ -63,9 +63,7 @@
                         }
                     });
             }
-
             this.location = window.location.href;
-
         },
         methods: {
             getQueryString(name) {
@@ -100,7 +98,7 @@
                         }
                     });
                     if(url && url.length){
-                        window.location.href = url+`?proId=${vm.proId}`;
+                        window.location.href = url+`?proId=${this.G.proId}&soaProId=${this.G.soaProId}`;
                     }
                 },100);
             }
