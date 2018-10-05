@@ -79,6 +79,7 @@
                 this.getLogList();
             },
             setPaginationSize(size) {
+                this.$set(this.condition, 'pageNum', 1);
                 this.$set(this.condition, 'pageSize', size);
                 this.getLogList();
             },

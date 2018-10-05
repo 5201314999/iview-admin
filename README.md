@@ -200,6 +200,7 @@
 #### 2.3.8 `Chart` 图表
 
     1.说明:主要是说明echart 在业务系统中基本的参数配置,仅供参考。
+      echarts 官网 http://echarts.baidu.com/
 
     2.影响范围：main.js；Chart.vue； 文件夹static；package.json 中 echarts 引入；components 中 toolbox文件夹。
      为了可以访问到static 修改了 config 中的几个配置文件
