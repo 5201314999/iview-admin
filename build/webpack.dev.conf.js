@@ -57,10 +57,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             template: 'index.html',
             inject: true
         }),
-        // copy login.html
+        // copy
         new CopyWebpackPlugin([
             {
-                from: path.resolve(__dirname, '../login.html'),
+                from: path.resolve(__dirname, '../static'),
                 to: config.dev.assetsSubDirectory,
                 ignore: ['.*']
             }

@@ -112,7 +112,14 @@ const webpackConfig = merge(baseWebpackConfig, {
             async: 'vendor-async',
             children: true,
             minChunks: 3
-        })
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: path.resolve(__dirname, '../static'),
+                to: config.build.assetsSubDirectory,
+                ignore: ['.*']
+            }
+        ])
     ]
 });
 

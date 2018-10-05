@@ -15,6 +15,7 @@ import DemoPaginationRouter from './demo/pagination';
 import DemoFormRouter from './demo/form';
 import DemoDetailRouter from './demo/detail';
 import DemoDraggableRouter from './demo/draggable';
+import DemoChartRouter from './demo/Chart';
 
 Vue.use(VueRouter);
 
@@ -24,7 +25,8 @@ const childrenRouter = [
     DemoPaginationRouter,
     DemoFormRouter,
     DemoDetailRouter,
-    DemoDraggableRouter
+    DemoDraggableRouter,
+    DemoChartRouter
 ];
 
 const router = new VueRouter({

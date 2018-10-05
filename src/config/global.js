@@ -73,6 +73,10 @@ let menu = {
                     title: '拖拽（Draggable）',
                     name: 'draggable',
                     path: '/draggable'
+                },{
+                    title: '图表（Chart）',
+                    name: 'chart',
+                    path: '/chart'
                 }
             ]
         },

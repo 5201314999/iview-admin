@@ -6,9 +6,9 @@
             </Row>
             <Row class="pagination mb20">
                 <span class="pagination-total">
-                    共 {{ total }} 条记录 第 {{ condition.page + 1 }} / {{ Math.ceil(total / condition.pageNum) }} 页
+                    共 {{ total }} 条记录 第 {{ condition.pageNum}} / {{ Math.ceil(total / condition.pageSize) }} 页
                 </span>
-                <Page :total="total" :current="(condition.page + 1)" :page-size="condition.pageNum" show-elevator show-sizer @on-change="getLogList" @on-page-size-change="setPageNumber"></Page>
+                <Page :total="total" :current="(condition.pageNum)" :page-size="condition.pageSize" show-elevator show-sizer @on-change="setPaginationNum" @on-page-size-change="setPaginationSize"></Page>
             </Row>
         </Row>
     </div>
@@ -38,8 +38,8 @@
                                 slot: 'content',
                                 class: 'date'
                             }, [
-                                h('p', this.formatDate(new Date(this.list[params.index]['createTime'])))
-                            ]);
+                                    h('p', this.formatDate(new Date(this.list[params.index]['createTime'])))
+                                ]);
                         }
                     }
                 ],
@@ -58,36 +58,30 @@
              * get logs list.
              * @param page {*} current page.
              */
-            getLogList(page) {
-                const vm = this;
-                if(typeof page !== 'undefined'){
-                    vm.$set(vm.condition, 'page', page - 1);
-                }
-                vm.$api.post(vm.G.api.logs, vm.condition, function(res){
-                    if(res['ret']['retCode'].toString() === '0'){
+            getLogList() {
+                const vm=this;
+                vm.$api.post(vm.G.api.logs, vm.condition, function (res) {
+                    if (res['ret']['retCode'].toString() === '0') {
                         vm.$set(vm, 'loading', false);
                         vm.$set(vm, 'list', res.data['logRecordBeanList']);
-                        vm.$set(vm, 'total', res.data.pagination.size);
-                    }else{
+                        vm.$set(vm, 'total', res.data.pagination.count);
+                    } else {
                         vm.$error(res['ret']['retMsg']);
                         return false;
                     }
-                }, function(err){
+                }, function (err) {
                     vm.$error(err);
                     return false;
                 });
             },
-
-            /**
-             * set page number.
-             * @param number {Number} page number.
-             */
-            setPageNumber(number) {
-                const vm = this;
-                vm.$set(vm.condition, 'pageSize', number);
-                vm.getLogList();
+            setPaginationNum(num) {
+                this.$set(this.condition, 'pageNum', num);
+                this.getLogList();
             },
-
+            setPaginationSize(size) {
+                this.$set(this.condition, 'pageSize', size);
+                this.getLogList();
+            },
             /**
              * format date.
              * @param date

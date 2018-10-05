@@ -81,7 +81,7 @@ function _base(method, url, params, success, failure, _config){
         }
     }
     axios(config).then(function(response){
-        if(response.data['ret']['retCode'].toUpperCase() === 'A001'){
+        if(response.data['ret']&&response.data['ret']['retCode']&&response.data['ret']['retCode'].toUpperCase() === 'A001'){
             setTimeout(() => {
                 window.location.href = process.env.AUTH_SERVICES;
             }, 2500);
