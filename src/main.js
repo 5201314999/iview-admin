@@ -15,6 +15,11 @@ import 'iview/dist/styles/iview.css';
 import './styles/main.scss';
 import highlight from './plugins/highlight';
 
+//不需要echart时 应当删除
+const echarts = require('echarts');
+Vue.prototype.$echarts=echarts;
+
+
 Vue.use(iView);
 Vue.use(base);
 Vue.use(highlight);
