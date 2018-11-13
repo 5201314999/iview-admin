@@ -1,0 +1,116 @@
+
+$text: #495060;
+$border: #F1F1F1;
+$searchBorder: #E8E8EA;
+$textBorder: #DDDEE1;
+
+.ivu-modal-wrap{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .ivu-modal{
+        top: 0;
+    }
+    .search{
+        .search-input{
+            width: 350px;
+            margin-right: 20px;
+        }
+        .search-button{
+            button{
+                margin-right: 10px;
+            }
+            button:last-child{
+                margin-right: 0;
+            }
+        }
+        .search-senior{
+            border: 1px solid $searchBorder;
+            border-radius: 2px;
+            padding: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+    }
+    .ivu-modal-content{
+        .ivu-modal-body{
+            padding: 0;
+            .ivu-modal-confirm{
+                padding: 0;
+                .ivu-modal-confirm-head{
+                    height: 42px;
+                    line-height: 42px;
+                    padding: 0 20px;
+                    border-bottom: 1px solid $border;
+                    .ivu-modal-confirm-head-title{
+                        font-weight: normal;
+                        font-size: 14px;
+                        margin-left: 0;
+                    }
+                    .ivu-modal-confirm-head-icon-confirm{
+                        display: none;
+                    }
+                }
+                .ivu-modal-confirm-body{
+                    padding-left: 0;
+                    > div{
+                        font-size: 14px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100%;
+                        padding: 35px 20px;
+                        .wi-modal-icon{
+                            position: relative;
+                            top: unset;
+                            left: unset;
+                            margin-right: 10px;
+                            i{
+                                font-size: 36px;
+                            }
+                            &.wi-modal-error-icon{
+                                i{color: $red;}
+                            }
+                            &.wi-modal-success-icon{
+                                i{color: $green;}
+                            }
+                            &.wi-modal-warning-icon,
+                            &.wi-modal-confirm-icon{
+                                i{color: $orange;}
+                            }
+                        }
+                    }
+                }
+                .ivu-modal-confirm-footer{
+                    padding: 20px;
+                    border-top: 1px solid $border;
+                    margin-top: 0;
+                    .ivu-btn-text{
+                        border: 1px solid $textBorder;
+                        border-radius: 4px;
+                        margin-right: 10px;
+                    }
+                    .ivu-btn-text:hover{
+                        color: $text;
+                    }
+                }
+            }
+        }
+    }
+}
+.wi-modal-success,
+.wi-modal-error,
+.wi-modal-warning{
+    .ivu-modal-content{
+        .ivu-modal-close{
+            z-index: 100;
+        }
+        .ivu-modal-body{
+            .ivu-modal-confirm{
+                .ivu-modal-confirm-body{
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
