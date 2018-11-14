@@ -1,6 +1,7 @@
 import axios from 'axios';
+axios.defaults.withCredentials = true;
 
-const SERVER = process.env.SERVER;
+const DOMAIN = process.env.DOMAIN;
 const AUTH = process.env.AUTH_SERVICES;
 
 /**
@@ -25,12 +26,7 @@ function base(method, url, params, success, failure, config) {
         method: method,
         url: url,
         data: params,
-        baseURL: SERVER,
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'X-App-Id': 35,
-            'X-Basic-Pro-Id': 18
-        },
+        baseURL: DOMAIN,
         timeout: 30000
     };
     if(method === 'GET' && params !== null){
@@ -55,17 +51,6 @@ function base(method, url, params, success, failure, config) {
     }).catch((err) => {
         if((typeof failure).toUpperCase() === 'FUNCTION') failure(err);
     });
-}
-
-function getUrl(name) {
-    if(name !== null){
-        const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i'),
-            match = window.location.href.substr(1).match(reg);
-        if(match !== null) return unescape(match[2]);
-        return null;
-    }else{
-        return window.location.href;
-    }
 }
 
 export default {
