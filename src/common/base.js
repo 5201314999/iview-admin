@@ -11,7 +11,7 @@ exports.install = (Vue) => {
             method: 'getLoginUser',
             soaProId: vm.G.id.soa
         }, (res) => {
-            if(res['ret']['retMsg'].toString() === '0'){
+            if(res['ret']['retCode'].toString() === '0'){
                 vm.$set(vm.G, 'user', res.data);
                 vm.$emit('get-user-success', res.data);
             }else{
@@ -62,7 +62,7 @@ exports.install = (Vue) => {
      * @param name
      * @returns {*}
      */
-    Vue.prototype.getUrl = function(name) {
+    Vue.prototype.getUrlOrParam = function(name) {
         const vm = this;
         if(vm.trim(name) !== null){
             const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i'),

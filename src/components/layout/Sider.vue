@@ -59,16 +59,69 @@
         methods: {
             setMenuActive() {
 
+            },
+            parseMenu(menu) {
+                const vm = this,
+                    temp = [],
+                    length = menu.length,
+                    getChildren = (data) => {
+                        const res = [],
+                            len = data.length;
+                        for(let i = 0; i < len; i++){
+                            const cur = data[i],
+                                children = cur['listChildren'],
+                                item = {
+                                    title: cur['resname'],
+                                    icon: cur['icon'],
+                                    name: cur['resparam']
+                                };
+                            if(children && children.length > 0){
+                                item.children = getChildren(children);
+                            }else{
+                                item.path = cur['resparam'];
+                                if(flag === 0){
+                                    vm.$set(vm.G.menu, 'active', item.path);
+                                    vm.$set(vm.menu, 'active', item.path);
+                                    flag++;
+                                }
+                            }
+                            res.push(item);
+                        }
+                        return res;
+                    };
+                let flag = 0;
+                for(let i = 0; i < length; i++){
+                    const cur = menu[i],
+                        children = cur['listChildren'],
+                        item = {
+                            title: cur['resname'],
+                            icon: cur.icon,
+                            name: cur['resname'],
+                            children: []
+                        };
+                    item.children = getChildren(children);
+                    if(i === 0){
+                        vm.$set(vm.G.menu, 'open', [item.name]);
+                        vm.$set(vm.menu, 'open', [item.name]);
+                    }
+                    temp.push(item);
+                }
+                return temp;
             }
         },
         mounted() {
-            const vm = this,
-                soa = parseInt(vm.getUrl(vm.G.id.mapping.soa));
-            if(soa && !isNaN(soa)) vm.$set(vm.G.id, 'soa', soa);
+            const vm = this;
             vm.getUser();
             vm.$on('get-user-success', (data) => {
                 vm.$set(vm.G, 'user', data);
-                vm.$emit('username');
+                if(!vm.G.debug){
+                    const menu = data['listResource'];
+                    if(menu){
+                        const menus = vm.parseMenu(menu);
+                        vm.$set(vm.G.menu, 'items', menus);
+                        vm.$set(vm.menu, 'items', menus);
+                    }
+                }
             });
         }
     };

@@ -2,7 +2,7 @@
  * debug
  * @type {boolean}
  */
-const debug = true;
+const debug = false;
 /**
  * @desc global variable. Via [ this.G.title / {{ G.title }} ] to get it in components
  * @type {string}
@@ -25,8 +25,10 @@ let logo = null;
 let id = {
     app: null,
     soa: null,
+    pro: null,
     mapping: {
         app: 'appId',
+        pro: 'proId',
         soa: 'soaProId'
     }
 };
@@ -153,7 +155,8 @@ let menu = {
 const api = {
     login: 'user/login/{sid}',
     user: '/user',
-    logout: '/LoginServlet'
+    logout: '/LoginServlet',
+    project: '/LoginServlet'
 };
 /**
  * file's configuration
