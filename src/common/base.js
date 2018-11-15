@@ -34,7 +34,8 @@ exports.install = (Vue) => {
     Vue.prototype.logout = function() {
         const vm = this;
         vm.$api.get(process.env.AUTH_SERVICES + vm.G.api.logout, {
-            method: 'logOutMsg'
+            method: 'logOutMsg',
+            proId: vm.G.id.pro
         }, (res) => {
             if(res['ret']['retMsg'].toString() === '0'){
                 window.location.href = process.env.AUTH_SERVICES;
