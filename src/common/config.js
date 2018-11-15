@@ -1,10 +1,12 @@
 /**
+ * @desc global variable. Via [ this.G.title / {{ G.title }} ] to get it in components
+ *
  * debug
  * @type {boolean}
  */
 const debug = false;
 /**
- * @desc global variable. Via [ this.G.title / {{ G.title }} ] to get it in components
+ * title
  * @type {string}
  */
 const title = '基础框架';
@@ -47,61 +49,61 @@ let menu = {
                     title: 'Input 输入框',
                     icon: 'ios-create-outline',
                     name: 'input',
-                    path: '/input'
+                    path: '/form/input'
                 },
                 {
                     title: 'Radio 单选框',
                     icon: 'ios-radio-button-on',
                     name: 'radio',
-                    path: '/radio'
+                    path: '/form/radio'
                 },
                 {
                     title: 'Checkbox 多选框',
                     icon: 'ios-checkbox-outline',
                     name: 'checkbox',
-                    path: '/checkbox'
+                    path: '/form/checkbox'
                 },
                 {
                     title: 'Select 选择',
                     icon: 'ios-arrow-dropdown',
                     name: 'select',
-                    path: '/select'
+                    path: '/form/select'
                 },
                 {
                     title: 'Table 表格',
                     icon: 'ios-grid',
                     name: 'table',
-                    path: '/table'
+                    path: '/form/table'
                 },
                 {
                     title: 'Cascader 级联选择',
                     icon: 'ios-more-outline',
                     name: 'cascader',
-                    path: '/cascader'
+                    path: '/form/cascader'
                 },
                 {
                     title: 'DatePicker 日期选择',
                     icon: 'ios-calendar-outline',
                     name: 'date',
-                    path: '/date'
+                    path: '/form/date'
                 },
                 {
                     title: 'TimePicker 时间选择',
                     icon: 'ios-clock-outline',
                     name: 'time',
-                    path: '/time'
+                    path: '/form/time'
                 },
                 {
                     title: 'Upload 上传',
                     icon: 'ios-cloud-upload-outline',
                     name: 'upload',
-                    path: '/upload'
+                    path: '/form/upload'
                 },
                 {
                     title: 'Draggable 拖拽',
                     icon: 'ios-browsers-outline',
                     name: 'draggable',
-                    path: '/draggable'
+                    path: '/form/draggable'
                 }
             ]
         },
@@ -114,13 +116,13 @@ let menu = {
                     title: 'Alert 警告提示',
                     icon: 'ios-warning-outline',
                     name: 'alert',
-                    path: '/alert'
+                    path: '/view/alert'
                 },
                 {
                     title: 'Message 全局提示',
                     icon: 'ios-close-circle-outline',
                     name: 'message',
-                    path: '/message'
+                    path: '/view/message'
                 }
             ]
         },
@@ -133,13 +135,13 @@ let menu = {
                     title: '登录日志',
                     icon: 'ios-log-in',
                     name: 'login',
-                    path: '/login'
+                    path: '/logs/login'
                 },
                 {
                     title: '操作日志',
                     icon: 'ios-checkmark-circle-outline',
                     name: 'operation',
-                    path: 'operation'
+                    path: '/logs/operation'
                 }
             ]
         }
@@ -150,13 +152,12 @@ let menu = {
 };
 /**
  * api
- * @type {{login: string, user: string, logout: string}}
+ * @type {{user: string, logout: string, project: string}}
  */
 const api = {
-    login: 'user/login/{sid}',
     user: '/user',
-    logout: '/LoginServlet',
-    project: '/LoginServlet'
+    logout: process.env.AUTH_SERVICES + '/LoginServlet',
+    project: process.env.AUTH_SERVICES + '/LoginServlet'
 };
 /**
  * file's configuration
@@ -172,10 +173,16 @@ const files = {
     }
 };
 /**
- * content(popup)
- * @type {string}
+ * {name: cookie's name; expire: expiry date;}
+ * note: ( unit:day )
+ * @type {{collapse: {name: string, expire: number}}}
  */
-let content = `<div class="wi-modal-confirm-body-icon"></div>`;
+const cookie = {
+    collapse: {
+        name: 'layout-theme-menu-collapsed',
+        expire: 1
+    }
+};
 /**
  * footer
  * @type {string}
@@ -191,6 +198,6 @@ export default {
     menu,
     api,
     files,
-    content,
+    cookie,
     footer
 }

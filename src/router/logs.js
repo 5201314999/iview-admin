@@ -4,7 +4,7 @@ import Operation from '@/views/logs/Operation';
 
 export default {
     path: 'logs',
-    meta: {name: '日志'},
+    name: '日志',
     component: Logs,
     children: [
         {path: 'login', component: Login, name: '登录日志'},

@@ -1,5 +1,5 @@
 <template>
-    <Row class="sider wi-custom-scroll">
+    <Row class="layout-sider wi-custom-scroll" :class="clsCollapsed">
         <Row class="sider-list">
             <Row class="sider-logo">
                 <router-link :to="{path: '/'}" :title="G.title">
@@ -9,8 +9,9 @@
                 </router-link>
             </Row>
             <Row class="sider-menu">
-                <template>
-                    <Menu theme="dark" mode="vertical" :width="width.unfold" :active-name="menu.active" :open-names="menu.open" @on-select="setMenuActive" ref="menu" accordion>
+                <!-- accordion -->
+                <template v-if="!isCollapsed">
+                    <Menu theme="dark" mode="vertical" :width="width.unfold" :active-name="menu.active" :open-names="menu.open" ref="menu" accordion>
                         <template v-for="item in menu.items">
                             <!-- submenu : if -->
                             <AccordionMenuItem :items="item" :key="prefix + item.name" v-if="item.children && item.children.length > 0"></AccordionMenuItem>
@@ -18,6 +19,20 @@
                             <MenuItem :name="item.name" v-else>
                                 <span class="wi-menu-icon" v-if="item.icon"><icon :type="item.icon"></icon></span>
                                 <router-link :to="{path: item.path}" :class="item.icon ? '' : 'wi-menu-link'" v-html="item.title"></router-link>
+                            </MenuItem>
+                        </template>
+                    </Menu>
+                </template>
+                <!-- dropdown -->
+                <template v-if="isCollapsed">
+                    <Menu theme="dark" mode="vertical" :width="width.fold" :active-name="menu.active" :open-names="menu.open" ref="menu">
+                        <template v-for="item in menu.items">
+                            <MenuItem :name="item.name">
+                                <DropdownMenuItem :items="item" :key="prefix + item.name" v-if="item.children && item.children.length > 0"></DropdownMenuItem>
+                                <router-link :to="{path: item.path}" v-else>
+                                    <icon :type="item.icon" v-if="item.icon"></icon>
+                                    <icon type="ios-link-outline" v-else></icon>
+                                </router-link>
                             </MenuItem>
                         </template>
                     </Menu>
@@ -38,6 +53,20 @@
             collapse: {
                 type: [Boolean, String],
                 default: false
+            },
+            update: {
+                type: Boolean,
+                default: false
+            }
+        },
+        computed: {
+            isCollapsed: function() {
+                const vm = this;
+                return vm.collapse;
+            },
+            clsCollapsed: function() {
+                const vm = this;
+                return vm.collapse ? 'layout-sider-collapsed' : '';
             }
         },
         data() {
@@ -57,9 +86,6 @@
             }
         },
         methods: {
-            setMenuActive() {
-
-            },
             parseMenu(menu) {
                 const vm = this,
                     temp = [],
@@ -73,15 +99,15 @@
                                 item = {
                                     title: cur['resname'],
                                     icon: cur['icon'],
-                                    name: cur['resparam']
+                                    name: cur['resid']
                                 };
                             if(children && children.length > 0){
                                 item.children = getChildren(children);
                             }else{
                                 item.path = cur['resparam'];
                                 if(flag === 0){
-                                    vm.$set(vm.G.menu, 'active', item.path);
-                                    vm.$set(vm.menu, 'active', item.path);
+                                    vm.$set(vm.G.menu, 'active', item.name);
+                                    vm.$set(vm.menu, 'active', item.name);
                                     flag++;
                                 }
                             }
@@ -96,7 +122,7 @@
                         item = {
                             title: cur['resname'],
                             icon: cur.icon,
-                            name: cur['resname'],
+                            name: cur['resid'],
                             children: []
                         };
                     item.children = getChildren(children);
@@ -109,11 +135,21 @@
                 return temp;
             }
         },
+        watch: {
+            update: function() {
+                const vm = this;
+                vm.$nextTick(() => {
+                    vm.$refs.menu.updateOpened();
+                    vm.$refs.menu.updateActiveName();
+                });
+            }
+        },
         mounted() {
             const vm = this;
             vm.getUser();
             vm.$on('get-user-success', (data) => {
                 vm.$set(vm.G, 'user', data);
+                vm.$emit('username');
                 if(!vm.G.debug){
                     const menu = data['listResource'];
                     if(menu){
@@ -122,6 +158,10 @@
                         vm.$set(vm.menu, 'items', menus);
                     }
                 }
+                vm.$nextTick(() => {
+                    vm.$refs.menu.updateOpened();
+                    vm.$refs.menu.updateActiveName();
+                });
             });
         }
     };

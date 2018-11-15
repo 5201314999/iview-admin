@@ -1,9 +1,9 @@
 <template>
     <Row class="layout has-sider">
         <layout>
-            <wi-sider></wi-sider>
+            <wi-sider @username="setUsername" :collapse="collapse" :update="update"></wi-sider>
             <layout>
-                <wi-header :username="username" @collapsed="collapse"></wi-header>
+                <wi-header :username="username" @collapsed="setCollapsed"></wi-header>
                 <wi-content></wi-content>
                 <wi-footer></wi-footer>
             </layout>
@@ -27,8 +27,30 @@
             const vm = this;
             return {
                 collapse: vm.G.menu.collapsed,
-                username: vm.G.user.name
+                username: vm.G.user.name,
+                update: false
             };
+        },
+        methods: {
+            /**
+             * set username.(callback)
+             * Get the global user name and send it to `Header Component`,
+             * after the request finished.
+             */
+            setUsername() {
+                const vm = this;
+                vm.$set(vm, 'username', vm.G.user.name);
+            },
+            /**
+             * collapsed.(callback)
+             * If click `collapse` in `Header Component`,
+             * send broadcast to `Sider Component`
+             */
+            setCollapsed() {
+                const vm = this;
+                vm.$set(vm, 'collapse', vm.G.menu.collapsed);
+                if(!vm.G.menu.collapsed) vm.$set(vm, 'update', !vm.update);
+            }
         },
         created() {
             const vm = this,
@@ -44,6 +66,11 @@
                 'Pro-Id': vm.G.id.pro,
                 'SOA-Pro-Id': vm.G.id.soa
             };
+            const cookie = vm.getCookie(vm.G.cookie.collapse.name);
+            if(cookie && vm.trim(cookie) !== 'false'){
+                vm.$set(vm, 'collapse', cookie);
+                vm.$set(vm.G.menu, 'collapsed', cookie);
+            }
         }
     };
     export default LayoutComponent;
