@@ -1,0 +1,17 @@
+.wi-table{
+    .ivu-table{
+        .ivu-table-header{
+            th{
+                font-weight: 400;
+                height: 48px;
+            }
+        }
+        .ivu-table-tip{
+            padding: 20px;
+            overflow: hidden;
+            td{
+                border-bottom: none;
+            }
+        }
+    }
+}

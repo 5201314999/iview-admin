@@ -79,6 +79,18 @@
                     a{
                         color: rgba(255, 255, 255, 0.7);
                         &:hover{color: $white;}
+                        &:before{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            content: '';
+                            width: 100%;
+                            height: 100%;
+                            background: transparent;
+                            display: block;
+                        }
                     }
                     span.wi-menu-icon{
                         display: flex;
@@ -170,6 +182,7 @@
                                     text-overflow: ellipsis;
                                     white-space: nowrap;
                                     padding: 0;
+                                    position: relative;
                                     &:hover{background: $gray;}
                                     a{
                                         height: 40px;
@@ -314,16 +327,45 @@
             }
         }
     }
-    .ivu-layout-content{
-        margin: 15px 15px 0;
-        height: 100%;
-        min-height: 470px;
-        .wi-container{
-            .wi-content{
-                padding: 24px;
-                background: $white;
-                border-radius: 2px;
-                transition: all .3s;
+    .layout-content{
+        .layout-breadcrumb{
+            background: $white;
+            padding: 16px 32px;
+            position: unset;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            &.ivu-breadcrumb{
+                span{
+                    a, a:active, a:hover, a:visited{
+                        color: $theme;
+                    }
+                    .ivu-icon{
+                        font-size: 18px;
+                        margin-right: 5px;
+                        vertical-align: -1px;
+                    }
+                }
+                span:last-child{
+                    font-weight: normal;
+                    span{
+                        color: #C0C0C0;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+        .ivu-layout-content{
+            margin: 15px 15px 0;
+            height: 100%;
+            border-radius: 4px;
+            .wi-container{
+                min-height: 420px;
+                .wi-content{
+                    background: $white;
+                    padding: 24px;
+                    transition: all .3s;
+                }
             }
         }
     }

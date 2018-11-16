@@ -1,0 +1,25 @@
+.ivu-card{
+    .ivu-card-head{
+        border-color: #F3F3F3;
+        .wi-card-title{
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 20px;
+            i.ivu-icon{
+                font-size: 26px;
+                margin-right: 10px;
+            }
+        }
+    }
+    .wi-card-explain{
+        padding: 0 15px;
+        li{
+            list-style: bengali;
+        }
+    }
+    &:hover{
+        box-shadow: none;
+        border-color: #E8EAEC;
+    }
+}

@@ -95,13 +95,12 @@
                     if(data){
                         vm.$set(vm, 'menus', data.menu);
                         if(data['program']){
-                            vm.$nextTick(() => {
-                                const name = data['program']['programname'],
-                                    logo = data['program'].icon;
-                                vm.$set(vm.G, 'title', name ? name : '');
-                                vm.$set(vm.G, 'logo', logo);
-                                vm.setTitle();
-                            });
+                            const name = data['program']['programname'],
+                                logo = data['program'].icon;
+                            vm.$set(vm.G, 'title', name ? name : '');
+                            vm.$set(vm.G, 'logo', logo);
+                            vm.$emit('update-logo');
+                            vm.setTitle();
                         }
                     }
                 }else vm.setTitle();

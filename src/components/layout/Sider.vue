@@ -2,10 +2,10 @@
     <Row class="layout-sider wi-custom-scroll" :class="clsCollapsed">
         <Row class="sider-list">
             <Row class="sider-logo">
-                <router-link :to="{path: '/'}" :title="G.title">
-                    <img :src="G.logo" :alt="G.title" v-if="G.logo" />
-                    <icon type="ios-appstore-outline" v-if="!G.logo"></icon>
-                    <h1 v-html="G.title"></h1>
+                <router-link :to="{path: '/'}" :title="project">
+                    <img :src="logo" :alt="project" v-if="logo" />
+                    <icon type="ios-appstore-outline" v-if="!logo"></icon>
+                    <h1 v-html="project"></h1>
                 </router-link>
             </Row>
             <Row class="sider-menu">
@@ -57,6 +57,14 @@
             update: {
                 type: Boolean,
                 default: false
+            },
+            project: {
+                type: String,
+                default: null
+            },
+            logo: {
+                type: String,
+                default: null
             }
         },
         computed: {
@@ -73,7 +81,9 @@
             const vm = this;
             return {
                 prefix: 'menu-',
+                path: null,
                 title: vm.G.title,
+                menus: [],
                 menu: {
                     items: vm.G.menu.items,
                     active: vm.G.menu.active || null,
@@ -105,17 +115,17 @@
                                 item.children = getChildren(children);
                             }else{
                                 item.path = cur['resparam'];
-                                if(flag === 0){
+                                if(item.path && item.path === vm.path){
                                     vm.$set(vm.G.menu, 'active', item.name);
                                     vm.$set(vm.menu, 'active', item.name);
-                                    flag++;
+                                    state = true;
                                 }
                             }
                             res.push(item);
                         }
                         return res;
                     };
-                let flag = 0;
+                let state = false;
                 for(let i = 0; i < length; i++){
                     const cur = menu[i],
                         children = cur['listChildren'],
@@ -126,23 +136,38 @@
                             children: []
                         };
                     item.children = getChildren(children);
-                    if(i === 0){
+                    if(state && vm.menu.open.length <= 0){
                         vm.$set(vm.G.menu, 'open', [item.name]);
                         vm.$set(vm.menu, 'open', [item.name]);
                     }
                     temp.push(item);
                 }
                 return temp;
-            }
-        },
-        watch: {
-            update: function() {
+            },
+            updateMenuActive() {
                 const vm = this;
                 vm.$nextTick(() => {
                     vm.$refs.menu.updateOpened();
                     vm.$refs.menu.updateActiveName();
                 });
             }
+        },
+        watch: {
+            update: function() {
+                const vm = this;
+                vm.updateMenuActive();
+            },
+            '$route': function() {
+                const vm = this;
+                vm.$set(vm, 'path', vm.$route.path);
+                vm.$set(vm.menu, 'open', []);
+                vm.parseMenu(vm.menus);
+                vm.updateMenuActive();
+            }
+        },
+        created() {
+            const vm = this;
+            vm.$set(vm, 'path', vm.$route.path);
         },
         mounted() {
             const vm = this;
@@ -153,15 +178,13 @@
                 if(!vm.G.debug){
                     const menu = data['listResource'];
                     if(menu){
+                        vm.$set(vm, 'menus', menu);
                         const menus = vm.parseMenu(menu);
                         vm.$set(vm.G.menu, 'items', menus);
                         vm.$set(vm.menu, 'items', menus);
                     }
                 }
-                vm.$nextTick(() => {
-                    vm.$refs.menu.updateOpened();
-                    vm.$refs.menu.updateActiveName();
-                });
+                vm.updateMenuActive();
             });
         }
     };
