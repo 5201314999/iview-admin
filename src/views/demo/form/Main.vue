@@ -1,5 +1,3 @@
 <template>
-    <Row class="wi-container">
-        <router-view></router-view>
-    </Row>
+    <router-view></router-view>
 </template>

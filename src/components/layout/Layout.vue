@@ -1,9 +1,9 @@
 <template>
     <Row class="layout has-sider">
         <layout>
-            <wi-sider @username="setUsername" :collapse="collapse" :update="update"></wi-sider>
+            <wi-sider @username="setUsername" :collapse="collapse" :update="update" :project="project" :logo="logo"></wi-sider>
             <layout>
-                <wi-header :username="username" @collapsed="setCollapsed"></wi-header>
+                <wi-header :username="username" @collapsed="setCollapsed" @update-logo="setLogo"></wi-header>
                 <wi-content></wi-content>
                 <wi-footer></wi-footer>
             </layout>
@@ -28,7 +28,9 @@
             return {
                 collapse: vm.G.menu.collapsed,
                 username: vm.G.user.name,
-                update: false
+                update: false,
+                project: vm.G.title,
+                logo: vm.G.logo
             };
         },
         methods: {
@@ -50,6 +52,11 @@
                 const vm = this;
                 vm.$set(vm, 'collapse', vm.G.menu.collapsed);
                 if(!vm.G.menu.collapsed) vm.$set(vm, 'update', !vm.update);
+            },
+            setLogo() {
+                const vm = this;
+                vm.$set(vm, 'project', vm.G.title);
+                vm.$set(vm, 'logo', vm.G.logo);
             }
         },
         created() {

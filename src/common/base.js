@@ -170,6 +170,42 @@ exports.install = (Vue) => {
     };
 
     /**
+     * format
+     * @param date
+     * @param type
+     * @returns {string}
+     */
+    Vue.prototype.formatDate = function(date, type){
+        const y = date.getFullYear();
+        let m = date.getMonth() + 1;
+        m = m < 10 ? '0' + m : m;
+        let d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        let h = date.getHours(),
+            min = date.getMinutes(),
+            seconds = date.getSeconds(),
+            format = null;
+        h = h < 10 ? '0' + h : h;
+        min = min < 10 ? '0' + min : min;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        switch(type){
+            case 1:
+                format = y + '-' + m + '-' + d;
+                break;
+            case 2:
+                format = h + ':' + min + ':' + seconds;
+                break;
+            case 3:
+                format = y + '-' + m + '-' + d + ' ' + h + ':' + min;
+                break;
+            default:
+                format = y + '-' + m + '-' + d + ' ' + h + ':' + min + ':' + seconds;
+                break;
+        }
+        return format;
+    };
+
+    /**
      * random.
      * @returns {string}
      */
