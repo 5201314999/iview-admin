@@ -43,10 +43,11 @@ img{
     vertical-align: middle;
     border-style: none;
 }
-pre{
+pre, code, kbd, samp{
     margin: 0;
+    font-family: "Courier New","Source Code Pro","Miscrosoft Yahei","Segoe UI","Lucida Grande",Helvetica,Arial,FreeSans,Arimo,"Droid Sans","wenquanyi micro hei","Hiragino Sans GB","Hiragino Sans GB W3",sans-serif;
+    font-size: 14px;
 }
-
 .ivu-layout, .container{
     overflow: hidden;
     .ivu-btn-large{
@@ -247,4 +248,6 @@ pre{
 @import "./components/layout";
 @import "./components/table";
 @import "./components/card";
+@import "./components/pagination";
 @import "./components/modal";
+@import "./components/form";

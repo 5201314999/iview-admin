@@ -1,9 +1,93 @@
 .wi-table{
     .ivu-table{
+        &:before{
+            height: .5px;
+        }
         .ivu-table-header{
             th{
                 font-weight: 400;
                 height: 48px;
+                .ivu-table-cell{
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    flex-direction: row;
+                    .ivu-table-sort{
+                        margin-top: 2px;
+                    }
+                }
+                .ivu-table-filter{
+                    i.ivu-icon{margin-left: 4px;}
+                }
+            }
+            .ivu-table-column-center{
+                .ivu-table-cell{
+                    justify-content: center;
+                }
+            }
+            .ivu-table-column-right{
+                .ivu-table-cell{
+                    justify-content: flex-end;
+                }
+            }
+        }
+        .ivu-table-body{
+            overflow-x: hidden;
+            overflow-y: auto;
+            .ivu-table-row{
+                .ivu-table-cell{
+                    .image{
+                        max-width: 200px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 15px 0;
+                        img{
+                            height: 80px;
+                            width: 80px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        }
+                    }
+                    .date{
+                        max-width: 250px;
+                        p{
+                            color: #999;
+                            line-height: 24px;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            overflow: hidden;
+                        }
+                    }
+                    .action{
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-start;
+                        span{
+                            cursor: pointer;
+                            margin-right: 15px;
+                            color: $theme;
+                            &:last-child{
+                                margin-right: 0;
+                            }
+                        }
+                        .ivu-poptip-popper{
+                            min-width: 0;
+                            a.action-item{
+                                display: block;
+                                font-size: 14px;
+                                padding: 5px 10px;
+                            }
+                        }
+                    }
+                }
+                &.ivu-table-row-hover{
+                    &:hover{
+                        td{
+                            background: #EBF7FF;
+                        }
+                    }
+                }
             }
         }
         .ivu-table-tip{
@@ -13,5 +97,21 @@
                 border-bottom: none;
             }
         }
+    }
+    .ivu-table-stripe{
+        .ivu-table-body tr:nth-child(2n) td,
+        .ivu-table-fixed-body tr:nth-child(2n) td{
+            background: transparent;
+        }
+    }
+}
+.ivu-table-popper{
+    .ivu-checkbox-wrapper{
+        padding: 5px;
+        font-size: 14px;
+    }
+    .ivu-table-filter-footer{
+        padding: 4px 8px;
+        button{font-size: 14px;}
     }
 }

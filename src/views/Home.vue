@@ -7,13 +7,9 @@
 <script>
     import Layout from '@/components/layout/Layout';
     const HomeComponent = {
-        components: {
-            'wi-layout': Layout
-        },
+        components: {'wi-layout': Layout},
         data() {
-            return {
-                loading: true
-            }
+            return {loading: true}
         },
         mounted() {
             const vm = this;

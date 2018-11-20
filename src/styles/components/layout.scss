@@ -159,6 +159,9 @@
                     background: transparent;
                     height: 50px;
                     padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     &.ivu-menu-item-selected{
                         background: $gray;
                         color: $white;
