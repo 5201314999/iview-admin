@@ -146,8 +146,8 @@ let menu = {
             ]
         }
     ],
-    active: 'input',
-    open: ['form'],
+    active: 'form',
+    open: ['basic'],
     collapsed: false
 };
 /**
@@ -161,10 +161,10 @@ const api = {
 };
 /**
  * file's configuration
- * @type {{serve: {upload: *, download: *}, accept: {image: string}}}
+ * @type {{server: {upload: *, download: *}, accept: {image: string}}}
  */
 const files = {
-    serve: {
+    server: {
         upload: process.env.UPLOAD_SERVER,
         download: process.env.FILE_SERVER
     },

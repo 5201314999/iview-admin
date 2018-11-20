@@ -3,14 +3,15 @@ import VueRouter from 'vue-router';
 import Home from '@/views/Home';
 import LogRouter from '@/router/logs';
 
-import DemoFormRouter from '@/router/demo/form';
+import DemoBasicRouter from '@/router/demo/basic';
+import DemoExtendRouter from '@/router/demo/extend';
 
 Vue.use(VueRouter);
 
 const childrenRouter = [
     LogRouter,
-
-    DemoFormRouter
+    DemoBasicRouter,
+    DemoExtendRouter
 ];
 
 const router = new VueRouter({
@@ -19,7 +20,7 @@ const router = new VueRouter({
         path: '/',
         name: '首页',
         component: Home,
-        redirect: '/form/input',
+        redirect: '/basic/input',
         children: [...childrenRouter]
     }]
 });
