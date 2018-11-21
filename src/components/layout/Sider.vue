@@ -42,6 +42,7 @@
     </Row>
 </template>
 <script>
+    import {scrollTop} from 'iview/src/utils/assist';
     import AccordionMenu from '@/components/layout/Accordion';
     import DropdownMenu from '@/components/layout/Dropdown';
     const SiderComponent = {
@@ -150,6 +151,10 @@
                     vm.$refs.menu.updateOpened();
                     vm.$refs.menu.updateActiveName();
                 });
+            },
+            backToTop() {
+                const top = document.documentElement.scrollTop || document.body.scrollTop;
+                scrollTop(window, top, 0, 1000);
             }
         },
         watch: {
@@ -163,6 +168,7 @@
                 vm.$set(vm.menu, 'open', []);
                 vm.parseMenu(vm.menus);
                 vm.updateMenuActive();
+                vm.backToTop();
             }
         },
         created() {
