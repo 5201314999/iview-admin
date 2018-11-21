@@ -20,7 +20,7 @@ const router = new VueRouter({
         path: '/',
         name: '首页',
         component: Home,
-        redirect: '/basic/input',
+        redirect: '/basic/form',
         children: [...childrenRouter]
     }]
 });

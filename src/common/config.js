@@ -41,94 +41,64 @@ let id = {
 let menu = {
     items: [
         {
-            title: '表单',
-            name: 'form',
+            title: '基础组件',
+            name: 'basic',
             icon: 'md-list',
             children: [
                 {
-                    title: 'Input 输入框',
+                    title: 'Form 表单',
                     icon: 'ios-create-outline',
                     name: 'input',
-                    path: '/form/input'
-                },
-                {
-                    title: 'Radio 单选框',
-                    icon: 'ios-radio-button-on',
-                    name: 'radio',
-                    path: '/form/radio'
-                },
-                {
-                    title: 'Checkbox 多选框',
-                    icon: 'ios-checkbox-outline',
-                    name: 'checkbox',
-                    path: '/form/checkbox'
-                },
-                {
-                    title: 'Select 选择',
-                    icon: 'ios-arrow-dropdown',
-                    name: 'select',
-                    path: '/form/select'
+                    path: '/basic/form'
                 },
                 {
                     title: 'Table 表格',
                     icon: 'ios-grid',
                     name: 'table',
-                    path: '/form/table'
+                    path: '/basic/table'
                 },
                 {
                     title: 'Cascader 级联选择',
                     icon: 'ios-more-outline',
                     name: 'cascader',
-                    path: '/form/cascader'
+                    path: '/basic/cascader'
                 },
                 {
                     title: 'DatePicker 日期选择',
                     icon: 'ios-calendar-outline',
                     name: 'date',
-                    path: '/form/date'
+                    path: '/basic/date'
                 },
                 {
                     title: 'TimePicker 时间选择',
                     icon: 'ios-clock-outline',
                     name: 'time',
-                    path: '/form/time'
-                },
+                    path: '/basic/time'
+                }
+            ]
+        },
+        {
+            title: '扩展组件',
+            name: 'extend',
+            icon: 'ios-alert-outline',
+            children: [
                 {
                     title: 'Upload 上传',
                     icon: 'ios-cloud-upload-outline',
                     name: 'upload',
-                    path: '/form/upload'
+                    path: '/extend/upload'
                 },
                 {
                     title: 'Draggable 拖拽',
                     icon: 'ios-browsers-outline',
                     name: 'draggable',
-                    path: '/form/draggable'
-                }
-            ]
-        },
-        {
-            title: '视图',
-            name: 'view',
-            icon: 'ios-alert-outline',
-            children: [
-                {
-                    title: 'Alert 警告提示',
-                    icon: 'ios-warning-outline',
-                    name: 'alert',
-                    path: '/view/alert'
-                },
-                {
-                    title: 'Message 全局提示',
-                    icon: 'ios-close-circle-outline',
-                    name: 'message',
-                    path: '/view/message'
+                    path: '/extend/draggable'
                 }
             ]
         },
         {
             title: '日志',
-            name: 'log',
+            name: 'logs',
             icon: 'ios-list-box-outline',
             children: [
                 {
