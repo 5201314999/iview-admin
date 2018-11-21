@@ -17,7 +17,6 @@ export default {
         {path: 'cascader', component: BasicCascader, name: 'Cascader 级联选择'},
         {path: 'date', component: BasicDatePicker, name: 'DatePicker 日期选择'},
         {path: 'time', component: BasicTimePicker, name: 'TimePicker 时间选择'},
-        {path: 'cascader', component: BasicCascader, name: 'Cascader 级联选择'},
         {path: 'pagination', component: BasicPagination, name: 'Page 分页'}
     ]
 }
