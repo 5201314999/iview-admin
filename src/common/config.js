@@ -154,6 +154,15 @@ const cookie = {
     }
 };
 /**
+ * domains
+ * @type {{auth: (string), project: (string), webservices: (string)}}
+ */
+const domains = {
+    auth: process.env.AUTH_SERVICES,
+    project: process.env.DOMAIN,
+    webservices: process.env.WEB_SERVICES
+};
+/**
  * footer
  * @type {string}
  */
@@ -169,5 +178,6 @@ export default {
     api,
     files,
     cookie,
+    domains,
     footer
 }
