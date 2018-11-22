@@ -140,7 +140,8 @@ const files = {
     },
     accept: {
         image: 'image/gif, image/jpeg, image/png, image/jpeg'
-    }
+    },
+    format: ['jpg', 'jpeg', 'png', 'gif', 'bmp']
 };
 /**
  * {name: cookie's name; expire: expiry date;}

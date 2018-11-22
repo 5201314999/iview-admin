@@ -116,7 +116,9 @@
                                 item.children = getChildren(children);
                             }else{
                                 item.path = cur['resparam'];
-                                if(item.path && item.path === vm.path){
+                                const paths = item.path.replace('？', '?').split('?'),
+                                    path = paths[0];
+                                if(path && path === vm.path){
                                     vm.$set(vm.G.menu, 'active', item.name);
                                     vm.$set(vm.menu, 'active', item.name);
                                     state = true;

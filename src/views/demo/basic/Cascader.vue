@@ -5,17 +5,26 @@
                 <icon type="ios-create-outline" />
                 <a href="https://www.iviewui.com/components/cascader" target="_blank">Cascader</a>
             </Row>
-            <Card>
-                <Row slot="title" class="wi-card-title">基础用法</Row>
-                <Row class="wi-cascader">
-                    <Col span="4">
-                        <Cascader :data="normal.data" v-model="normal.value" trigger="hover" size="large"></Cascader>
-                    </Col>
-                </Row>
-                <Row class="mt20">
-                    <pre v-highlight><code>{{ code.normal }}</code></pre>
-                </Row>
-            </Card>
+            <Row class="wi-cascader">
+                <Col span="4">
+                    <Cascader :data="normal.data" v-model="normal.value" trigger="hover" size="large"></Cascader>
+                </Col>
+                <Col span="4" class="ml20">
+                    <Cascader :data="normal.data" v-model="normal.default" size="large"></Cascader>
+                </Col>
+                <Col span="4" class="ml20">
+                    <Cascader :data="normal.data" v-model="normal.change" size="large" change-on-select></Cascader>
+                </Col>
+                <Col span="4" class="ml20">
+                    <Cascader :data="normal.data" v-model="normal.filter" size="large" filterable></Cascader>
+                </Col>
+            </Row>
+        </Card>
+        <Card class="mt20">
+            <Row slot="title" class="wi-card-title">
+                <icon type="ios-code-working" /> 代码
+            </Row>
+            <pre v-highlight><code>{{ code.normal }}</code></pre>
         </Card>
     </Row>
 </template>
@@ -25,6 +34,9 @@
             return {
                 normal: {
                     value: [],
+                    default: ['jiangsu', 'nanjing', 'fuzimiao'],
+                    change: [],
+                    fliter: [],
                     data: [{
                         value: 'beijing',
                         label: '北京',
@@ -64,7 +76,18 @@
                 code: {
                     normal: '<template>\n' +
                         '    <Row class="wi-cascader">\n' +
-                        '        <Col span="4"><Cascader :data="normal.data" v-model="normal.value" size="large"></Cascader></Col>\n' +
+                        '        <Col span="4">\n' +
+                        '            <Cascader :data="normal.data" v-model="normal.value" trigger="hover" size="large"></Cascader>\n' +
+                        '        </Col>\n' +
+                        '        <Col span="4" class="ml20">\n' +
+                        '            <Cascader :data="normal.data" v-model="normal.default" size="large"></Cascader>\n' +
+                        '        </Col>\n' +
+                        '        <Col span="4" class="ml20">\n' +
+                        '            <Cascader :data="normal.data" v-model="normal.change" size="large" change-on-select></Cascader>\n' +
+                        '        </Col>\n' +
+                        '        <Col span="4" class="ml20">\n' +
+                        '            <Cascader :data="normal.data" v-model="normal.filter" size="large" filterable></Cascader>\n' +
+                        '        </Col>\n' +
                         '    </Row>\n' +
                         '</template>\n' +
                         '<script>\n' +
@@ -73,6 +96,9 @@
                         '            return {\n' +
                         '                normal: {\n' +
                         '                    value: [],\n' +
+                        '                    default: [\'jiangsu\', \'nanjing\', \'fuzimiao\'],\n' +
+                        '                    change: [],\n' +
+                        '                    fliter: [],\n' +
                         '                    data: [{\n' +
                         '                        value: \'beijing\',\n' +
                         '                        label: \'北京\',\n' +
