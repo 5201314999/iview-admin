@@ -60,7 +60,8 @@
 <script>
     'use strict';
     import errorImg from './error.png';
-    const UploadComponent = {
+    const ImageUploadComponent = {
+        name: 'img-upload',
         props: ['config'],
         data() {
             const vm = this,
@@ -72,8 +73,8 @@
                 format: vm.config && vm.config.format ? vm.config.format : vm.G.files.format,
                 noteText: vm.config && vm.config.noteText ? vm.config.noteText : '',
                 maxCount: vm.config && null != vm.config.maxCount
-                        ? vm.config.maxCount
-                        : 100,
+                    ? vm.config.maxCount
+                    : 100,
                 /* 多选 */
                 multiple: vm.config && vm.config.multiple && null != vm.config.maxCount && vm.config.maxCount > 1,
                 /* 大小限制 ( 压缩前不大于3M ) */
@@ -431,5 +432,6 @@
             }
         }
     };
-    export default UploadComponent;
+    export default ImageUploadComponent;
 </script>
+
