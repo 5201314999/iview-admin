@@ -6,7 +6,7 @@
         data() {
             const vm = this;
             return {
-                page: 'log.html',
+                page: 'optLog.html',
                 url: vm.G.domains.webservices
             };
         },
@@ -45,7 +45,8 @@
                             }else parameter.push(n.toString() + '=' + params[n]);
                         }
                     }
-                    vm.$set(vm, 'url', vm.G.domains.webservices + '/' + vm.page + '?' + parameter.join('&'));
+                    const url = vm.G.domains.webservices + '/' + vm.page + '?' + parameter.join('&');
+                    vm.$set(vm, 'url', url);
                 }
             }
         },

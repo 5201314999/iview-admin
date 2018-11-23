@@ -66,7 +66,7 @@ exports.install = (Vue) => {
     Vue.prototype.getUrlOrParam = function(name) {
         const vm = this;
         if(vm.trim(name) !== null){
-            const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i'),
+            const reg = new RegExp('(^|&)??' + name + '=([^&]*)(&|$)', 'i'),
                 match = window.location.href.substr(1).match(reg);
             if(match !== null) return unescape(match[2]);
             return null;

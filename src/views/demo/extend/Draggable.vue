@@ -1,13 +1,10 @@
 <template>
 
 </template>
-
 <script>
-    export default {
-        name: "Draggable"
-    }
+    import Draggable from '@/components/draggable/Draggable';
+    const DraggableDemoComponent = {
+        components: {Draggable}
+    };
+    export default DraggableDemoComponent;
 </script>
-
-<style scoped>
-
-</style>

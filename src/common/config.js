@@ -22,14 +22,14 @@ let user = {};
 let logo = null;
 /**
  * identification.
- * @type {{app: null, soa: null, mapping: {app: string, soa: string}}}
+ * @type {{app: null, soa: null, pro: null, mapping: {app: string, pro: string, soa: string}}}
  */
 let id = {
     app: null,
     soa: null,
     pro: null,
     mapping: {
-        app: 'appId',
+        app: 'appid',
         pro: 'proId',
         soa: 'soaProId'
     }
