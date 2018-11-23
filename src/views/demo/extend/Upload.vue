@@ -6,27 +6,27 @@
                 <a href="https://www.iviewui.com/components/upload" target="_blank">Upload</a>
             </Row>
             <Row class="wi-item">
-                <Row class="wi-item-label">上传 ( 单图 )</Row>
+                <Row class="wi-item-label">图片上传 ( 单图 )</Row>
                 <Row class="wi-item-content">
                     <Row class="wi-upload">
-                        <wi-upload v-model="poster" :config="{
+                        <image-upload v-model="poster" :config="{
                             maxCount: 1,
                             fbId: 'F1704100',
                             maxSize: 3072
-                        }"></wi-upload>
+                        }"></image-upload>
                     </Row>
                 </Row>
             </Row>
             <Row class="wi-item">
-                <Row class="wi-item-label">上传 ( 多图 )</Row>
+                <Row class="wi-item-label">图片上传 ( 多图 )</Row>
                 <Row class="wi-item-content">
                     <Row class="wi-upload">
-                        <wi-upload v-model="images" :config="{
+                        <image-upload v-model="images" :config="{
                             maxCount: 10,
                             fbId: 'F1704100',
                             maxSize: 3072,
                             multiple: true
-                        }"></wi-upload>
+                        }"></image-upload>
                     </Row>
                 </Row>
             </Row>
@@ -40,16 +40,16 @@
     </Row>
 </template>
 <script>
-    import FileUpload from '@/components/upload/Upload';
+    import ImageUpload from '@/components/upload/ImageUpload';
     const UploadDemoComponent = {
-        components: {'wi-upload': FileUpload},
+        components: {'image-upload': ImageUpload},
         data() {
             return {
                 poster: null,
                 images: [],
                 html: '<template>\n' +
                     '    <Row class="wi-item">\n' +
-                    '        <Row class="wi-item-label">上传 ( 单图 )</Row>\n' +
+                    '        <Row class="wi-item-label">图片上传 ( 单图 )</Row>\n' +
                     '        <Row class="wi-item-content">\n' +
                     '            <Row class="wi-upload">\n' +
                     '                <wi-upload v-model="poster" :config="{\n' +
@@ -61,7 +61,7 @@
                     '        </Row>\n' +
                     '    </Row>\n' +
                     '    <Row class="wi-item">\n' +
-                    '        <Row class="wi-item-label">上传 ( 多图 )</Row>\n' +
+                    '        <Row class="wi-item-label">图片上传 ( 多图 )</Row>\n' +
                     '        <Row class="wi-item-content">\n' +
                     '            <Row class="wi-upload">\n' +
                     '                <wi-upload v-model="images" :config="{\n' +
