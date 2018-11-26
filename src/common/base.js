@@ -65,10 +65,26 @@ exports.install = (Vue) => {
      */
     Vue.prototype.getUrlOrParam = function(name) {
         const vm = this;
+        let parameters = {};
         if(vm.trim(name) !== null){
-            const reg = new RegExp('(^|&)??' + name + '=([^&]*)(&|$)', 'i'),
-                match = window.location.href.substr(1).match(reg);
-            if(match !== null) return unescape(match[2]);
+            const location = window.location,
+                hash = location.hash,
+                hashs = hash.split('?'),
+                url = location.search + hash,
+                param = url.split('?');
+            for(let i = 0; i < param.length; i++){
+                const cur = param[i],
+                    params = cur.split('&');
+                for(let k = 0; k < params.length; k++){
+                    const current = params[k],
+                        parameter = current.split('=');
+                    if(parameter && parameter.length > 1){
+                        if(hashs) parameter[1] = parameter[1].replace('/' + hashs[0], '');
+						parameters[vm.trim(parameter[0])] = vm.trim(parameter[1]);
+                    }
+                }
+            }
+            if(parameters[name]) return parameters[name];
             return null;
         }else{
             return window.location.href;

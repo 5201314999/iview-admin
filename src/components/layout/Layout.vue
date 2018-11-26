@@ -61,12 +61,12 @@
         },
         created() {
             const vm = this,
-                app = parseInt(vm.getUrlOrParam(vm.G.id.mapping.app)),
+                app = vm.getUrlOrParam(vm.G.id.mapping.app),
                 pro = parseInt(vm.getUrlOrParam(vm.G.id.mapping.pro)),
-                soa = parseInt(vm.getUrlOrParam(vm.G.id.mapping.soa));
-            if(app && !isNaN(app)) vm.$set(vm.G.id, 'app', app);
+                soa = vm.getUrlOrParam(vm.G.id.mapping.soa);
+            if(app) vm.$set(vm.G.id, 'app', app);
             if(pro && !isNaN(pro)) vm.$set(vm.G.id, 'pro', pro);
-            if(soa && !isNaN(soa)) vm.$set(vm.G.id, 'soa', soa);
+            if(soa) vm.$set(vm.G.id, 'soa', soa);
             axios.defaults.headers = {
                 'Content-Type': 'application/json;charset=utf-8',
                 'App-Id': vm.G.id.app,

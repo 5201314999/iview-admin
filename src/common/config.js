@@ -127,7 +127,9 @@ let menu = {
 const api = {
     user: '/user',
     logout: process.env.AUTH_SERVICES + '/LoginServlet',
-    project: process.env.AUTH_SERVICES + '/LoginServlet'
+    project: process.env.AUTH_SERVICES + '/LoginServlet',
+    dimension: process.env.UPLOAD_SERVER + '/dimension/v1/',
+    region: process.env.UPLOAD_SERVER + '/region/level-list/'
 };
 /**
  * file's configuration
