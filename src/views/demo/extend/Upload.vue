@@ -41,7 +41,7 @@
 </template>
 <script>
     import ImageUpload from '@/components/upload/ImageUpload';
-    const UploadDemoComponent = {
+    const UploadComponent = {
         components: {'image-upload': ImageUpload},
         data() {
             return {
@@ -90,5 +90,5 @@
             };
         }
     };
-    export default UploadDemoComponent;
+    export default UploadComponent;
 </script>
