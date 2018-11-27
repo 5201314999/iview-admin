@@ -129,7 +129,13 @@ const api = {
     logout: process.env.AUTH_SERVICES + '/LoginServlet',
     project: process.env.AUTH_SERVICES + '/LoginServlet',
     dimension: process.env.UPLOAD_SERVER + '/dimension/v1/',
-    region: process.env.UPLOAD_SERVER + '/region/level-list/'
+    region: process.env.UPLOAD_SERVER + '/region/level-list/',
+    draggable: {
+        base: '/basic-manager/basic-attribute',
+        list: '/module-manager/module/height/{height}/module-list',
+        height: '/module-manager/module/height-list',
+        template: '/layout-manager/layout/{id}'
+    }
 };
 /**
  * file's configuration

@@ -79,7 +79,10 @@ exports.install = (Vue) => {
                     const current = params[k],
                         parameter = current.split('=');
                     if(parameter && parameter.length > 1){
-                        if(hashs) parameter[1] = parameter[1].replace('/' + hashs[0], '');
+                        if(hashs){
+                            parameter[1] = parameter[1].replace('/' + hashs[0], '');
+                            parameter[1] = parameter[1].replace(hashs[0], '');
+                        }
 						parameters[vm.trim(parameter[0])] = vm.trim(parameter[1]);
                     }
                 }
