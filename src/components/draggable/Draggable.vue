@@ -1,16 +1,82 @@
 <template>
 	<Row class="wi-draggable" ref="draggable">
 		<Card :id="classes.drag.source" v-if="!setting.only">
-			<Row class="wi-search clearfix">
+			<div class="wi-search">
+				<!-- search & layout -->
 				<Row class="wi-search-left">
-					<Row class="wi-select">
-						<Select v-model="search.height" :style="{width: '100px'}">
-							<Option v-for="(item, index) in height" :label="item" :value="item" :key="index"></Option>
-						</Select>
+					<Select v-model="search.height" :style="{width: '100px'}" @on-change="handleComponentSearch" class="wi-select">
+						<Option v-for="(item, index) in height" :label="item" :value="item" :key="index"></Option>
+					</Select>
+					<Button type="primary" size="large" class="ml15" @click="getCommonLayout" v-if="setting.commonly">常用布局</Button>
+				</Row>
+				<!-- create button -->
+				<Row class="wi-search-right">
+					<Button type="primary" size="large" ref="create">
+                        <icon type="plus-round" class="mr5"></icon>添加推荐行
+                    </Button>
+				</Row>
+				<!-- modal -->
+				<Modal v-model="template.modal" :title="template.title" :transfer="true" :width="1132" :scrollable="true" class-name="wi-common-layout-preview-modal" v-if="setting.commonly">
+					<!-- search & list -->
+					<Row class="wi-common-layout-search" ref="search">
+						<Row class="wi-search">
+							<Row class="wi-search-left">
+								<Input icon="ios-search" size="large" placeholder="搜索常用布局ID或常用布局标题" @keyup.native="handleLayoutSearch" v-model="template.condition.queryParam" :style="{width: '350px'}" />
+							</Row>
+						</Row>
+						<Row class="wi-search-list">
+							<Row class="wi-common-layout-prev">
+								<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="handleLayoutSearchSwitch" ref="left"></icon>
+							</Row>
+							<Row class="wi-search-content">
+								<ul class="wi-search-items clearfix" ref="template">
+									<li v-for="(li, k) in template.data" :key="k" v-html="li['layoutTitle']" @click="handleLayoutSelect" :data-id="li['layoutId']" :title="li['layoutTitle']" :class="template.active === li['layoutId'] ? classes.template.active : ''"></li>
+								</ul>
+							</Row>
+							<Row class="wi-common-layout-next">
+								<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="right" v-on:click="handleLayoutSearchSwitch" ref="right"></icon>
+							</Row>
+						</Row>
+					</Row>
+					<!-- name -->
+					<Row class="wi-common-layout-name" v-html="template.name"></Row>
+					<!-- content -->
+					<Row class="wi-common-layout-container">
+						<Row class="wi-common-layout-prev">
+							<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="handleLayoutPreviewSwitch" ref="prev"></icon>
+						</Row>
+						<Row class="wi-common-layout-content" ref="preview" :style="{padding: '0 ' + Math.ceil((960 - template.width) * setting.base.ratio) + 'px'}">
+							<Row class="wi-common-layout-row" ref="row">
+								<Row v-for="(list, index) in template.list" :style="{'margin-top' : index > 0 ? Math.ceil(setting.base.row * setting.base.ratio) + 'px' : 0}" :key="index" class="wi-common-layout-list">
+									<Row v-for="(item, key) in list['layoutRowModules']" :style="{'margin-left': key > 0 ? Math.ceil(setting.base.block * setting.base.ratio) + 'px' : 0}" :key="key" class="wi-common-layout-item">
+										<Row class="wi-common-layout-block" v-for="(block, i) in item.blocks" :key="i" :style="{width: Math.ceil(block.width * setting.base.ratio) + 'px', height: Math.ceil(block.height * setting.base.ratio) + 'px', 'margin-top': (i > 0 ? setting.base.space * setting.base.ratio + 'px' : 0)}" v-html="block.width + ' * ' + block.height"></Row>
+									</Row>
+								</Row>
+							</Row>
+						</Row>
+						<Row class="wi-common-layout-next">
+							<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="next" v-on:click="handleLayoutPreviewSwitch" ref="right"></icon>
+						</Row>
+					</Row>
+					<!-- button -->
+					<Row class="wi-common-layout-btn">
+						<Button type="primary" size="large" @click="setCommonLayoutToRow">确定</Button>
+					</Row>
+					<Row slot="footer"></Row>
+				</Modal>
+			</div>
+			<!-- source -->
+			<Row class="wi-draggable-box">
+				<Row class="wi-draggable-prev">
+					<icon type="md-arrow-dropleft"></icon>
+				</Row>
+				<Row class="wi-draggable-content">
+					<Row class="wi-draggable-list" id="source" ref="source">
+						<Row class="wi-draggable-item" v-for="(item, index) in items" :key="item.id + '-' + $unique()"></Row>
 					</Row>
 				</Row>
-				<Row class="wi-search-right">
-				
+				<Row class="wi-draggable-next">
+					<icon type="md-arrow-dropright"></icon>
 				</Row>
 			</Row>
 		</Card>
@@ -60,9 +126,7 @@
 		        search: {
         			temp: 0,
 			        height: 370,
-			        condition: {
-        				queryParam: ''
-			        }
+			        condition: {queryParam: ''}
 		        },
 		        height: [],
 		        items: [],
@@ -104,6 +168,9 @@
 				        image: prefix + 'drag-item-block-image',
 				        cover: prefix + 'drag-item-block-image-cover'
 			        },
+			        template: {
+        				active: prefix + 'search-item-active'
+			        },
 			        disabled: 'disabled',
 			        hidden: 'hidden'
 		        },
@@ -128,12 +195,10 @@
 		        },
 		        template: {
         			condition: {
-                        queryParam: null,
+        				queryParam: null,
                         sortMark: 'DESC',
-                        pagination: {
-                            pageNum: 1,
-                            pageSize: 10000
-                        }
+                        pageNum: 1,
+				        pageSize: 10000
                     },
 			        form: {
                         validate: {
@@ -145,7 +210,17 @@
                         disabled: false,
                         rules: {},
                         data: {}
-                    }
+                    },
+			        offset: {
+        				list: 0,
+				        preview: 0
+			        },
+			        width: 960,
+			        active: 0,
+			        list: [],
+			        modal: false,
+			        title: '选择推荐组常用布局模板',
+			        name: '常用布局模板预览'
 		        }
 	        };
         },
@@ -416,6 +491,180 @@
 	        },
 	        
 	        updateComponentBodyWidth() {},
+	        
+	        /**
+             * search ( refresh ).
+             * when click the search button, get data and refresh layout.
+             * @see getComponentData
+             */
+	        handleComponentSearch() {
+	        	const vm = this,
+			        source = vm.$refs.source;
+	        	vm.getComponentData();
+	        	if(source) source.style.marginLeft = 0;
+	        },
+	
+	        /**
+	         * get common layout.
+	         * the modal is opened, select first and click it (default).
+	         */
+	        getCommonLayout() {
+	        	const vm = this;
+	        	vm.resetCommonLayout();
+	        	vm.$api.get(vm.setting.api.layout, vm.template.condition, (res) => {
+	        		if(res['ret']['retCode'].toString() === '0'){
+	        			vm.$set(vm.template, 'modal', true);
+	        			vm.$set(vm.template, 'data', res.data.layouts);
+	        			vm.$nextTick(() => {
+	        				/** click first one (default). */
+	        				const elem = vm.$refs.template,
+						        li = elem ? elem.getElementsByTagName('li') : [];
+	        				if(li.length > 0) li[0].click();
+	        				if(vm.template.data.length > 6) vm.removeClass(vm.$refs.right.$el, vm.classes.disabled);
+				        });
+			        }else{
+	        			vm.$warning('暂无常用模板, 请前往 [ 模板库 ] 进行创建');
+	        			return false;
+			        }
+		        }, (err) => {
+	        		vm.$error(err);
+	        		return false;
+		        });
+	        },
+	        
+	        /**
+	         * parse common layout data.
+	         * @param datas
+	         * @returns {*}
+	         */
+	        parseCommonLayout(datas) {
+	        	const vm = this;
+	        	let list = [],
+			        widths = [];
+	        	datas.map((data) => {
+	        		const modules = data['layoutRowModules'];
+	        		let w = 0;
+	        		modules.map((module, k) => {
+	        			const num = module['positionNum'],
+					        width = module['moduleWidth'],
+					        height = module['moduleHeight'];
+	        			if(num > 1){
+	        				const spacing = vm.setting.base.space * (num - 1),
+						        h = Math.round((height - spacing) / num * 100) / 100;
+	        				for(let i = 0; i < num; i++){
+	        					list.push({
+							        width: width,
+							        height: h
+						        });
+					        }
+				        }else{
+	        				list.push({
+						        width: width,
+						        height: height
+					        });
+				        }
+	        			w += width;
+	        			if(k < modules.length - 1) w += vm.setting.base.row;
+	        			modules[k]['blocks'] = list;
+	        			list = [];
+			        });
+	        		widths.push(w);
+		        });
+	        	vm.$set(vm.template, 'max', Math.max.apply(null, widths));
+	        	return datas;
+	        },
+	        
+	        /**
+	         * reset common layout.
+	         * the first one is activity status, and empty the `list`.
+	         */
+	        resetCommonLayout() {
+	        	const vm = this;
+	        	vm.$set(vm.template, 'active', 0);
+	        	vm.$set(vm.template, 'list', []);
+	        },
+	        
+	        setCommonLayoutToRow() {
+	        
+	        },
+	        
+	        /**
+	         * search common layout.
+	         * @see getCommonLayout
+	         */
+	        handleLayoutSearch() {
+	        	const vm = this;
+	        	vm.getCommonLayout();
+	        },
+	        
+	        /**
+	         * select common layout.
+	         * @param event
+	         */
+	        handleLayoutSelect(event) {
+	        	const vm = this,
+			        elem = event.target,
+			        id = parseInt(elem.getAttribute('data-id'));
+	        	if(!isNaN(id) && id > 0){
+	        		if(vm.template.active !== id){
+	        			vm.$set(vm.template, 'active', id);
+	        			const name = vm.trim(elem.getAttribute('title'));
+	        			vm.$set(vm.template, 'name', '[ ' + name + ' ] 布局预览');
+	        			vm.$set(vm.template, 'width', 960 - Math.ceil(vm.setting.base.left * vm.setting.base.ratio));
+	        			vm.$api.get(vm.parseUrl(vm.setting.api.template, {id: id}), {}, (res) => {
+	        				if(res['ret']['retCode'].toString() === '0'){
+	        					vm.$set(vm.template, 'list', vm.parseCommonLayout(res.data['layoutRows']));
+					        }else{
+	        					vm.$error(res['ret']['retMsg']);
+	        					return false;
+					        }
+				        }, (err) => {
+	        				vm.$error(err);
+	        				return false;
+				        });
+			        }
+		        }else{
+	        		vm.$error('[ 布局模板ID ] 参数有误，请刷新后再试');
+                    return false;
+		        }
+	        },
+	        
+	        /**
+	         * switch common layout.
+	         * `left` or `right`, set the offset of element in content.
+	         * and control the switch button
+	         */
+	        handleLayoutSearchSwitch(event) {
+	        	const vm = this,
+			        elem = event.target,
+			        direct = vm.trim(elem.getAttribute('data-direct')),
+			        info = {single: 150, total: 960, spacing: 12},
+			        length = vm.template.data.length,
+			        max = info.single * length + info.spacing * (length - 1),
+			        offset = vm.template.offset.list,
+			        element = vm.$refs.template;
+	        	let pos = 0;
+	        	if(direct === 'left'){
+	        		if(offset > 0){
+	        			pos = Math.abs(offset - info.total);
+	        			pos = pos > 0 ? pos : 0;
+	        			element.style.marginLeft = - pos + 'px';
+	        	        vm.$set(vm.template.offset, 'list', pos);
+	        	        if(pos <= 0) vm.addClass(elem, vm.classes.disabled);
+	        	        vm.removeClass(vm.$refs.right.$el, vm.classes.disabled);
+			        }
+		        }else if(direct === 'right'){
+	        		if(offset < (max - info.total)){
+	        			pos = Math.abs(info.total + offset);
+	        			element.style.marginLeft = - pos + 'px';
+	        	        vm.$set(vm.template.offset, 'list', pos);
+	        	        if(pos > max - info.total) vm.addClass(elem, vm.classes.disabled);
+	        	        vm.removeClass(vm.$refs.left.$el, vm.classes.disabled);
+			        }
+		        }
+	        },
+	        
+	        handleLayoutPreviewSwitch() {},
 	        
 	        handleComponentSwitchTarget(node) {},
 	        
@@ -733,10 +982,13 @@
 	        		api: {
                         base: api.base ? vm.trim(api.base) : vm.G.api.draggable.base,
 				        list: api.list ? vm.trim(api.list) : vm.G.api.draggable.list,
-				        height: api.height ? vm.trim(api.height) : vm.G.api.draggable.height
+				        height: api.height ? vm.trim(api.height) : vm.G.api.draggable.height,
+				        template: api.template ? vm.trim(api.template) : vm.G.api.draggable.template,
+				        layout: api.layout ? vm.trim(api.layout) : vm.G.api.draggable.layout
 			        },
 			        base: {},
 			        only: false,
+			        commonly: typeof config.commonly !== 'undefined' ? config.commonly : false,
 			        carousel: {
 	        			auto: typeof carousel.auto !== 'undefined' ? carousel.auto : true,
 				        speed: carousel.speed ? parseInt(carousel.speed) : 4000,

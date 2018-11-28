@@ -4,7 +4,9 @@
 			<Row slot="title" class="wi-card-title">
 				<icon type="ios-create-outline" /> Draggable
 			</Row>
-			<wi-draggable :rows="rows" :exec="exec" :init="true"></wi-draggable>
+			<wi-draggable :rows="rows" :exec="exec" :init="true" :config="{
+				commonly: true
+			}"></wi-draggable>
 		</Card>
 	</Row>
 </template>

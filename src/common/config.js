@@ -134,7 +134,8 @@ const api = {
         base: '/basic-manager/basic-attribute',
         list: '/module-manager/module/height/{height}/module-list',
         height: '/module-manager/module/height-list',
-        template: '/layout-manager/layout/{id}'
+        template: '/layout-manager/layout/{id}',
+	    layout: '/layout-manager/layouts'
     }
 };
 /**
