@@ -21,20 +21,20 @@
 					<Row class="wi-common-layout-search" ref="search">
 						<Row class="wi-search">
 							<Row class="wi-search-left">
-								<Input icon="ios-search" size="large" placeholder="搜索常用布局ID或常用布局标题" @keyup.native="handleLayoutSearch" v-model="template.condition.queryParam" :style="{width: '350px'}" />
+								<Input icon="ios-search" size="large" placeholder="搜索常用布局ID或常用布局标题" @keyup.native="searchCommonLayout" v-model="template.condition.queryParam" :style="{width: '350px'}" />
 							</Row>
 						</Row>
 						<Row class="wi-search-list">
 							<Row class="wi-common-layout-prev">
-								<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="handleLayoutSearchSwitch" ref="left"></icon>
+								<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="switchCommonLayoutSearch" ref="left"></icon>
 							</Row>
 							<Row class="wi-search-content">
 								<ul class="wi-search-items clearfix" ref="template">
-									<li v-for="(li, k) in template.data" :key="k" v-html="li['layoutTitle']" @click="handleLayoutSelect" :data-id="li['layoutId']" :title="li['layoutTitle']" :class="template.active === li['layoutId'] ? classes.template.active : ''"></li>
+									<li v-for="(li, k) in template.data" :key="k" v-html="li['layoutTitle']" @click="selectCommonLayout" :data-id="li['layoutId']" :title="li['layoutTitle']" :class="template.active === li['layoutId'] ? classes.template.active : ''"></li>
 								</ul>
 							</Row>
 							<Row class="wi-common-layout-next">
-								<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="right" v-on:click="handleLayoutSearchSwitch" ref="right"></icon>
+								<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="right" v-on:click="switchCommonLayoutSearch" ref="right"></icon>
 							</Row>
 						</Row>
 					</Row>
@@ -43,24 +43,24 @@
 					<!-- content -->
 					<Row class="wi-common-layout-container">
 						<Row class="wi-common-layout-prev">
-							<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="handleLayoutPreviewSwitch" ref="prev"></icon>
+							<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="switchCommonLayoutPreview" ref="prev"></icon>
 						</Row>
-						<Row class="wi-common-layout-content" ref="preview" :style="{padding: '0 ' + Math.ceil((960 - template.width) * setting.base.ratio) + 'px'}">
+						<Row class="wi-common-layout-content" ref="preview" :style="{padding: '0 ' + Math.round((960 - template.width) * setting.base.ratio) + 'px'}">
 							<Row class="wi-common-layout-row" ref="row">
-								<Row v-for="(list, index) in template.list" :style="{'margin-top' : index > 0 ? Math.ceil(setting.base.row * setting.base.ratio) + 'px' : 0}" :key="index" class="wi-common-layout-list">
-									<Row v-for="(item, key) in list['layoutRowModules']" :style="{'margin-left': key > 0 ? Math.ceil(setting.base.block * setting.base.ratio) + 'px' : 0}" :key="key" class="wi-common-layout-item">
-										<Row class="wi-common-layout-block" v-for="(block, i) in item.blocks" :key="i" :style="{width: Math.ceil(block.width * setting.base.ratio) + 'px', height: Math.ceil(block.height * setting.base.ratio) + 'px', 'margin-top': (i > 0 ? setting.base.space * setting.base.ratio + 'px' : 0)}" v-html="block.width + ' * ' + block.height"></Row>
+								<Row v-for="(list, index) in template.list" :style="{'margin-top' : index > 0 ? Math.round(setting.base.row * setting.base.ratio) + 'px' : 0}" :key="index" class="wi-common-layout-list">
+									<Row v-for="(item, key) in list['layoutRowModules']" :style="{'margin-left': key > 0 ? Math.round(setting.base.block * setting.base.ratio) + 'px' : 0}" :key="key" class="wi-common-layout-item">
+										<Row class="wi-common-layout-block" v-for="(block, i) in item.blocks" :key="i" :style="{width: Math.round(block.width * setting.base.ratio) + 'px', height: Math.round(block.height * setting.base.ratio) + 'px', 'margin-top': (i > 0 ? setting.base.space * setting.base.ratio + 'px' : 0)}" v-html="block.width + ' * ' + block.height"></Row>
 									</Row>
 								</Row>
 							</Row>
 						</Row>
 						<Row class="wi-common-layout-next">
-							<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="next" v-on:click="handleLayoutPreviewSwitch" ref="right"></icon>
+							<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="next" v-on:click="switchCommonLayoutPreview" ref="right"></icon>
 						</Row>
 					</Row>
 					<!-- button -->
 					<Row class="wi-common-layout-btn">
-						<Button type="primary" size="large" @click="setCommonLayoutToRow">确定</Button>
+						<Button type="primary" size="large" @click="setCommonLayout">确定</Button>
 					</Row>
 					<Row slot="footer"></Row>
 				</Modal>
@@ -68,18 +68,45 @@
 			<!-- source -->
 			<Row class="wi-draggable-box">
 				<Row class="wi-draggable-prev">
-					<icon type="md-arrow-dropleft"></icon>
+					<icon type="ios-arrow-back"></icon>
 				</Row>
 				<Row class="wi-draggable-content">
 					<Row class="wi-draggable-list" id="source" ref="source">
-						<Row class="wi-draggable-item" v-for="(item, index) in items" :key="item.id + '-' + $unique()"></Row>
+						<Row class="wi-draggable-item" v-for="(item, index) in items" :key="prefix + item.id + '-' + $unique()" :data-index="item.id" :data-num="item.number" :data-width="item.width" :data-height="item.height" :style="{'margin-right': index === items.length - 1 ? '0' : (setting.base.block * setting.ratio) + 'px'}">
+							<Row v-for="(block, key) in item.data" :style="{width: block.width + 'px', height: block.height + 'px', 'margin-bottom': block.space + 'px'}" :key="item.id + '-' + key" :class="classes.drag.single" :data-width="block.source.width" :data-height="block.source.height">
+								{{ block.source.width }} * {{ block.source.height }}
+							</Row>
+						</Row>
 					</Row>
 				</Row>
 				<Row class="wi-draggable-next">
-					<icon type="md-arrow-dropright"></icon>
+					<icon type="ios-arrow-forward"></icon>
 				</Row>
 			</Row>
 		</Card>
+		<!-- target -->
+		<Row class="wi-tabs wi-draggable-tabs" :class="setting.only ? '' : 'mt20'">
+			<Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="switchComponentRow">
+				<TabPane label="第 1 行推荐" name="tab-1">
+					<Row class="wi-draggable-container" id="target-row-1">
+						<Row class="wi-draggable-box wi-draggable-target">
+							<Row class="wi-draggable-prev">
+								<icon type="ios-arrow-back"></icon>
+							</Row>
+							<Row class="wi-draggable-content">
+								<Row class="wi-draggable-list" id="target-1"></Row>
+								<span :class="classes.drag.line" :style="{left: ((1920 - setting.base.left) * setting.base.ratio) + 'px'}" v-if="drag.rows.width.nums['target-1'] <= 1"></span>
+								<span :class="classes.drag.align" ref="align" :style="{left: ((1920 - (setting.base.left * 2)) * setting.base.ratio) + 'px'}" v-if="drag.rows.width.nums['target-1'] <= 1"></span>
+							</Row>
+							<Row class="wi-draggable-next">
+								<icon type="ios-arrow-forward"></icon>
+							</Row>
+							<Row class="wi-draggable-tip" ref="tip" v-if="!setting.only">选择组件，拖放至此处</Row>
+						</Row>
+					</Row>
+				</TabPane>
+			</Tabs>
+		</Row>
 	</Row>
 </template>
 <script>
@@ -132,25 +159,26 @@
 		        items: [],
 		        component: [],
 		        classes: {
-        			body: null,
-			        wrapper: prefix + 'drag-delete-wrap',
-			        container: prefix + 'wi-container',
+			        container: prefix + 'container',
 			        drag: {
-        				container: prefix + 'drag-container',
-				        box: prefix + 'drag-box',
-				        prev: prefix + 'drag-prev',
-				        next: prefix + 'drag-next',
-				        content: prefix + 'drag-content',
-				        list: prefix + 'drag-list',
-				        source: prefix + 'drag-source',
-				        target: prefix + 'drag-target',
-				        item: prefix + 'drag-item',
-				        single: prefix + 'drag-item-one',
-				        active: prefix + 'drag-item-active',
-				        image: prefix + 'drag-item-image',
-				        line: prefix + 'drag-screen-line',
-				        align: prefix + 'drag-align-line',
-				        only: prefix + 'drag-only-target'
+        				container: prefix + 'draggable-container',
+				        body: prefix + 'draggable-body',
+				        box: prefix + 'draggable-box',
+				        prev: prefix + 'draggable-prev',
+				        next: prefix + 'draggable-next',
+				        content: prefix + 'draggable-content',
+				        list: prefix + 'draggable-list',
+				        source: prefix + 'draggable-source',
+				        target: prefix + 'draggable-target',
+				        item: prefix + 'draggable-item',
+				        single: prefix + 'draggable-item-one',
+				        active: prefix + 'draggable-item-active',
+				        image: prefix + 'draggable-item-image',
+				        line: prefix + 'draggable-screen-line',
+				        align: prefix + 'draggable-align-line',
+				        through: prefix + 'draggable-align-line-through',
+				        only: prefix + 'draggable-only-target',
+				        dragging: prefix + 'dragging'
 			        },
 			        shadow: {
         				single: prefix + 'drag-item-shadow',
@@ -165,8 +193,8 @@
 			        },
 			        block: {
         				prefix: prefix + 'block',
-				        image: prefix + 'drag-item-block-image',
-				        cover: prefix + 'drag-item-block-image-cover'
+				        image: prefix + 'draggable-item-block-image',
+				        cover: prefix + 'draggable-item-block-image-cover'
 			        },
 			        template: {
         				active: prefix + 'search-item-active'
@@ -175,6 +203,7 @@
 			        hidden: 'hidden'
 		        },
 		        drag: {
+        			body: null,
         			elements: {},
         			pages: {
         				source: 0,
@@ -183,7 +212,12 @@
 			        rows: {
         				id: 1,          // row's number.
         				num: 1,         // row's number. (actual)
-				        width: {},      // row's width.
+				        width: {        // row's width.
+        					width: 0,
+					        nums: {
+        						'target-1': 1
+					        }
+				        },
 				        height: {},     // row's height.
 				        instance: {}    // sortable object. (target)
 			        },
@@ -191,6 +225,10 @@
         				template: [],
 				        instance: [],
 				        values: {}
+			        },
+			        tabs: {
+        				id: 1,
+        				value: 'tab-1'
 			        }
 		        },
 		        template: {
@@ -236,10 +274,10 @@
         			if(res['ret']['retCode'].toString() === '0'){
         				const top = res.data['topMargin'],
 					        left = res.data['leftMargin'],
-					        block = res.data['recModuleInterval'],
+					        group = res.data['recGroupInterval'],
 					        row = res.data['recRowInterval'],
-					        space = res.data['recPositionInterval'],
-					        group = res.data['recGroupInterval'];
+					        block = res.data['recModuleInterval'],
+					        space = res.data['recPositionInterval'];
         				vm.$set(vm.setting, 'base', {
         					left: left,
 					        top: top,
@@ -249,6 +287,8 @@
 					        space: space,
 					        ratio: 0.5
 				        });
+        				if(!vm.init) vm.getComponentHeightData();
+        	            if(!vm.setting.only) vm.initDraggableSource();
 			        }else{
         				vm.$error(res['ret']['retMsg']);
         				return false;
@@ -463,7 +503,7 @@
 	         * @param spacing
 	         * @returns {number}
 	         */
-	        getComponentTotalWidth(data, spacing) {
+	        getComponentWidth(data, spacing) {
 	        	let width = 0;
 	        	data.map((item) => {
 	        		if(item.data && item.data.length > 0){
@@ -472,6 +512,47 @@
 		        });
 	        	width = width > 0 ? width - spacing : width;
 	        	return width;
+	        },
+	        
+	        /**
+	         * Calculating the page's number based on the number of component.
+             * @param node currently clicked object
+             * @param num component's number
+	         */
+	        getComponentPages(node, num) {
+	        	const vm = this,
+			        number = typeof num !== 'undefined' ? parseInt(num) : vm.items.length,
+			        width = vm.getComponentNodeWidth(node, vm.classes.drag.content),
+			        items = node.getElementsByClassName(vm.classes.drag.item);
+	        	let widths = {
+	        		item: 0,
+			        total: 0
+		        };
+	        	if(number > 0){
+	        		for(let i = 0; i < number; i++){
+	        			if(items.hasOwnProperty(i)){
+	        				const cur = items[i],
+						        temp = parseInt(cur.getAttribute('data-width'));
+	        				if(!isNaN(temp)) widths.item += temp * vm.setting.base.ratio;
+				        }
+			        }
+		        }
+	        	widths.total = widths.item + (vm.setting.base.block * vm.setting.base.ratio) * (number - 1);
+	        	return Math.ceil(widths.total / width);
+	        },
+	        
+	        /**
+             * get component node's client width
+             * @param node currently clicked object
+             * @param name class' name
+             */
+	        getComponentNodeWidth(node, name) {
+	        	const element = node.getElementsByClassName(name);
+	        	if(element.length > 0){
+	        		const elem = element[0];
+	        		return elem.clientWidth;
+		        }
+	        	return 0;
 	        },
 	        
 	        /**
@@ -485,7 +566,7 @@
 	        		const parent = body.parentNode,
 				        width = parent.clientWidth;
 	        		vm.$set(vm.drag.rows.width, 'width', width);
-	        		vm.$set(vm.drag.rows.width, 'nums', []);
+	        		vm.$set(vm.drag.rows.width, 'nums', {});
 	        		vm.$set(vm.drag.rows.width['nums'], id, 1);
 		        }
 	        },
@@ -503,6 +584,12 @@
 	        	vm.getComponentData();
 	        	if(source) source.style.marginLeft = 0;
 	        },
+	        
+	        switchComponentRow() {},
+	        
+	        switchComponentTarget(node) {},
+	        
+	        switchComponentSource() {},
 	
 	        /**
 	         * get common layout.
@@ -530,6 +617,18 @@
 	        		vm.$error(err);
 	        		return false;
 		        });
+	        },
+	        
+	        setCommonLayout() {},
+	        
+	        /**
+	         * reset common layout.
+	         * the first one is activity status, and empty the `list`.
+	         */
+	        resetCommonLayout() {
+	        	const vm = this;
+	        	vm.$set(vm.template, 'active', 0);
+	        	vm.$set(vm.template, 'list', []);
 	        },
 	        
 	        /**
@@ -575,24 +674,10 @@
 	        },
 	        
 	        /**
-	         * reset common layout.
-	         * the first one is activity status, and empty the `list`.
-	         */
-	        resetCommonLayout() {
-	        	const vm = this;
-	        	vm.$set(vm.template, 'active', 0);
-	        	vm.$set(vm.template, 'list', []);
-	        },
-	        
-	        setCommonLayoutToRow() {
-	        
-	        },
-	        
-	        /**
 	         * search common layout.
 	         * @see getCommonLayout
 	         */
-	        handleLayoutSearch() {
+	        searchCommonLayout() {
 	        	const vm = this;
 	        	vm.getCommonLayout();
 	        },
@@ -601,7 +686,7 @@
 	         * select common layout.
 	         * @param event
 	         */
-	        handleLayoutSelect(event) {
+	        selectCommonLayout(event) {
 	        	const vm = this,
 			        elem = event.target,
 			        id = parseInt(elem.getAttribute('data-id'));
@@ -610,7 +695,7 @@
 	        			vm.$set(vm.template, 'active', id);
 	        			const name = vm.trim(elem.getAttribute('title'));
 	        			vm.$set(vm.template, 'name', '[ ' + name + ' ] 布局预览');
-	        			vm.$set(vm.template, 'width', 960 - Math.ceil(vm.setting.base.left * vm.setting.base.ratio));
+	        			vm.$set(vm.template, 'width', 960 - Math.round(vm.setting.base.left * vm.setting.base.ratio));
 	        			vm.$api.get(vm.parseUrl(vm.setting.api.template, {id: id}), {}, (res) => {
 	        				if(res['ret']['retCode'].toString() === '0'){
 	        					vm.$set(vm.template, 'list', vm.parseCommonLayout(res.data['layoutRows']));
@@ -634,7 +719,7 @@
 	         * `left` or `right`, set the offset of element in content.
 	         * and control the switch button
 	         */
-	        handleLayoutSearchSwitch(event) {
+	        switchCommonLayoutSearch(event) {
 	        	const vm = this,
 			        elem = event.target,
 			        direct = vm.trim(elem.getAttribute('data-direct')),
@@ -664,11 +749,7 @@
 		        }
 	        },
 	        
-	        handleLayoutPreviewSwitch() {},
-	        
-	        handleComponentSwitchTarget(node) {},
-	        
-	        handleComponentSwitchSource() {},
+	        switchCommonLayoutPreview() {},
 	        
 	        /**
 	         * reset draggable setting.
@@ -710,6 +791,8 @@
 	        	vm.getComponentHeightData();
 	        	if(vm.rows && vm.rows.length > 0){
 	        		vm.resetDraggable();
+	        		const tip = vm.$refs.tip;
+	        		if(tip && tip.$el) vm.addClass(tip.$el, vm.classes.hidden);
 	        		vm.rows.map((item, i) => {
 	        			const id = 'target-' + vm.drag.rows.num;
 	        			let data = item['layoutRowModules'],
@@ -741,7 +824,7 @@
 					        }
 				        }
 	        			const list = vm.parseComponentData(data, rowId),
-					        width = vm.getComponentTotalWidth(list, vm.setting.base.block);
+					        width = vm.getComponentWidth(list, vm.setting.base.block);
 	        			height = list ? (list[0].height > height ? list[0].height : height) : height;
 	        			template[id] = {
 	        				template: vm.initDraggableBlock(list, id),
@@ -760,7 +843,7 @@
 	        						node = container.parentNode.parentNode;
 	        						vm.$set(vm.drag.rows.height, key, cur.height);
 	        						vm.$set(vm.drag.pages.target, key, 1);
-	        						vm.$set(vm.drag.rows.width['nums'], k, 1);
+	        						vm.$set(vm.drag.rows.width['nums'], key, 1);
 	        						container.innerHTML = cur.template;
 	        						/** re initialization */
 	        						if(!vm.click && !vm.init){
@@ -770,7 +853,7 @@
 	        								vm.initDraggableTarget(target);
 								        }
 							        }else vm.setComponentBodyWidth(key);
-	        						vm.handleComponentSwitchTarget(node);
+	        						vm.switchComponentTarget(node);
 						        }
 					        });
 	        				bus.$emit('init-target-draggable');
@@ -864,7 +947,7 @@
 		        		/** whether can click or not. */
 		        		if(vm.init || vm.click){
 		        			/** attributes data */
-		        			const key = vm.prefix + '-' + id,
+		        			const key = vm.prefix + id,
 						        attributes = [
 						        	`id="${key}"`,
 							        `data-id="${item.id}"`,
@@ -891,7 +974,7 @@
 		        			/** convert to `string` */
 		        			string.params = params.join('');
 		        			string.style = style.join('');
-		        			if(len < 0){
+		        			if(len <= 0){
 		        				/** none (add icon or text) */
 		        				element.push(
 		        					`<Row ${string.params} style="${string.style}">${content}</Row>`
@@ -965,12 +1048,123 @@
 		        return templates.join('');
 	        },
 	        
-	        initDraggableSource() {},
+	        initDraggableSource() {
+	        	document.body.ondrop = function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                };
+	        	const vm = this,
+			        source = document.getElementById('source'),
+			        start = (event) => {
+	        		
+			        },
+			        end = () => {};
+	        	Sortable.create(source, {
+			        group: {
+			        	name: 'source',
+				        pull: 'clone',
+				        put: ['none']
+			        },
+			        animation: 120,
+			        ghostClass: vm.classes.drag.dragging,
+			        sort: false,
+			        onStart(event) {start(event);},
+			        onEnd() {end();}
+		        });
+	        },
 	        
 	        initDraggableTarget(id) {
 	        	const vm = this;
 	        	id = id && !isNaN(id) ? 'target-' + id : 'target-' + vm.drag.rows.num;
 	        	vm.setComponentBodyWidth(id);
+	        	const target = document.getElementById(id),
+			        add = (event) => {
+	        		    const parent = target.parentNode,
+				            parents = parent.parentNode,
+				            children = target.children,
+				            number = vm.getComponentPages(parents);
+			        },
+			        update = () => {
+	        		    const parent = target.parentNode,
+				            parents = parent.parentNode,
+				            number = vm.getComponentPages(parents),
+				            width = {
+	        		    	    old: vm.drag.pages.target[id] ? vm.drag.pages.target[id] : 0,
+					            new: (number - 1) * vm.drag.rows.width.width
+				            },
+				            first = width.old === 0 && width.new === 0;
+	        		    if(first && width.old > width.new){
+	        		    	target.style.marginLeft = '-' + width.new + 'px';
+	        		    	const temp = width.new <= 0 ? vm.drag.rows.width.width : width.new;
+	        		    	target.style.width = temp + 'px';
+	        		    	vm.$set(vm.drag.pages.target, id, width.new);
+			            }
+	        		    vm.switchComponentTarget(parents, number, id);
+	        		    parent.scrollLeft = 0;
+			        };
+	        	if(target){
+	        		if(vm.click || vm.only){
+	        			vm.$set(vm.drag.rows.instance, id, {});
+			        }else{
+	        			vm.drag.rows.instance[id] = Sortable.create(target, {
+	        				group: {
+	        					name: 'target',
+						        pull: true,
+						        put: ['source']
+					        },
+					        animation: 120,
+					        ghostClass: vm.classes.drag.dragging,
+					        onStart() {
+	        					vm.initDraggableBody();
+					        },
+					        onAdd(event) {
+	        					add(event);
+	        					event.item.style.marginRight = vm.setting.base.block * vm.setting.base.ratio + 'px';
+					        },
+					        onEnd() {
+	        					vm.initDraggableBody(true);
+					        },
+					        onRemove() {update();}
+				        });
+			        }
+		        }
+	        },
+	
+	        /**
+	         * init component container(draggable)
+             * mainly use to delete for all `target item`.
+	         * @param disabled
+	         */
+	        initDraggableBody(disabled) {
+	        	const vm = this,
+			        container = document.getElementsByClassName(vm.classes.container);
+	        	disabled = typeof disabled !== 'undefined' ? disabled : false;
+	        	if(container){
+	        		const body = container[0];
+	        		vm.$set(vm.drag, 'body', {});
+	        		vm.drag.body = Sortable.create(body, {
+	        			group: {
+	        				name: 'layout',
+					        pull: true,
+					        put: ['target']
+				        },
+				        animation: 120,
+				        ghostClass: vm.classes.drag.dragging,
+				        disabled: disabled,
+				        onAdd(event) {
+                            const children = event.target.children,
+                            length = children.length;
+	                        if(length > 1){
+	                            for(let i = 0; i < length; i++){
+	                                if(children.hasOwnProperty(i)){
+	                                    const child = children[i];
+	                                    if(vm.hasClass(child, vm.drag.item)) child.remove();
+	                                }
+	                            }
+	                        }
+                        }
+			        });
+		        }
 	        },
 	        
 	        parseComponentConfiguration() {
@@ -1006,9 +1200,6 @@
         mounted() {
         	const vm = this;
         	vm.getComponentBaseData();
-        	if(!vm.init) vm.getComponentHeightData();
-        	if(!vm.setting.only) vm.initDraggableSource();
-        	vm.initDraggableTarget();
         },
         destoryed() {}
     };
