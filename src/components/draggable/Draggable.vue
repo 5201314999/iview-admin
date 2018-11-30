@@ -87,7 +87,7 @@
 		<!-- target -->
 		<Row class="wi-tabs wi-draggable-tabs" :class="setting.only ? '' : 'mt20'">
 			<Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="switchComponentRow">
-				<TabPane label="第 1 行推荐" name="tab-1">
+				<TabPane label="第 1 行推荐" name="target-1">
 					<Row class="wi-draggable-container" id="target-row-1">
 						<Row class="wi-draggable-box wi-draggable-target">
 							<Row class="wi-draggable-prev">
@@ -159,6 +159,7 @@
 		        items: [],
 		        component: [],
 		        classes: {
+        			layout: prefix + 'layout',
 			        container: prefix + 'container',
 			        drag: {
         				container: prefix + 'draggable-container',
@@ -178,21 +179,21 @@
 				        align: prefix + 'draggable-align-line',
 				        through: prefix + 'draggable-align-line-through',
 				        only: prefix + 'draggable-only-target',
-				        dragging: prefix + 'dragging'
+				        dragging: prefix + 'draggable-dragging'
 			        },
 			        shadow: {
-        				single: prefix + 'drag-item-shadow',
-				        active: prefix + 'drag-item-shadow-active'
+        				single: prefix + 'draggable-item-shadow',
+				        active: prefix + 'draggable-item-shadow-active'
 			        },
 			        tabs: {
-        				container: prefix + 'recommend-tabs',
+        				container: prefix + 'draggable-tabs',
 				        pane: 'ivu-tabs-tabpane',
 				        tab: 'ivu-tabs-tab',
 				        active: 'ivu-tabs-tab-active',
 				        icon: 'ios-close-outline'
 			        },
 			        block: {
-        				prefix: prefix + 'block',
+        				prefix: prefix + 'draggable-block',
 				        image: prefix + 'draggable-item-block-image',
 				        cover: prefix + 'draggable-item-block-image-cover'
 			        },
@@ -203,11 +204,16 @@
 			        hidden: 'hidden'
 		        },
 		        drag: {
-        			body: null,
         			elements: {},
+			        data: {},
         			pages: {
         				source: 0,
 				        target: {'target-1': 1}
+			        },
+			        instance: {         // sortable instance object.
+        				layout: {},
+				        source: {},
+				        target: {}
 			        },
 			        rows: {
         				id: 1,          // row's number.
@@ -218,8 +224,7 @@
         						'target-1': 1
 					        }
 				        },
-				        height: {},     // row's height.
-				        instance: {}    // sortable object. (target)
+				        height: {}      // row's height.
 			        },
 			        blocks: {
         				template: [],
@@ -228,8 +233,9 @@
 			        },
 			        tabs: {
         				id: 1,
-        				value: 'tab-1'
-			        }
+        				value: 'target-1'
+			        },
+			        cross: {}
 		        },
 		        template: {
         			condition: {
@@ -462,9 +468,164 @@
 		        });
         		return list;
 	        },
+	        
+	        /**
+             * get the recommend data. all of recommend rows.
+             * @return {Array|Boolean}
+             * @see checkComponentRowData
+             */
+	        wrapComponentData() {
+	        	const vm = this;
+	        	return vm.checkComponentData();
+	        },
+	        
+	        /**
+             * Checked the row data.
+             * It's not empty and total width must longer than the base line.
+             * @return {Array|Boolean}
+             */
+	        checkComponentData() {
+	        	const vm = this, rows = [],
+			        container = document.getElementsByClassName(vm.classes.tabs.container),
+			        standard = Math.round((1920 - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
+	        	let tabs = null, length = 0, validate = true,
+			        params = {}, template = [];
+	        	if(container && container.length > 0){
+	        		const body = container[0];
+	        		tabs = body.getElementsByClassName(vm.classes.tabs.pane);
+	        		length = tabs.length;
+	        		for(let i = 0; i < length; i++){
+	        			const cur = tabs[i], data = [], commonly = [],
+					        items = cur.getElementsByClassName(vm.classes.drag.item),
+					        target = cur.getElementsByClassName(vm.classes.drag.box);
+	        			let width = 0, name, setting;
+	        			if(vm.setting.template){
+	        				/** commonly layout. */
+	        				for(let k = 0; k < items.length; k++){
+	        					const item = items[k],
+							        id = parseInt(item.getAttribute('data-index')),
+							        w = parseInt(item.getAttribute('data-width'));
+	        					if(!isNaN(id) && id > 0) commonly.push(id);
+	        					if(!isNaN(w) && w > 0) width += Math.round(w * vm.setting.base.ratio);
+	        					if(k < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
+					        }
+	        				template.push(commonly);
+				        }else{
+	        				/** `title` setting */
+	        				if(target){
+	        					name = target[0].getAttribute('data-name');
+	        					if(name === vm.drag.tabs.value)
+	        						setting = JSON.parse(JSON.stringify(vm.template.form.validata));
+	        					else setting = JSON.parse(JSON.stringify(vm.template.form.data[name]));
+	        					if(setting){
+	        						params = {
+	        							showTitle: setting.title,
+								        titlePosition: setting.position,
+								        showSubTitle: setting.subTitle
+							        };
+						        }else{
+	        						params = {
+	        							showTitle: JSON.parse(JSON.stringify(vm.template.form.validate.title)),
+	        							titlePosition: JSON.parse(JSON.stringify(vm.template.form.validate.position)),
+	        							showSubTitle: JSON.parse(JSON.stringify(vm.template.form.validate.subTitle))
+							        };
+						        }
+	        					if(!parseInt(params.showTitle)){
+	        						/** restoring the defaults. */
+	        						params.titlePosition = '1';
+	        						params.subTitle = '1';
+						        }
+					        }
+	        				/** recommend rows' layout. */
+	        				for(let n = 0; n < items.length; n++){
+	        					const item = items[n],
+							        id = parseInt(item.getAttribute('data-index')),
+							        row = parseInt(item.getAttribute('data-row')),
+							        num = parseInt(item.getAttribute('data-num')),
+							        w = parseInt(item.getAttribute('data-width')),
+							        height = parseInt(item.getAttribute('data-height')),
+							        blocks = item.getElementsByClassName(vm.classes.drag.single),
+							        temporary = [];
+	        					let relate = 0;
+	        					for(let m = 0; m < blocks.length; m++){
+	        						const block = blocks[m],
+								        variable = {
+	        							    width: parseInt(block.getAttribute('data-width')),
+									        height: parseInt(block.getAttribute('data-height')),
+									        position: parseInt(block.getAttribute('data-pos')),
+									        relate: parseInt(block.getAttribute('data-relate'))
+								        };
+	        						if(variable.relate) relate = variable.relate;
+	        						let single = {
+	        							width: variable.width,
+								        height: variable.height
+							        };
+	        						if(variable.position && !isNaN(variable.position))
+	        							Object.assign(single, {recPositionId: variable.position});
+	        						temporary.push(single);
+						        }
+	        					let modules = {
+	        						moduleId: id,
+							        positionNum: num,
+							        width: w,
+							        height: height,
+							        recPositions: temporary
+						        };
+	        					if(relate) Object.assign(modules, {
+	        						groupRowModuleId: relate
+						        });
+	        					data.push(modules);
+	        					width += Math.round(w * vm.setting.base.ratio);
+	        					if(n < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
+	        					/** update, needs `groupRowId` */
+	        					if(
+	        						row
+							        && !isNaN(row)
+							        && !params.groupRowId
+							        && !vm.template.create
+						        ) params.groupRowId = row;
+	        					params.modules = data;
+					        }
+	        				rows.push(params);
+				        }
+	        			if(width < standard){
+	        				validate = false;
+	        				break;
+				        }
+			        }
+		        }
+	        	return validate ? (vm.setting.template ? template : rows) : [];
+	        },
+	        
+	        updateComponentAlignLine() {
+	        	const vm = this,
+			        container = document.getElementsByClassName(vm.classes.tabs.container),
+			        standard = Math.round((1920 - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
+	        	let tabs = null, length = 0;
+	        	if(container && container.length > 0){
+	        		const body = container[0];
+	        		tabs = body.getElementsByClassName(vm.classes.tabs.pane);
+	        		length = tabs.length;
+	        		for(let i = 0; i < length; i++){
+	        			const cur = tabs[i],
+					        items = cur.getElementsByClassName(vm.classes.drag.item),
+					        align = cur.getElementsByClassName(vm.classes.drag.align);
+	        			let width = 0, alignment;
+	        			if(align) alignment = align[0];
+	        			for(let n = 0; n < items.length; n++){
+                            const item = items[n],
+						        w = parseInt(item.getAttribute('data-width'));
+                            width += Math.round(w * vm.setting.base.ratio);
+                            if(n < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
+				        }
+	        			if(width < standard) vm.removeClass(alignment, vm.classes.drag.through);
+	        			else vm.addClass(alignment, vm.classes.drag.through);
+			        }
+	        	}
+	        },
 	
 	        /**
-	         * get component heights' list.
+	         * Getting component heights' list.
 	         * all of heights.
 	         */
 	        getComponentHeightData() {
@@ -498,7 +659,7 @@
 	        },
 	        
 	        /**
-	         * get components' total width.
+	         * Getting components' total width.
 	         * @param data
 	         * @param spacing
 	         * @returns {number}
@@ -825,7 +986,13 @@
 				        }
 	        			const list = vm.parseComponentData(data, rowId),
 					        width = vm.getComponentWidth(list, vm.setting.base.block);
-	        			height = list ? (list[0].height > height ? list[0].height : height) : height;
+	        			if(list.length > 0){
+	        				list.map((block, index) => {
+	        					if(index === 0) height = block.height > height ? block.height : height;
+	        					if(!vm.drag.data[id]) vm.$set(vm.drag.data, id, []);
+	        					vm.drag.data[id].push(block);
+					        });
+				        }
 	        			template[id] = {
 	        				template: vm.initDraggableBlock(list, id),
 					        height: height,
@@ -847,7 +1014,7 @@
 	        						container.innerHTML = cur.template;
 	        						/** re initialization */
 	        						if(!vm.click && !vm.init){
-	        							if(typeof vm.drag.rows.instance[key] === 'undefined'){
+	        							if(typeof vm.drag.instance.target[key] === 'undefined'){
 	        								const keys = key.split('-'),
 										        target = parseInt(keys[1]);
 	        								vm.initDraggableTarget(target);
@@ -893,6 +1060,7 @@
 								        }
 							        }
 						        });
+	        					vm.updateComponentAlignLine();
 	        					vm.$emit('init-finish');
 					        }
 				        }else{
@@ -1059,7 +1227,7 @@
 	        		
 			        },
 			        end = () => {};
-	        	Sortable.create(source, {
+	        	vm.drag.instance.source = Sortable.create(source, {
 			        group: {
 			        	name: 'source',
 				        pull: 'clone',
@@ -1104,9 +1272,9 @@
 			        };
 	        	if(target){
 	        		if(vm.click || vm.only){
-	        			vm.$set(vm.drag.rows.instance, id, {});
+	        			vm.$set(vm.drag.instance.target, id, {});
 			        }else{
-	        			vm.drag.rows.instance[id] = Sortable.create(target, {
+	        			vm.drag.instance.target[id] = Sortable.create(target, {
 	        				group: {
 	        					name: 'target',
 						        pull: true,
@@ -1122,6 +1290,8 @@
 	        					event.item.style.marginRight = vm.setting.base.block * vm.setting.base.ratio + 'px';
 					        },
 					        onEnd() {
+	        					const data = vm.wrapComponentData();
+	        					vm.$emit('get-data', []);
 	        					vm.initDraggableBody(true);
 					        },
 					        onRemove() {update();}
@@ -1137,12 +1307,11 @@
 	         */
 	        initDraggableBody(disabled) {
 	        	const vm = this,
-			        container = document.getElementsByClassName(vm.classes.container);
+			        layout = document.getElementsByClassName(vm.classes.layout);
 	        	disabled = typeof disabled !== 'undefined' ? disabled : false;
-	        	if(container){
-	        		const body = container[0];
-	        		vm.$set(vm.drag, 'body', {});
-	        		vm.drag.body = Sortable.create(body, {
+	        	if(layout){
+	        		const container = layout[0];
+	        		vm.drag.instance.layout = Sortable.create(container, {
 	        			group: {
 	        				name: 'layout',
 					        pull: true,
@@ -1152,21 +1321,30 @@
 				        ghostClass: vm.classes.drag.dragging,
 				        disabled: disabled,
 				        onAdd(event) {
-                            const children = event.target.children,
-                            length = children.length;
-	                        if(length > 1){
-	                            for(let i = 0; i < length; i++){
-	                                if(children.hasOwnProperty(i)){
-	                                    const child = children[i];
-	                                    if(vm.hasClass(child, vm.drag.item)) child.remove();
-	                                }
+	        				/** remove item & delete rows.data[$child] */
+	        				const data = vm.drag.data[vm.drag.tabs.value];
+	        				if(data){
+                            	const item = event.item,
+		                            id = item ? parseInt(item.getAttribute('data-index')) : 0;
+                            	if(!isNaN(id) && id > 0){
+                            		data.map((block, key) => {
+                            			if(block.id === id){
+                            				data.splice(key, 1);
+                            				return false;
+			                            }
+		                            });
 	                            }
-	                        }
+                            }
+	        				event.item.remove();
                         }
 			        });
 		        }
 	        },
-	        
+	
+	        /**
+	         * parse config.
+	         * @returns {{api: {base: *, list: *, height: *, template: *, layout: *}, base: {}, only: boolean, commonly: boolean, carousel: {auto: boolean, speed: number, radiuDot: boolean}, template: boolean}}
+	         */
 	        parseComponentConfiguration() {
 	        	const vm = this,
 			        config = vm.config,
@@ -1187,7 +1365,8 @@
 	        			auto: typeof carousel.auto !== 'undefined' ? carousel.auto : true,
 				        speed: carousel.speed ? parseInt(carousel.speed) : 4000,
 				        radiuDot: typeof carousel.radiuDot !== 'undefined' ? carousel.radiuDot : true
-			        }
+			        },
+			        template: typeof config.template !== 'undefined' ? config.template : false
 		        };
 	        },
         },
