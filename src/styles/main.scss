@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-$theme: #1890FF;
+$theme: #409EFF;
 $dark: #001529;
 $green: #5CB85C;
 $red: #ED3F14;
@@ -23,10 +23,10 @@ html{
 }
 body{
     margin: 0;
-    font-family: "Microsoft YaHei","Monospaced Number","Chinese Quote",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-family: "Pingfang SC","Microsoft YaHei","Monospaced Number","Chinese Quote",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 14px;
     line-height: 1.5;
-    color: rgba(0,0,0,.65);
+    color: rgba(0, 0 ,0, .85);
     background-color: $white;
 }
 a{
