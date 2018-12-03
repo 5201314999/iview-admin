@@ -9,16 +9,16 @@
                 <Form :model="form.validate" :rules="form.rules">
                     <!-- text -->
                     <Card>
-                        <FormItem prop="input" label="输入框 ( normal )" class="wi-input">
+                        <FormItem prop="input" label="输入框 ( normal )" class="wi-input wi-input-large">
                             <Input type="text" v-model="form.validate.input" placeholder="输入框默认提示信息" size="large" />
                         </FormItem>
-                        <FormItem prop="icon" label="输入框 ( icon )" class="wi-input">
+                        <FormItem prop="icon" label="输入框 ( icon )" class="wi-input wi-input-large">
                             <Input type="text" v-model="form.validate.input" suffix="ios-search" placeholder="带 icon 图标输入框的默认提示信息" size="large" />
                         </FormItem>
-                        <FormItem prop="disabled" label="输入框 ( disabled )" class="wi-input">
+                        <FormItem prop="disabled" label="输入框 ( disabled )" class="wi-input wi-input-large">
                             <Input type="text" v-model="form.validate.input" size="large" disabled />
                         </FormItem>
-                        <FormItem prop="complex" label="输入框 ( complex )" class="wi-input">
+                        <FormItem prop="complex" label="输入框 ( complex )" class="wi-input wi-input-large">
                             <Input type="text" v-model="form.validate.input" size="large">
                                 <Select v-model="form.validate.select.prepend" slot="prepend">
                                     <Option value="http">http://</Option>
@@ -117,7 +117,7 @@
                                 <Option value="shenzhen">深圳</Option>
                             </Select>
                         </FormItem>
-                        <FormItem prop="multiple" label="选择器 ( multiple )" class="wi-select">
+                        <FormItem prop="multiple" label="选择器 ( multiple )" class="wi-select wi-select-large">
                             <Select v-model="form.validate.select.multiple" clearable multiple>
                                 <Option value="beijing">北京</Option>
                                 <Option value="shanghai">上海</Option>

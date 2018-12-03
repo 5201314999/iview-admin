@@ -61,16 +61,17 @@ exports.install = (Vue) => {
     /**
      * get url / query string.
      * @param name
+     * @param all
      * @returns {*}
      */
-    Vue.prototype.getUrlOrParam = function(name) {
+    Vue.prototype.getUrlOrParam = function(name, all) {
         const vm = this;
         let parameters = {};
         if(vm.trim(name) !== null){
             const location = window.location,
                 hash = location.hash,
                 hashs = hash.split('?'),
-                url = location.search + hash,
+                url = decodeURIComponent(all ? location.search + hash : location.search),
                 param = url.split('?');
             for(let i = 0; i < param.length; i++){
                 const cur = param[i],
@@ -79,7 +80,10 @@ exports.install = (Vue) => {
                     const current = params[k],
                         parameter = current.split('=');
                     if(parameter && parameter.length > 1){
-                        if(hashs) parameter[1] = parameter[1].replace('/' + hashs[0], '');
+                        if(hashs){
+                            parameter[1] = parameter[1].replace('/' + hashs[0], '');
+                            parameter[1] = parameter[1].replace(hashs[0], '');
+                        }
 						parameters[vm.trim(parameter[0])] = vm.trim(parameter[1]);
                     }
                 }

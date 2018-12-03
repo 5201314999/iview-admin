@@ -2,7 +2,7 @@
     <Row class="layout has-sider">
         <layout>
             <wi-sider @username="setUsername" :collapse="collapse" :update="update" :project="project" :logo="logo"></wi-sider>
-            <layout>
+            <layout class="wi-layout">
                 <wi-header :username="username" @collapsed="setCollapsed" @update-logo="setLogo"></wi-header>
                 <wi-content></wi-content>
                 <wi-footer></wi-footer>

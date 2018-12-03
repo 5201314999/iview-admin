@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
     NODE_ENV: '"test"',
-    DOMAIN: '"https://test-basic-frame.tvflnet.com"',
+    DOMAIN: '"https://test-cms-operation.tvflnet.com"',
     UPLOAD_SERVER: '"https://test-web-services.tvflnet.com"',
     FILE_SERVER: '"https://test-file.tvflnet.com"',
     WEB_SERVICES: '"https://test-web-services.tvflnet.com"',
