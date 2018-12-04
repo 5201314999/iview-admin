@@ -93,6 +93,12 @@ let menu = {
                     icon: 'ios-browsers-outline',
                     name: 'draggable',
                     path: '/extend/draggable'
+                },
+                {
+                    title: 'transfer 穿梭框',
+                    icon: 'ios-swap',
+                    name: 'transfer',
+                    path: '/extend/transfer'
                 }
             ]
         },
