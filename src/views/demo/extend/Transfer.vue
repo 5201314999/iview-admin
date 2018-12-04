@@ -72,7 +72,53 @@
 					'       }\n' +
 					'   };\n' +
 					'   export default TransferDemoComponent;\n' +
-					'<\/script>'
+					'<\/script>\n'
+
+					+
+					
+					'\n使用方法：\n'+
+					'1. \'import\' 引入插件并声明；\n'+
+					'2. config可配置参数说明：\n'+
+					    '	[expandTo] 树状结构展开到第几层 (Number)\n'+
+					    '	[server] api请求地址 (String)\n'+
+					    '	[readonly] 是否只读 (Boolean)\n'+
+					    '	[title] 展示标题文字 (String)\n'+
+					    '	[onlyLeaf] 是否 (Boolean)\n'+
+					    '	[dataOptions] 可切换数据源，配置后显示右上角切换数据源下拉框(Array)，格式：\n'+
+					                      '		[{name: "芯片", value: "1704101"},\n'+
+										'		{name: "Launcher", value: "1704102"},\n'+
+										'		{name: "内容", value: "1704103"}]\n'+
+					    '	[dataType] dataOptions配置下拉框选中值\n'+
+						'	[secondSelect] 是否二次选择(Boolean)\n'+
+					'3. events\n'+
+						'	[change] 选择项改变时，自动触发，传出已选择结果\n'+
+					'4. 初始化组件方式\n'+
+						'	4.1 通过 :data,传入数据，进行初始化,数据结构：\n'+
+						'	{\n'+
+							'		"maxLevel": 3,\n'+
+							'		"datas": [{\n'+
+								'			"id": "1",\n'+
+								'			"name": "INFOCUS",\n'+
+								'			"parentId": null,\n'+
+								'			"level": 1\n'+
+								'			}, {\n'+
+								'			"id": "1-1",\n'+
+								'			"name": "MStar638",\n'+
+								'			"parentId": "1",\n'+
+								'			"level": 2\n'+
+								'			}, {\n'+
+								'			"id": "1-1-194",\n'+
+								'			"name": "测试2",\n'+
+								'			"parentId": "1-1",\n'+
+								'			"level": 3\n'+
+							'		}]\n'+
+						'	}\n'+
+						'	4.1 通过调用init方法初始化，需要配置server,可选配置dataType，组件内部默认使用get方法请求\n'+
+						'	4.2 通过调用initWithSelected方法初始化，传入参数格式如下，其中type按需要传入：\n'+
+						'	{\n'+
+							'		type: "1702002",\n'+
+							'		data: ["1-4-43", "1-5-49", "2-4-41", "2-4-42"]\n'+
+						'	}'
 			};
 		},
 		methods: {
