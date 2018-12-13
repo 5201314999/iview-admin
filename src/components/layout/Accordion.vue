@@ -10,7 +10,8 @@
             <!-- menuitem : else -->
             <MenuItem :name="item.name" :key="prefix + item.name" v-else>
                 <span class="wi-menu-icon" v-if="item.icon"><icon :type="item.icon"></icon></span>
-                <router-link :to="{path: item.path}" :class="item.icon ? '' : 'wi-menu-link'" v-html="item.title"></router-link>
+                <router-link :to="{path: item.path}" :class="item.icon ? '' : 'wi-menu-link'" v-html="item.title" v-if="!G.regExps.url.test(item.path)"></router-link>
+                <a :href="item.path" target="_blank" v-html="item.title" v-if="G.regExps.url.test(item.path)"></a>
             </MenuItem>
         </template>
     </Submenu>

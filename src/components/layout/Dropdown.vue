@@ -13,11 +13,17 @@
                 <DropdownItem v-if="item.children && item.children.length > 0">
                     <DropdownMenuItem :items="item" :key="prefix + item.name"></DropdownMenuItem>
                 </DropdownItem>
-                <DropdownItem :class="setActive(item.path)" v-else>
+                <DropdownItem :class="setActive(item.path)" v-else-if="!G.regExps.url.test(item.path)">
                     <router-link :to="{path: item.path}">
                         <icon :type="item.icon" v-if="item.icon"></icon>
                         {{ item.title }}
                     </router-link>
+                </DropdownItem>
+                <DropdownItem v-else-if="G.regExps.url.test(item.path)">
+                    <a :href="item.path" target="_blank">
+                        <icon :type="item.icon" v-if="item.icon"></icon>
+                        {{ item.title }}
+                    </a>
                 </DropdownItem>
             </DropdownMenu>
         </template>

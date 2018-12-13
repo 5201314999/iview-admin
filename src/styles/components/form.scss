@@ -17,13 +17,24 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
+            .wi-form-item-image{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 120px;
+                height: 120px;
+                img{
+                    border-radius: 4px;
+                    max-width: 100%;
+                    max-height: 100%;
+                }
+            }
         }
         .ivu-form-item-label{
-            width: 130px;
+            width: 100px;
             padding: 0;
             white-space: nowrap;
             text-overflow: ellipsis;
-            overflow: hidden;
             margin-right: 20px;
             color: #999;
         }
@@ -31,18 +42,30 @@
             position: relative;
             top: 0;
             left: 0;
-            min-width: 200px;
+            min-width: 220px;
             padding-top: 0;
             margin-left: 15px;
             max-width: 550px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            &.hidden{
+                display: none;
+            }
         }
         &:last-child{
             border-bottom: none;
             padding-bottom: 0;
             margin-bottom: 0;
+        }
+    }
+    &.wi-form-left-align{
+        .ivu-form-item{
+            .ivu-form-item-label{
+                width: auto;
+                text-align: left;
+                margin-right: 2px;
+            }
         }
     }
 }

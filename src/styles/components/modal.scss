@@ -5,9 +5,31 @@ $searchBorder: #E8E8EA;
 $textBorder: #DDDEE1;
 
 .ivu-modal-wrap{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    &.wi-modal-success,
+    &.wi-modal-error,
+    &.wi-modal-warning,
+    &.wi-modal-confirm,
+    &.wi-modal-custom{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wi-modal-custom-content{
+        form{
+            padding: 24px;
+        }
+        .wi-modal-footer{
+            padding: 16px;
+            border-top: 1px solid #E8EAEC;
+            text-align: right;
+            button{
+                margin-right: 16px;
+                &:last-child{
+                    margin-right: 0;
+                }
+            }
+        }
+    }
     .ivu-modal{
         top: 0;
     }
@@ -95,6 +117,11 @@ $textBorder: #DDDEE1;
                     }
                 }
             }
+        }
+    }
+    .ivu-modal-footer{
+        .ivu-btn-text{
+            border: 1px solid #E0E0E0;
         }
     }
 }

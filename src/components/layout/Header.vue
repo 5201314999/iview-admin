@@ -55,7 +55,9 @@
                 vm.$set(vm.G.menu, 'collapsed', !vm.G.menu.collapsed);
                 vm.setCookie(vm.G.cookie.collapse.name, vm.G.menu.collapsed, vm.G.cookie.collapse.expire);
                 vm.$emit('collapsed');
-                vm.$root.$emit('resize');
+                setTimeout(()=>{
+                    vm.$root.$emit('resize');
+                }, 300);
             },
             signOut(name) {
                 const vm = this;

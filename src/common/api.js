@@ -29,8 +29,10 @@ function base(method, url, params, success, failure, config) {
         baseURL: DOMAIN,
         timeout: 30000
     };
+    if(method === 'GET'){
+        configuration.data=true;
+    }
     if(method === 'GET' && params !== null){
-        delete configuration.data;
         configuration.params = params;
     }
     if(config && Object.keys(config).length > 0){

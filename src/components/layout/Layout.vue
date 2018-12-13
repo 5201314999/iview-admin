@@ -1,11 +1,11 @@
 <template>
-    <Row class="layout has-sider">
+    <Row class="layout has-sider" :class="G.embed ? 'layout-embed' : ''">
         <layout>
-            <wi-sider @username="setUsername" :collapse="collapse" :update="update" :project="project" :logo="logo"></wi-sider>
-            <layout class="wi-layout">
-                <wi-header :username="username" @collapsed="setCollapsed" @update-logo="setLogo"></wi-header>
+            <wi-sider @username="setUsername" :collapse="collapse" :update="update" :project="project" :logo="logo" v-if="!G.embed"></wi-sider>
+            <layout>
+                <wi-header :username="username" @collapsed="setCollapsed" @update-logo="setLogo" v-if="!G.embed"></wi-header>
                 <wi-content></wi-content>
-                <wi-footer></wi-footer>
+                <wi-footer v-if="!G.embed"></wi-footer>
             </layout>
         </layout>
     </Row>
@@ -63,7 +63,8 @@
             const vm = this,
                 app = vm.getUrlOrParam(vm.G.id.mapping.app),
                 pro = parseInt(vm.getUrlOrParam(vm.G.id.mapping.pro)),
-                soa = vm.getUrlOrParam(vm.G.id.mapping.soa);
+                soa = vm.getUrlOrParam(vm.G.id.mapping.soa),
+                embed = vm.getUrlOrParam('embed');
             if(app) vm.$set(vm.G.id, 'app', app);
             if(pro && !isNaN(pro)) vm.$set(vm.G.id, 'pro', pro);
             if(soa) vm.$set(vm.G.id, 'soa', soa);
@@ -78,6 +79,7 @@
                 vm.$set(vm, 'collapse', cookie);
                 vm.$set(vm.G.menu, 'collapsed', cookie);
             }
+            if(typeof embed !== 'undefined' && embed !== null) vm.$set(vm.G, 'embed', embed);
         }
     };
     export default LayoutComponent;
