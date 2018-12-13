@@ -62,12 +62,9 @@
             height: 120px;
             box-sizing: border-box;
             margin-right: 5px;
-            border: 1px solid #E2E2E2;
-            border-radius: 4px;
-            padding: 5px;
             .progress{
-                width: 110px;
-                height: 110px;
+                width: 120px;
+                height: 120px;
                 line-height: 120px;
             }
             .compress-wrapper{
@@ -94,17 +91,16 @@
                 margin-top: 15px;
                 width: 100%;
             }
-            /deep/ .sizeCompare{
+            >>> .sizeCompare{
                 cursor: pointer;
                 &:hover {
                     color: #1890FF;
                 }
             }
-            /deep/ .ivu-table-cell-ellipsis{
+            >>> .ivu-table-cell-ellipsis{
                 line-height: 16px;
             }
         }
-
         .drag-item{
             position: relative;
             width: 100%;
@@ -113,10 +109,11 @@
             overflow: hidden;
             display: inline-block;
             vertical-align: top;
+            border: 1px solid #D8D8D8;
+            border-radius: 4px;
             &:hover{
-                border: 1px solid transparent;
                 .cover{
-                    display: block;
+                    top: 0
                 }
             }
             .img-wrapper{
@@ -134,31 +131,39 @@
                     cursor: pointer;
                 }
             }
-
             .cover{
-                display: none;
+                width:23px;
+                height:42px;
+                background: url('~@/components/upload/coverBg.png');
+                background-size: 100% 100%;
                 position: absolute;
-                top: -1px;
+                top: -100%;
                 left: -1px;
-                background: rgba(0, 0, 0, 0.6);
-                i {
-                    color: $white;
-                    font-size: 20px;
+                transition: .5s;
+                .cover-item{
+                    height:18px;
+                    background-size: 12px 9px;
+                    background-position:center center;
+                    background-repeat: no-repeat;
                     cursor: pointer;
-                    margin: 0 2px;
+                    &.view{
+                        background-image: url('~@/components/upload/view.png');
+                    }
+                    &.delete{
+                        background-image: url('~@/components/upload/delete.png');
+                    }
                 }
             }
             &.dragActive{
                 .drag-img,
-                .cover {
+                .cover{
                     visibility: hidden;
                 }
             }
         }
-
         .uploader{
             line-height: 1;
-            /deep/ .ivu-upload-drag{
+            >>> .ivu-upload-drag{
                 width: 120px;
                 height: 120px;
                 box-sizing: border-box;

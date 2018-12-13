@@ -1,4 +1,5 @@
 .wi-transfer{
+	display: inline-block;
 	.wrapper{
 		.ivu-transfer-list{
 			width: 250px;
@@ -41,7 +42,7 @@
 			padding-right: 5px;
 		}
 		.treeNode{
-			/deep/ .ivu-tree-empty{
+			>>> .ivu-tree-empty{
 				text-align: center;
 			}
 		}

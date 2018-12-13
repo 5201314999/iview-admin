@@ -4,18 +4,18 @@ exports.install = (Vue) => {
      * get user information.
      * @returns {null}
      */
-    Vue.prototype.getUser = function() {
+    Vue.prototype.getUser = function () {
         const vm = this,
             url = process.env.AUTH_SERVICES + vm.G.api.user;
         vm.$api.get(url, {
             method: 'getLoginUser',
             soaProId: vm.G.id.soa
         }, (res) => {
-            if(res['ret']['retCode'].toString() === '0'){
+            if (res['ret']['retCode'].toString() === '0') {
                 vm.$set(vm.G, 'user', res.data);
                 vm.$emit('get-user-success', res.data);
-            }else{
-                if(!vm.G.debug){
+            } else {
+                if (!vm.G.debug) {
                     vm.$error('用户信息获取失败 ( ' + res['ret']['retMsg'] + ' )<br />即将跳转至登录页......');
                     setTimeout(() => {
                         window.location.href = process.env.AUTH_SERVICES;
@@ -23,7 +23,7 @@ exports.install = (Vue) => {
                 }
             }
         }, () => {
-            if(!vm.G.debug) window.location.href = process.env.AUTH_SERVICES;
+            if (!vm.G.debug) window.location.href = process.env.AUTH_SERVICES;
         });
     };
 
@@ -31,7 +31,7 @@ exports.install = (Vue) => {
      * logout
      * @returns {null}
      */
-    Vue.prototype.logout = function() {
+    Vue.prototype.logout = function () {
         const vm = this;
         vm.$api.get(process.env.AUTH_SERVICES + vm.G.api.logout, {
             method: 'logOutMsg',
@@ -53,7 +53,7 @@ exports.install = (Vue) => {
      * set document's title
      * @param title
      */
-    Vue.prototype.setTitle = function(title) {
+    Vue.prototype.setTitle = function (title) {
         const vm = this;
         document.title = (title ? title : vm.G.title) + ' - 后台管理';
     };
@@ -61,32 +61,39 @@ exports.install = (Vue) => {
     /**
      * get url / query string.
      * @param name
-     * @param all
      * @returns {*}
      */
-    Vue.prototype.getUrlOrParam = function(name, all) {
+    Vue.prototype.getUrlOrParam = function (name) {
         const vm = this;
         let parameters = {};
         if(vm.trim(name) !== null){
-            const location = window.location,
+            const vm = this,
+                path = vm.$route.path,
+                location = window.location,
+                search = location.search,
+                searches = search ? search.replace('?', '').split('&') : [],
                 hash = location.hash,
-                hashs = hash.split('?'),
-                url = decodeURIComponent(all ? location.search + hash : location.search),
-                param = url.split('?');
-            for(let i = 0; i < param.length; i++){
-                const cur = param[i],
-                    params = cur.split('&');
-                for(let k = 0; k < params.length; k++){
-                    const current = params[k],
-                        parameter = current.split('=');
-                    if(parameter && parameter.length > 1){
-                        if(hashs){
-                            parameter[1] = parameter[1].replace('/' + hashs[0], '');
-                            parameter[1] = parameter[1].replace(hashs[0], '');
-                        }
-						parameters[vm.trim(parameter[0])] = vm.trim(parameter[1]);
+                hashes = hash
+                    ? hash.replace(path, '')
+                        .replace('?', '')
+                        .replace('#', '')
+                        .split('&')
+                    : [];
+            if(searches){
+                searches.map((item) => {
+                    const param = item.split('=');
+                    if(param && param.length > 1){
+                        parameters[vm.trim(param[0])] = vm.trim(param[1]);
                     }
-                }
+                });
+            }
+            if(hashes){
+                hashes.map((item) => {
+                    const param = item.split('=');
+                    if(param && param.length > 1){
+                        parameters[vm.trim(param[0])] = vm.trim(param[1]);
+                    }
+                });
             }
             if(parameters[name]) return parameters[name];
             return null;
@@ -101,7 +108,7 @@ exports.install = (Vue) => {
      * @param params
      * @returns {*}
      */
-    Vue.prototype.parseUrl = function(url, params) {
+    Vue.prototype.parseUrl = function (url, params) {
         params = params ? params : {};
         if(Object.keys(params).length > 0){
             for(const i in params){
@@ -120,7 +127,7 @@ exports.install = (Vue) => {
      * @param all
      * @returns {*}
      */
-    Vue.prototype.trim = function(string, all) {
+    Vue.prototype.trim = function (string, all) {
         if(all) return string.replace(/\s+/g, '');
         else return string.replace(/^\s+|\s+$/g, '');
     };
@@ -132,13 +139,13 @@ exports.install = (Vue) => {
      * @param i
      * @returns {number}
      */
-    Vue.prototype.inArray = function(elem, array, i) {
+    Vue.prototype.inArray = function (elem, array, i) {
         let len;
         if(array){
             len = array.length;
             i = i ? i < 0 ? Math.max(0, len + i) : i : 0;
             for(; i < len; i++){
-                if(i in array && array[i] ===  elem){
+                if(i in array && array[i] === elem){
                     return i;
                 }
             }
@@ -152,7 +159,7 @@ exports.install = (Vue) => {
      * @param cls
      * @returns {boolean}
      */
-    Vue.prototype.hasClass = function(obj, cls) {
+    Vue.prototype.hasClass = function (obj, cls) {
         const names = obj.className,
             classes = names.split(/\s+/);
         for(let i in classes){
@@ -170,7 +177,7 @@ exports.install = (Vue) => {
      * @param obj
      * @param cls
      */
-    Vue.prototype.removeClass = function(obj, cls) {
+    Vue.prototype.removeClass = function (obj, cls) {
         let name = ' ' + obj.className + ' ';
         name.replace(/(\s+)/gi, ' ');
         let removed = name.replace(' ' + cls + ' ', ' ');
@@ -183,7 +190,7 @@ exports.install = (Vue) => {
      * @param obj
      * @param cls
      */
-    Vue.prototype.addClass = function(obj, cls) {
+    Vue.prototype.addClass = function (obj, cls) {
         const name = obj.className,
             blank = name !== '' ? ' ' : '';
         obj.className = name + blank + cls;
@@ -195,7 +202,7 @@ exports.install = (Vue) => {
      * @param type
      * @returns {string}
      */
-    Vue.prototype.formatDate = function(date, type){
+    Vue.prototype.formatDate = function (date, type) {
         const y = date.getFullYear();
         let m = date.getMonth() + 1;
         m = m < 10 ? '0' + m : m;
@@ -229,7 +236,7 @@ exports.install = (Vue) => {
      * random.
      * @returns {string}
      */
-    Vue.prototype.$random = function() {
+    Vue.prototype.$random = function () {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     };
 
@@ -237,7 +244,7 @@ exports.install = (Vue) => {
      * generate unique key.
      * @returns {string}
      */
-    Vue.prototype.$unique = function() {
+    Vue.prototype.$unique = function () {
         const vm = this;
         return (vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random() + vm.$random()).toLocaleUpperCase();
     };
@@ -249,8 +256,9 @@ exports.install = (Vue) => {
      * @see $success
      * @see $error
      * @see $warning
+     * @see $confirm
      */
-    Vue.prototype.$onPopup = function(event, unique) {
+    Vue.prototype.$onPopup = function (event, unique) {
         const vm = this,
             prefix = 'ivu-modal-',
             classes = {
@@ -292,11 +300,11 @@ exports.install = (Vue) => {
      * @param event
      * @param time
      */
-    Vue.prototype.$emitPopup = function(event, time) {
+    Vue.prototype.$emitPopup = function (event, time) {
         const vm = this;
         time = typeof time !== 'undefined' ? time : 0;
         vm.$nextTick(() => {
-            vm.$emit(event, function(){
+            vm.$emit(event, function() {
                 if(time && time > 0){
                     setTimeout(() => {
                         vm.$Modal.remove();
@@ -312,7 +320,7 @@ exports.install = (Vue) => {
      * @param width
      * @param time
      */
-    Vue.prototype.$success = function(content, width, time) {
+    Vue.prototype.$success = function (content, width, time) {
         const vm = this, title = vm.$unique(),
             success = 'wi-modal-success';
         width = width ? width : 360;
@@ -332,7 +340,7 @@ exports.install = (Vue) => {
      * @param width
      * @param time
      */
-    Vue.prototype.$error = function(content, width, time) {
+    Vue.prototype.$error = function (content, width, time) {
         const vm = this,
             title = vm.$unique(),
             error = 'wi-modal-error';
@@ -353,7 +361,7 @@ exports.install = (Vue) => {
      * @param width
      * @param time
      */
-    Vue.prototype.$warning = function(content, width, time) {
+    Vue.prototype.$warning = function (content, width, time) {
         const vm = this, title = vm.$unique(),
             warning = 'wi-modal-warning';
         width = width ? width : 360;
@@ -375,7 +383,7 @@ exports.install = (Vue) => {
      * @param width
      * @param title
      */
-    Vue.prototype.$confirm = function(content, ok, cancel, width, title) {
+    Vue.prototype.$confirm = function (content, ok, cancel, width, title) {
         title = title ? title : '温馨提示';
         width = width ? width : 360;
         const vm = this;
@@ -385,17 +393,21 @@ exports.install = (Vue) => {
             width: width,
             closable: true,
             loading: true,
-            onOk: function(){
+            onOk: function () {
                 vm.$Modal.remove();
                 if((typeof ok).toLowerCase() === 'function'){
                     ok.call();
                 }
             },
-            onCancel: function(){
+            onCancel: function () {
                 if((typeof cancel).toLowerCase() === 'function'){
                     cancel.call();
                 }
             }
+        });
+        vm.$nextTick(() => {
+            const wrap = document.getElementsByClassName('ivu-modal-wrap');
+            if(wrap) vm.addClass(wrap[wrap.length - 1], 'wi-modal-confirm');
         });
     };
 
@@ -404,10 +416,10 @@ exports.install = (Vue) => {
      * @param cname
      * @returns {string}
      */
-    Vue.prototype.getCookie = function(cname) {
+    Vue.prototype.getCookie = function (cname) {
         const name = cname + '=',
             ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
+        for(let i = 0; i < ca.length; i++){
             let c = ca[i];
             while(c.charAt(0) === ' ') c = c.substring(1);
             if(c.indexOf(name) !== -1){
@@ -423,7 +435,7 @@ exports.install = (Vue) => {
      * @param value
      * @param expire
      */
-    Vue.prototype.setCookie = function(name, value, expire) {
+    Vue.prototype.setCookie = function (name, value, expire) {
         const d = new Date();
         d.setTime(d.getTime() + (expire * 24 * 60 * 60 * 1000));
         const expires = 'expires=' + d.toUTCString();
@@ -434,10 +446,79 @@ exports.install = (Vue) => {
      * delete cookie
      * @param name
      */
-    Vue.prototype.delCookie = function(name) {
+    Vue.prototype.delCookie = function (name) {
         const d = new Date();
         d.setTime(d.getTime() - (24 * 60 * 60 * 1000));
         const expire = 'expires=' + d.toUTCString();
         document.cookie = name + '="";' + expire;
     };
+
+    /**
+     * judge whether it is empty.
+     * @param str
+     * @returns {boolean}
+     */
+    Vue.prototype.isEmpty = (str) => {
+        if(str === null || str === '' || typeof str === 'undefined'){
+            return true;
+        }
+        return false;
+    };
+
+    /**
+     * set title for column
+     * @param h
+     * @param text
+     * @returns {*}
+     */
+    Vue.prototype.tableRender = (h, text) => {
+        const showText = (text === null || text === '' || typeof text === 'undefined') ? '-' : text;
+        return h('div', {
+            class: 'common-cell-text',
+            attrs: {
+                title: showText
+            }
+        }, showText);
+    };
+
+    /**
+     * calculate width and height
+     * @param file
+     */
+    Vue.prototype.calcWidthHeight = file =>{
+        return new Promise((resolve, reject) => {
+            try{
+                let fileReader = new FileReader();
+                fileReader.onload = e => {
+                    const data = e.target.result;
+                    const image = new Image();
+                    image.onload = () => {
+                        resolve({
+                            width:image.width,
+                            height:image.height
+                        });
+                    };
+                    image.src = data;
+                };
+                fileReader.readAsDataURL(file);
+            }catch(e){
+                reject(`计算宽高错误:${e}`);
+            }
+        })
+    };
+
+    /**
+     * format file size
+     * @param size
+     * @returns {string}
+     */
+    Vue.prototype.formatFileSize = size => {
+        const units=['B','K','M','G','T','P'];
+        let i=0;
+        while(size>1024){
+            i++;
+            size=size/1024;
+        }
+        return `${size.toFixed(2)}${units[i]}`;
+    }
 };

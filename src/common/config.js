@@ -6,6 +6,12 @@
  */
 const debug = false;
 /**
+ * embed
+ * removed `Header` and `Sider` and `Breadcrumb`.
+ * @type {boolean}
+ */
+const embed = false;
+/**
  * title
  * @type {string}
  */
@@ -140,17 +146,18 @@ const api = {
 };
 /**
  * file's configuration
- * @type {{server: {upload: *, download: *}, accept: {image: string}}}
+ * @type {{server: {download: (string), upload: (string)}, format: {images: string[], videos: string[]}, accept: {images: string}}}
  */
 const files = {
     server: {
         upload: process.env.UPLOAD_SERVER,
         download: process.env.FILE_SERVER
     },
-    accept: {
-        image: 'image/gif, image/jpeg, image/png, image/jpeg'
-    },
-    format: ['jpg', 'jpeg', 'png', 'gif', 'bmp']
+    accept: {images: 'image/gif, image/jpeg, image/png, image/jpeg'},
+    format: {
+        images: ['jpg', 'jpeg', 'png', 'gif'],
+        videos: ['mp4', 'mkv', 'ts']
+    }
 };
 /**
  * {name: cookie's name; expire: expiry date;}
@@ -180,6 +187,7 @@ const footer = 'Copyright &copy; 2018';
 
 export default {
     debug,
+    embed,
     title,
     user,
     id,

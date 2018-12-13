@@ -2,7 +2,9 @@
 .ivu-layout, .container{
     overflow: hidden;
     .ivu-btn-large{
-        padding: 5.69px 20px;
+        padding: 0 20px;
+        height: 32px;
+        line-height: 28px;
     }
 }
 
@@ -47,6 +49,7 @@
 .mt5{margin-top: 5px;}
 .mt10{margin-top: 10px;}
 .mt15{margin-top: 15px;}
+.mt16{margin-top: 16px;}
 .mt20{margin-top: 20px;}
 .mb0{margin-bottom: 0 !important;}
 .mb5{margin-bottom: 5px;}
@@ -90,6 +93,11 @@
 .padding10, .p10{padding: 10px;}
 .padding20, .p20{padding: 20px;}
 
+/* btn */
+.wi-btn{
+    padding: 24px 0;
+}
+
 /* item */
 .wi-item{
     display: flex;
@@ -103,7 +111,7 @@
         padding-top: 8px;
     }
     &:last-child{
-        padding-bottom: 8px;
+        padding-bottom: 0;
         margin-bottom: 0;
         border-bottom: none;
     }
@@ -116,6 +124,50 @@
         overflow: hidden;
         margin-right: 20px;
     }
+    &.wi-form-item{
+        border-bottom: none;
+        padding-top: 0;
+        margin-bottom: 0;
+        .ivu-form-item-content{
+            .ivu-radio-inner:after{
+                top: 2.5px;
+            }
+            .ivu-form-item-error-tip{
+                position: absolute;
+                top: 100%;
+                left: 0;
+                margin-left: 0;
+                margin-top: 6px;
+                font-size: 12px;
+            }
+        }
+    }
+    .wi-item-tip{
+        position: absolute;
+        left: 100%;
+        width: 100%;
+        color: rgba(0,0,0,.25);
+        font-size: 12px;
+        bottom: -5px;
+        display: block;
+        margin-left: 8px;
+    }
+    &.wi-item-small{
+        .ivu-form-item{
+            .ivu-form-item-label{
+                width: 50px;
+            }
+        }
+        .wi-item-label{
+            width: 50px;
+        }
+    }
+}
+
+.wi-search{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 /* cascader */
@@ -156,6 +208,9 @@
     &:hover{
         box-shadow: none;
         border-color: #E8EAEC;
+    }
+    .ivu-card-body{
+        padding: 24px;
     }
 }
 
@@ -491,10 +546,27 @@
 
 /* textarea */
 .wi-textarea{
+    .ivu-form-item-content{
+        .ivu-input-wrapper{
+            width: auto;
+        }
+    }
     .ivu-input-wrapper-large{
         textarea{
-            width: 600px;
-            height: 200px;
+            width: 340px;
+            height: 114px;
+        }
+    }
+    &.wi-textarea-mini{
+        textarea{
+            width: 256px;
+            height: 96px;
+        }
+    }
+    &.wi-textarea-large{
+        textarea{
+            width: 480px;
+            height: 112px;
         }
     }
 }
@@ -536,6 +608,44 @@
     .ivu-date-picker{
         .ivu-input{
             font-size: 14px;
+        }
+    }
+}
+
+/* transfer(form) */
+.wi-form-transfer{
+    .ivu-transfer-list-header > span{
+        font-size: 14px;
+    }
+    .ivu-transfer-list-body-search-wrapper{
+        padding: 12px 7px 0;
+    }
+    .ivu-transfer-list-body-with-search{
+        .ivu-transfer-list-content{
+            padding: 12px 0;
+            .ivu-transfer-list-content-item{
+                font-size: 14px!important;
+            }
+        }
+    }
+    .ivu-input-icon-normal + .ivu-input{
+        height: 32px;
+        font-size: 14px;
+    }
+    .ivu-input-wrapper-small{
+        .ivu-input-icon{
+            font-size: 22px;
+            height: 32px;
+            line-height: 32px;
+        }
+    }
+    .ivu-transfer-operation{
+        .ivu-btn{
+            min-width: 60px;
+            font-size: 14px;
+            span > i{
+                display: none;
+            }
         }
     }
 }

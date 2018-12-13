@@ -18,7 +18,8 @@
                             <!-- menuitem : else -->
                             <MenuItem :name="item.name" v-else>
                                 <span class="wi-menu-icon" v-if="item.icon"><icon :type="item.icon"></icon></span>
-                                <router-link :to="{path: item.path}" :class="item.icon ? '' : 'wi-menu-link'" v-html="item.title"></router-link>
+                                <router-link :to="{path: item.path}" :class="item.icon ? '' : 'wi-menu-link'" v-html="item.title" v-if="!G.regExps.url.test(item.path)"></router-link>
+                                <a :href="item.path" target="_blank" v-html="item.title" v-if="G.regExps.url.test(item.path)"></a>
                             </MenuItem>
                         </template>
                     </Menu>
@@ -29,10 +30,11 @@
                         <template v-for="item in menu.items">
                             <MenuItem :name="item.name">
                                 <DropdownMenuItem :items="item" :key="prefix + item.name" v-if="item.children && item.children.length > 0"></DropdownMenuItem>
-                                <router-link :to="{path: item.path}" v-else>
+                                <router-link :to="{path: item.path}" v-else-if="!G.regExps.url.test(item.path)">
                                     <icon :type="item.icon" v-if="item.icon"></icon>
                                     <icon type="ios-link-outline" v-else></icon>
                                 </router-link>
+                                <a :href="item.path" target="_blank" v-html="item.title" v-else-if="G.regExps.url.test(item.path)"></a>
                             </MenuItem>
                         </template>
                     </Menu>
@@ -118,7 +120,7 @@
                                 item.path = cur['resparam'];
                                 const paths = item.path.replace('？', '?').split('?'),
                                     path = paths[0];
-                                if(path && path === vm.path){
+                                if(path && vm.path.indexOf(path) !== -1){
                                     vm.$set(vm.G.menu, 'active', item.name);
                                     vm.$set(vm.menu, 'active', item.name);
                                     state = true;
@@ -154,6 +156,14 @@
                     vm.$refs.menu.updateActiveName();
                 });
             },
+            setMenuActive() {
+                const vm = this,
+                    paths = vm.$route.path.substr(1).split('/'),
+                    open = paths[0],
+                    active = paths[1];
+                if(open) vm.$set(vm.menu, 'open', [open]);
+                if(active) vm.$set(vm.menu, 'active', active);
+            },
             backToTop() {
                 const top = document.documentElement.scrollTop || document.body.scrollTop;
                 scrollTop(window, top, 0, 1000);
@@ -166,9 +176,11 @@
             },
             '$route': function() {
                 const vm = this;
-                vm.$set(vm, 'path', vm.$route.path);
-                vm.$set(vm.menu, 'open', []);
-                vm.parseMenu(vm.menus);
+                if(!vm.G.debug){
+                    vm.$set(vm, 'path', vm.$route.path);
+                    vm.$set(vm.menu, 'open', []);
+                    vm.parseMenu(vm.menus);
+                }else vm.setMenuActive();
                 vm.updateMenuActive();
                 vm.backToTop();
             }
@@ -176,24 +188,33 @@
         created() {
             const vm = this;
             vm.$set(vm, 'path', vm.$route.path);
+            this.$nextTick(() => {
+                this.$root.$emit('resize');
+            });
         },
         mounted() {
             const vm = this;
             vm.getUser();
-            vm.$on('get-user-success', (data) => {
-                vm.$set(vm.G, 'user', data);
-                vm.$emit('username');
-                if(!vm.G.debug){
-                    const menu = data['listResource'];
-                    if(menu){
-                        vm.$set(vm, 'menus', menu);
-                        const menus = vm.parseMenu(menu);
-                        vm.$set(vm.G.menu, 'items', menus);
-                        vm.$set(vm.menu, 'items', menus);
-                    }
-                }
+            if(vm.G.debug){
+                vm.setMenuActive();
                 vm.updateMenuActive();
-            });
+            }else{
+                vm.$on('get-user-success', (data) => {
+                    vm.$set(vm.G, 'user', data);
+                    vm.$emit('username');
+                    if(!vm.G.debug){
+                        const menu = data['listResource'];
+                        if(menu){
+                            vm.$set(vm, 'menus', menu);
+                            const menus = vm.parseMenu(menu);
+                            vm.$set(vm.G.menu, 'items', menus);
+                            vm.$set(vm.menu, 'items', menus);
+                        }
+                    }
+                    console.log(vm.menu);
+                    vm.updateMenuActive();
+                });
+            }
         }
     };
     export default SiderComponent;
