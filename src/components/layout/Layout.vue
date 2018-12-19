@@ -80,6 +80,32 @@
                 vm.$set(vm.G.menu, 'collapsed', cookie);
             }
             if(typeof embed !== 'undefined' && embed !== null) vm.$set(vm.G, 'embed', embed);
+        },
+        watch: {
+            '$route': function() {
+                const vm = this;
+                if(vm.G.embed){
+                    vm.resetIframeHeight();
+                    vm.$nextTick(() => {
+                        vm.monitorIframeHeight();
+                    });
+                }
+            }
+        },
+        mounted() {
+            const vm = this;
+            if(vm.G.embed){
+                const vm = this,
+                    host = window.location.hostname,
+                    hosts = host.split('.');
+                hosts.shift();
+                document.domain = hosts.join('.');
+                if(vm.G.embed){
+                    vm.$nextTick(() => {
+                        vm.setIframeHeight();
+                    });
+                }
+            }
         }
     };
     export default LayoutComponent;

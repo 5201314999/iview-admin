@@ -1,11 +1,15 @@
 <template>
-    <iframe :src="url" id="loginLog"></iframe>
+    <Row>
+        <iframe :src="url" id="loginLog"></iframe>
+        <Spin v-if="spinShow" size="large" fix></Spin>
+    </Row>
 </template>
 <script>
     const LoginLogsComponent = {
         data() {
             const vm = this;
             return {
+                spinShow: false,
                 page: 'loginLog.html',
                 url: vm.G.domains.webservices
             };
