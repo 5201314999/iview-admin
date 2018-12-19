@@ -1,13 +1,14 @@
 exports.install = (Vue) => {
-
+    
+    const dateFns = require('date-fns');
+    
     /**
      * get user information.
      * @returns {null}
      */
     Vue.prototype.getUser = function () {
-        const vm = this,
-            url = process.env.AUTH_SERVICES + vm.G.api.user;
-        vm.$api.get(url, {
+        const vm = this;
+        vm.$api.get(vm.G.api.user, {
             method: 'getLoginUser',
             soaProId: vm.G.id.soa
         }, (res) => {
@@ -33,11 +34,11 @@ exports.install = (Vue) => {
      */
     Vue.prototype.logout = function () {
         const vm = this;
-        vm.$api.get(process.env.AUTH_SERVICES + vm.G.api.logout, {
+        vm.$api.get(vm.G.api.logout, {
             method: 'logOutMsg',
             proId: vm.G.id.pro
         }, (res) => {
-            if(res['ret']['retMsg'].toString() === '0'){
+            if(res['ret']['retCode'].toString() === '0'){
                 window.location.href = process.env.AUTH_SERVICES;
             }else{
                 vm.$error(res['ret']['retMsg']);
@@ -268,6 +269,7 @@ exports.install = (Vue) => {
      * remove class
      * @param obj
      * @param cls
+     * @see hasClass
      */
     Vue.prototype.removeClass = function (obj, cls) {
         let name = ' ' + obj.className + ' ';
@@ -286,42 +288,6 @@ exports.install = (Vue) => {
         const name = obj.className,
             blank = name !== '' ? ' ' : '';
         obj.className = name + blank + cls;
-    };
-
-    /**
-     * format
-     * @param date
-     * @param type
-     * @returns {string}
-     */
-    Vue.prototype.formatDate = function (date, type) {
-        const y = date.getFullYear();
-        let m = date.getMonth() + 1;
-        m = m < 10 ? '0' + m : m;
-        let d = date.getDate();
-        d = d < 10 ? ('0' + d) : d;
-        let h = date.getHours(),
-            min = date.getMinutes(),
-            seconds = date.getSeconds(),
-            format = null;
-        h = h < 10 ? '0' + h : h;
-        min = min < 10 ? '0' + min : min;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-        switch(type){
-            case 1:
-                format = y + '-' + m + '-' + d;
-                break;
-            case 2:
-                format = h + ':' + min + ':' + seconds;
-                break;
-            case 3:
-                format = y + '-' + m + '-' + d + ' ' + h + ':' + min;
-                break;
-            default:
-                format = y + '-' + m + '-' + d + ' ' + h + ':' + min + ':' + seconds;
-                break;
-        }
-        return format;
     };
 
     /**
@@ -507,6 +473,8 @@ exports.install = (Vue) => {
      * get cookie
      * @param cname
      * @returns {string}
+     * @see setCookie
+     * @see delCookie
      */
     Vue.prototype.getCookie = function (cname) {
         const name = cname + '=',
@@ -544,29 +512,41 @@ exports.install = (Vue) => {
         const expire = 'expires=' + d.toUTCString();
         document.cookie = name + '="";' + expire;
     };
-
+    
     /**
-     * judge whether it is empty.
-     * @param str
-     * @returns {boolean}
+     * history back.
+     * `$router.push();`
      */
-    Vue.prototype.isEmpty = (str) => {
-        if(str === null || str === '' || typeof str === 'undefined'){
-            return true;
-        }
-        return false;
+    Vue.prototype.back = function() {
+        const vm = this;
+        vm.$router.back();
     };
     
     /**
-     * empty.
-     * @param string
-     * @returns {*}
+     * group by.
+     * @param array
+     * @param field
+     * @returns {*[]}
      */
-    Vue.prototype.empty = function(string) {
-        if(string === null || string === '' || typeof string === 'undefined'){
-            return '-';
-        }
-        return string;
+    Vue.prototype.groupBy = function(array, field) {
+        let groups = {};
+        array.forEach((key) => {
+            const group = JSON.stringify(field[key]);
+            groups[group] = groups[group] || [];
+            groups[group].push(key);
+        });
+        return Object.keys(groups).map((group) => {
+            return groups[group];
+        });
+    };
+    
+    /**
+     * whether it's empty.
+     * @param string
+     * @returns {boolean}
+     */
+    Vue.prototype.isEmpty = (string) => {
+        return string === null || string === '' || typeof string === 'undefined';
     };
 
     /**
@@ -592,12 +572,12 @@ exports.install = (Vue) => {
      * calculate width and height
      * @param file
      */
-    Vue.prototype.calcWidthHeight = file =>{
+    Vue.prototype.calculateWidthHeight = function(file) {
         return new Promise((resolve, reject) => {
             try{
                 let fileReader = new FileReader();
                 fileReader.onload = e => {
-                    const data = e.target.result;
+                    const data = e.target['result'];
                     const image = new Image();
                     image.onload = () => {
                         resolve({
@@ -609,23 +589,155 @@ exports.install = (Vue) => {
                 };
                 fileReader.readAsDataURL(file);
             }catch(e){
-                reject(`计算宽高错误:${e}`);
+                reject(`计算宽高错误: ${e}`);
             }
-        })
+        });
     };
-
+    
     /**
-     * format file size
+     * file sizes calculated.
+     * @param bytes
+     * @returns {string}
+     * @see formatFileSize
+     */
+    Vue.prototype.getFileSize = function(bytes) {
+        const size = parseInt(bytes);
+        let msg = '文件大小有误';
+        if(!isNaN(size)){
+            if(size < 1048576){
+                msg = (size / 1024).toFixed(2) + 'KB';
+            }else if(size === 1048576){
+                msg = '1MB';
+            }else if(size > 1048576 && size < 1073741824){
+                msg = (size / (1024 * 1024)).toFixed(2) + 'MB';
+            }else if(size > 1048576 && size === 1073741824){
+                msg = '1GB';
+            }else if(size > 1073741824 && size < 1099511627776){
+                msg = (size / (1024 * 1024 * 1024)).toFixed(2) + 'GB';
+            }else{
+                msg = '文件超过1TB';
+            }
+        }
+        return msg;
+    };
+    
+    /**
+     * format file size.
      * @param size
      * @returns {string}
+     * @see getFileSize
      */
-    Vue.prototype.formatFileSize = size => {
-        const units=['B','K','M','G','T','P'];
-        let i=0;
-        while(size>1024){
+    Vue.prototype.formatFileSize = function(size) {
+        const units = ['B', 'K', 'M', 'G', 'T', 'P'];
+        let i = 0;
+        while(size > 1024){
             i++;
-            size=size/1024;
+            size = size / 1024;
         }
         return `${size.toFixed(2)}${units[i]}`;
-    }
+    };
+    
+    /**
+     * format date.
+     * @param date
+     * @param formatter
+     * @param empty
+     * @returns {string}
+     */
+    Vue.prototype.formatDate = function(date, formatter = 'yyyy-MM-dd HH:mm:ss', empty = '-') {
+        const vm = this;
+        if(vm.isEmpty(date)){
+            return dateFns.format(date, formatter);
+        }
+        return empty;
+    };
+    
+    /**
+     * format number (amount).
+     * @param number
+     * @returns {string}
+     */
+    Vue.prototype.formatAmount = function(number) {
+        if(number != null){
+            let num = number.toString(),
+                suffix = '',
+                prefix = '';
+            if(num.indexOf('.') !== -1){
+                suffix = num.substring(num.indexOf('.'));
+                num = num.substring(0, num.indexOf('.'));
+            }
+            while(num.length > 3){
+                prefix += ',' + num.substring(num.length - 3);
+                num = num.substring(0, num.length - 3);
+            }
+            prefix = num + prefix;
+            return prefix + suffix;
+        }else{
+            return '';
+        }
+    };
+    
+    /**
+     * format url.
+     * @param url
+     * @returns {*}
+     */
+    Vue.prototype.formatUrl = function(url) {
+        const vm = this,
+            reg = /^((ht|f)tps?):\/\//;
+        let res = url;
+        if(vm.isEmpty(res)){
+            return '';
+        }else{
+            res = res.trim();
+            if(reg.test(res)){
+                return res;
+            }else{
+                res = process.env.FILE_SERVER + '/' + res;
+            }
+        }
+        return res;
+    };
+    
+    /**
+     * format dimansion's data.
+     * @param data
+     * @returns {Array}
+     */
+    Vue.prototype.formatDimension = function(data) {
+        const result = [];
+        data.forEach((item) => {
+            const items = item ? item.split('-') : [],
+                res = {
+                    brandId: items[0] === null ? null : items[0],
+                    chipId: items[1] === null ? null : items[1],
+                    modelCodeId: items[2] === null ? null : items[2]
+                };
+            result.push(res);
+        });
+        return result;
+    };
+    
+    /**
+     * format dimension's id.
+     * @param data
+     * @returns {Array}
+     */
+    Vue.prototype.formatDimensionId = function(data) {
+        const result = [];
+        data.forEach((item) => {
+            let id = '';
+            if(item['brandId']){
+                id = item['brandId'];
+                if(item['condition1Id']){
+                    id += '-' + item['condition1Id'];
+                    if(item['modelCodeId']){
+                        id += '-' + item['modelCodeId'];
+                    }
+                }
+            }
+            if(id) result.push(id);
+        });
+        return result;
+    };
 };

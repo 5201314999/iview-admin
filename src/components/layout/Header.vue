@@ -9,7 +9,7 @@
                         {{ getUserName }}
                     </a>
                     <a href="javascript:void(0);" v-if="G.debug">
-                        <img src="@/images/avatar.jpg" class="header-avatar mr10" />
+                        <img src="static/images/avatar.jpg" class="header-avatar mr10" />
                         未知 ( DEBUG )
                     </a>
                     <DropdownMenu slot="list">

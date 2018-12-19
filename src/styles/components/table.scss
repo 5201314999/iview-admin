@@ -72,6 +72,26 @@
                             overflow: hidden;
                         }
                     }
+                    .attach{
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-start;
+                        .attach-image{
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 80px;
+                            max-height: 80px;
+                            margin: 10px 16px 10px 0;
+                            img{
+                                width: 100%;
+                                height: 100%;
+                            }
+                        }
+                        .gray{
+                            color: rgba(#000000, .25);
+                        }
+                    }
                     .action{
                         display: flex;
                         align-items: center;

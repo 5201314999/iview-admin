@@ -137,7 +137,7 @@ let menu = {
  * @type {{user: string, logout: string, project: string}}
  */
 const api = {
-    user: '/user',
+    user: process.env.AUTH_SERVICES + '/user',
     logout: process.env.AUTH_SERVICES + '/LoginServlet',
     project: process.env.AUTH_SERVICES + '/LoginServlet',
     dimension: process.env.UPLOAD_SERVER + '/dimension/v1/',
