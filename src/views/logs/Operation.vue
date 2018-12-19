@@ -1,11 +1,15 @@
 <template>
-    <iframe :src="url" id="optLog"></iframe>
+    <Row>
+        <iframe :src="url" id="optLog"></iframe>
+        <Spin v-if="spinShow" size="large" fix></Spin>
+    </Row>
 </template>
 <script>
     const OperationLogsComponent = {
         data() {
             const vm = this;
             return {
+                spinShow: false,
                 page: 'optLog.html',
                 url: vm.G.domains.webservices
             };

@@ -86,6 +86,7 @@
                 prefix: 'menu-',
                 path: null,
                 title: vm.G.title,
+                names: [],
                 menus: [],
                 menu: {
                     items: vm.G.menu.items,
@@ -140,7 +141,16 @@
                             name: cur['resid'],
                             children: []
                         };
-                    item.children = getChildren(children);
+                    if(children && children.length > 0){
+                        item.children = getChildren(children);
+                    }else{
+                        delete item.children;
+                        if(i === 0){
+                            vm.$set(vm.G.menu, 'active', item.name);
+                            vm.$set(vm.menu, 'active', item.name);
+                        }
+                        item.path = cur['resparam'];
+                    }
                     if(state && vm.menu.open.length <= 0){
                         vm.$set(vm.G.menu, 'open', [item.name]);
                         vm.$set(vm.menu, 'open', [item.name]);
@@ -148,6 +158,26 @@
                     temp.push(item);
                 }
                 return temp;
+            },
+            getMenuName() {
+                const vm = this,
+                    names = [],
+                    getChildName = (children) => {
+                        for(let k = 0; k < children.length; k++){
+                            names.push(children[k].name);
+                            if(children[k].children && children[k].children.length > 0){
+                                getChildName(children[k].children);
+                            }
+                        }
+                    };
+                for(let i = 0; i < vm.menu.items.length; i++){
+                    const item = vm.menu.items[i];
+                    names.push(item.name);
+                    if(item.children && item.children.length > 0){
+                        getChildName(item.children);
+                    }
+                }
+                vm.$set(vm, 'names', names);
             },
             updateMenuActive() {
                 const vm = this;
@@ -162,7 +192,9 @@
                     open = paths[0],
                     active = paths[1];
                 if(open) vm.$set(vm.menu, 'open', [open]);
-                if(active) vm.$set(vm.menu, 'active', active);
+                const contains = vm.inArray(active, vm.names) !== -1;
+                if(active && contains) vm.$set(vm.menu, 'active', active);
+                if(!contains) vm.$set(vm.menu, 'active', open);
             },
             backToTop() {
                 const top = document.documentElement.scrollTop || document.body.scrollTop;
@@ -196,6 +228,7 @@
             const vm = this;
             vm.getUser();
             if(vm.G.debug){
+                vm.getMenuName();
                 vm.setMenuActive();
                 vm.updateMenuActive();
             }else{
@@ -211,7 +244,6 @@
                             vm.$set(vm.menu, 'items', menus);
                         }
                     }
-                    console.log(vm.menu);
                     vm.updateMenuActive();
                 });
             }

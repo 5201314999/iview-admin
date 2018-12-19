@@ -91,7 +91,9 @@ exports.install = (Vue) => {
                 hashes.map((item) => {
                     const param = item.split('=');
                     if(param && param.length > 1){
-                        parameters[vm.trim(param[0])] = vm.trim(param[1]);
+                        const key = vm.trim(param[0]),
+                            value = vm.trim(param[1]);
+                        if(!parameters[key]) parameters[key] = value;
                     }
                 });
             }
@@ -117,6 +119,96 @@ exports.install = (Vue) => {
                     url = url.replace(reg, params[i]);
                 }
             }
+        }
+        return url;
+    };
+    
+    /**
+     * set parent's iframe height
+     * if `G.embed` is trued.
+     * @returns {null}
+     * @see parseIframeUrlParams
+     */
+    Vue.prototype.setIframeHeight = function() {
+        try{
+            const vm = this,
+                id = vm.getUrlOrParam('element'),
+                iframe = parent.document.getElementById(id);
+            document.body.style.overflow = 'hidden';
+            iframe.style.height = document.body.scrollHeight + 'px';
+            return null;
+        }catch(e){
+            throw new Error('set parent iframe height error.');
+        }
+    };
+    
+    /**
+     * reset iframe height.
+     * set `0` before route changed.
+     */
+    Vue.prototype.resetIframeHeight = function() {
+        const vm = this,
+            id = vm.getUrlOrParam('element'),
+            iframe = parent.document.getElementById(id);
+        iframe.style.height = '0';
+    };
+    
+    /**
+     * monitor iframe's height.
+     * if change, setInterval & clearInterval.
+     */
+    Vue.prototype.monitorIframeHeight = function() {
+        const vm = this,
+            handler = setInterval(() => {
+                vm.setIframeHeight();
+            }, 1);
+        setTimeout(() => {
+            clearInterval(handler);
+        }, 1000);
+    };
+    
+    /**
+     * parse url params (iframe).
+     * @param id
+     * @param domain
+     * @returns {string}
+     */
+    Vue.prototype.parseIframeUrlParams = function(id, domain) {
+        const vm = this,
+            location = window.location,
+            hash = location.hash,
+            hashes = hash.split('?');
+        let page = null, url = location.href;
+        hashes.shift();
+        if(hashes.length > 0){
+            const parameters = hashes[0].split('&');
+            let params = {};
+            for(let i = 0; i < parameters.length; i++){
+                const item = parameters[i],
+                    items = item.split('=');
+                params[items[0]] = decodeURIComponent(items[1])
+                    .toString()
+                    .replace(/^\{/gi, '')
+                    .replace(/\}$/gi, '');
+            }
+            const mapping = vm.G.id.mapping;
+            for(let k in mapping){
+                if(mapping.hasOwnProperty(k)){
+                    if(params.hasOwnProperty(mapping[k])){
+                        params[mapping[k]] = vm.G.id[k];
+                    }
+                }
+            }
+            let parameter = ['element=' + id, 'embed=true'];
+            for(let n in params){
+                if(params.hasOwnProperty(n)){
+                    if(params[n].toString().indexOf('.htm') !== -1){
+                        page = params[n];
+                        delete params[n];
+                    }else parameter.push(n.toString() + '=' + params[n]);
+                }
+            }
+            url = (domain ? domain : vm.G.domains.webservices) + '/' + (page ? page : 'index.html') + '?' + parameter.join('&');
         }
         return url;
     };
@@ -464,6 +556,18 @@ exports.install = (Vue) => {
         }
         return false;
     };
+    
+    /**
+     * empty.
+     * @param string
+     * @returns {*}
+     */
+    Vue.prototype.empty = function(string) {
+        if(string === null || string === '' || typeof string === 'undefined'){
+            return '-';
+        }
+        return string;
+    };
 
     /**
      * set title for column
@@ -471,10 +575,13 @@ exports.install = (Vue) => {
      * @param text
      * @returns {*}
      */
-    Vue.prototype.tableRender = (h, text) => {
+    Vue.prototype.tableRender = (h, text,align) => {
         const showText = (text === null || text === '' || typeof text === 'undefined') ? '-' : text;
         return h('div', {
             class: 'common-cell-text',
+            style:{
+                'text-align':align||'left'
+            },
             attrs: {
                 title: showText
             }
