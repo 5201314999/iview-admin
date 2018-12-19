@@ -1,13 +1,4 @@
-@charset "UTF-8";
-
-$theme: #409EFF;
-$dark: #001529;
-$green: #5CB85C;
-$red: #ED3F14;
-$orange: #EC971F;
-$white: #FFFFFF;
-$black: #002140;
-$gray: #000C17;
+@import './config.scss';
 
 html, body{
     width: 100%;
@@ -48,6 +39,7 @@ pre, code, kbd, samp{
     font-family: "Courier New","Source Code Pro","Miscrosoft Yahei","Segoe UI","Lucida Grande",Helvetica,Arial,FreeSans,Arimo,"Droid Sans","wenquanyi micro hei","Hiragino Sans GB","Hiragino Sans GB W3",sans-serif;
     font-size: 14px;
 }
+
 @import "./components/basic";
 @import "./components/layout";
 @import "./components/table";

@@ -401,4 +401,18 @@
             padding-left: 80px;
         }
     }
+    &.layout-embed{
+        .layout-content{
+            padding-left: 0;
+            .ivu-layout-content{
+                margin: 0;
+                .wi-container{
+                    min-height: auto;
+                }
+            }
+            .layout-breadcrumb{
+                display: none;
+            }
+        }
+    }
 }

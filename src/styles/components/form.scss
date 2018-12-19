@@ -8,6 +8,12 @@
         .ivu-form-item-label,
         .ivu-form-item-content{
             font-size: 14px;
+            > div.ivu-row{
+                max-width: 100%;
+                &.wi-desc{
+                    width: 500px;
+                }
+            }
         }
         .ivu-form-item-label{
             line-height: 24px;
@@ -31,7 +37,9 @@
             }
         }
         .ivu-form-item-label{
-            width: 100px;
+            width: 100%;
+            max-width: 104px;
+            min-width: 104px;
             padding: 0;
             white-space: nowrap;
             text-overflow: ellipsis;

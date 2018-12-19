@@ -6,6 +6,14 @@
         height: 32px;
         line-height: 28px;
     }
+    .wi-button-error{
+        outline: none;
+        &:hover{
+            background: $error;
+            border-color: $error;
+            color: $white;
+        }
+    }
 }
 
 /* flex */
@@ -129,9 +137,6 @@
         padding-top: 0;
         margin-bottom: 0;
         .ivu-form-item-content{
-            .ivu-radio-inner:after{
-                top: 2.5px;
-            }
             .ivu-form-item-error-tip{
                 position: absolute;
                 top: 100%;
@@ -156,6 +161,8 @@
         .ivu-form-item{
             .ivu-form-item-label{
                 width: 50px;
+                min-width: 50px;
+                max-width: 50px;
             }
         }
         .wi-item-label{
@@ -193,6 +200,7 @@
             align-items: center;
             justify-content: flex-start;
             font-size: 14px;
+            color: $title;
             i.ivu-icon{
                 font-size: 20px;
                 margin-right: 10px;
@@ -547,27 +555,16 @@
 /* textarea */
 .wi-textarea{
     .ivu-form-item-content{
+        width: 100%;
         .ivu-input-wrapper{
-            width: auto;
+            width: 100%;
         }
     }
-    .ivu-input-wrapper-large{
-        textarea{
-            width: 340px;
-            height: 114px;
-        }
-    }
-    &.wi-textarea-mini{
-        textarea{
-            width: 256px;
-            height: 96px;
-        }
-    }
-    &.wi-textarea-large{
-        textarea{
-            width: 480px;
-            height: 112px;
-        }
+    textarea{
+        width: 100%;
+        height: 96px;
+        max-width: 424px;
+        overflow-y: auto;
     }
 }
 
