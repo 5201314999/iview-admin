@@ -7,11 +7,10 @@
 <script>
     const LoginLogsComponent = {
         data() {
-            const vm = this;
             return {
                 spinShow: false,
                 page: 'loginLog.html',
-                url: vm.G.domains.webservices
+                url: process.env.WEB_SERVICES
             };
         },
         methods: {
@@ -49,7 +48,7 @@
                             }else parameter.push(n.toString() + '=' + params[n]);
                         }
                     }
-                    vm.$set(vm, 'url', vm.G.domains.webservices + '/' + vm.page + '?' + parameter.join('&'));
+                    vm.$set(vm, 'url', process.env.WEB_SERVICES + '/' + vm.page + '?' + parameter.join('&'));
                 }
             }
         },
@@ -60,6 +59,7 @@
             hosts.shift();
             document.domain = hosts.join('.');
             vm.parseUrlParams();
+            window.vueObj = this;
         }
     };
     export default LoginLogsComponent;

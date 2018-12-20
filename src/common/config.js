@@ -171,13 +171,12 @@ const cookie = {
     }
 };
 /**
- * domains
- * @type {{auth: (string), project: (string), webservices: (string)}}
+ * adapter.
+ * @type {{type: string, span: number}}
  */
-const domains = {
-    auth: process.env.AUTH_SERVICES,
-    project: process.env.DOMAIN,
-    webservices: process.env.WEB_SERVICES
+let adapter = {
+    type: 'l',
+    span: 8
 };
 /**
  * reg
@@ -205,7 +204,7 @@ export default {
     api,
     files,
     cookie,
-    domains,
     regExps,
+    adapter,
     footer
 }

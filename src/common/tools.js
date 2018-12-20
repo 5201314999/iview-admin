@@ -209,7 +209,7 @@ exports.install = (Vue) => {
                     }else parameter.push(n.toString() + '=' + params[n]);
                 }
             }
-            url = (domain ? domain : vm.G.domains.webservices) + '/' + (page ? page : 'index.html') + '?' + parameter.join('&');
+            url = (domain ? domain : process.env.WEB_SERVICES) + '/' + (page ? page : 'index.html') + '?' + parameter.join('&');
         }
         return url;
     };
@@ -373,7 +373,7 @@ exports.install = (Vue) => {
     };
 
     /**
-     * success
+     * success.
      * @param content
      * @param width
      * @param time
@@ -382,18 +382,19 @@ exports.install = (Vue) => {
         const vm = this, title = vm.$unique(),
             success = 'wi-modal-success';
         width = width ? width : 360;
-        vm.$onPopup(success, title);
-        vm.$Modal.success({
+        const instance = vm.G.embed ? (window.parent.instance ? window.parent.instance : vm) : vm;
+        instance.$onPopup(success, title);
+        instance.$Modal.success({
             content: `<div class="wi-modal-icon ${success}-icon"><i class="ivu-icon ivu-icon-ios-checkmark-circle"></i></div>` + content,
             width: width,
             title: title,
             closable: true
         });
-        vm.$emitPopup(success, time);
+        instance.$emitPopup(success, time);
     };
 
     /**
-     * error
+     * error.
      * @param content
      * @param width
      * @param time
@@ -403,18 +404,19 @@ exports.install = (Vue) => {
             title = vm.$unique(),
             error = 'wi-modal-error';
         width = width ? width : 360;
-        vm.$onPopup(error, title);
-        vm.$Modal.error({
+        const instance = vm.G.embed ? (window.parent.instance ? window.parent.instance : vm) : vm;
+        instance.$onPopup(error, title);
+        instance.$Modal.error({
             content: `<div class="wi-modal-icon ${error}-icon"><i class="ivu-icon ivu-icon-ios-close-circle"></i></div>` + content,
             width: width,
             title: title,
             closable: true
         });
-        vm.$emitPopup(error, time);
+        instance.$emitPopup(error, time);
     };
 
     /**
-     * warning
+     * warning.
      * @param content
      * @param width
      * @param time
@@ -423,14 +425,15 @@ exports.install = (Vue) => {
         const vm = this, title = vm.$unique(),
             warning = 'wi-modal-warning';
         width = width ? width : 360;
-        vm.$onPopup(warning, title);
-        vm.$Modal.warning({
+        const instance = vm.G.embed ? (window.parent.instance ? window.parent.instance : vm) : vm;
+        instance.$onPopup(warning, title);
+        instance.$Modal.warning({
             content: `<div class="wi-modal-icon ${warning}-icon"><i class="ivu-icon ivu-icon-ios-alert"></i></div>` + content,
             width: width,
             title: title,
             closable: true
         });
-        vm.$emitPopup(warning, time);
+        instance.$emitPopup(warning, time);
     };
 
     /**
@@ -444,15 +447,16 @@ exports.install = (Vue) => {
     Vue.prototype.$confirm = function (content, ok, cancel, width, title) {
         title = title ? title : '温馨提示';
         width = width ? width : 360;
-        const vm = this;
-        vm.$Modal.confirm({
+        const vm = this,
+            instance = vm.G.embed ? (window.parent.instance ? window.parent.instance : vm) : vm;
+        instance.$Modal.confirm({
             title: title,
             content: `<div class="wi-modal-icon wi-modal-confirm-icon"><i class="ivu-icon ivu-icon-ios-help-circle"></i></div>` + content,
             width: width,
             closable: true,
             loading: true,
             onOk: function () {
-                vm.$Modal.remove();
+                instance.$Modal.remove();
                 if((typeof ok).toLowerCase() === 'function'){
                     ok.call();
                 }
@@ -464,8 +468,9 @@ exports.install = (Vue) => {
             }
         });
         vm.$nextTick(() => {
-            const wrap = document.getElementsByClassName('ivu-modal-wrap');
-            if(wrap) vm.addClass(wrap[wrap.length - 1], 'wi-modal-confirm');
+            const doc = vm.G.embed ? window.parent.document : window.document,
+                wrap = doc.getElementsByClassName('ivu-modal-wrap');
+            if(wrap && wrap.length > 0) instance.addClass(wrap[wrap.length - 1], 'wi-modal-confirm');
         });
     };
 
@@ -548,24 +553,178 @@ exports.install = (Vue) => {
     Vue.prototype.isEmpty = (string) => {
         return string === null || string === '' || typeof string === 'undefined';
     };
-
+    
     /**
-     * set title for column
-     * @param h
-     * @param text
+     * format empty.
+     * @param string
      * @returns {*}
      */
-    Vue.prototype.tableRender = (h, text,align) => {
-        const showText = (text === null || text === '' || typeof text === 'undefined') ? '-' : text;
-        return h('div', {
-            class: 'common-cell-text',
-            style:{
-                'text-align':align||'left'
+    Vue.prototype.formatEmpty = function(string) {
+        if(string === null || string === '' || typeof string === 'undefined'){
+            return '-';
+        }
+        return string;
+    };
+    
+    /**
+     * render(column).
+     * @param h
+     * @param text
+     * @param align
+     * @returns {*}
+     * @see renderDate
+     * @see renderImage
+     * @see renderAction
+     */
+    Vue.prototype.renderColumn = function(h, text, align) {
+        const vm = this;
+        text = vm.formatEmpty(text);
+        return h('Row', {
+            class: 'wi-table-cell-text',
+            style: {
+                'text-align': align || 'left'
             },
+            attrs: {title: text}
+        }, text);
+    };
+    
+    /**
+     * render(date).
+     * @param h
+     * @param ctime
+     * @param utime
+     * @param creator
+     * @param updater
+     * @returns {*}
+     * @see renderColumn
+     */
+    Vue.prototype.renderDate = function(h, ctime, utime, creator, updater) {
+        const vm = this,
+            stime = vm.isEmpty(ctime) ? '-' : vm.formatDate(ctime),
+            etime = vm.isEmpty(utime) ? '-' : vm.formatDate(utime);
+        creator = vm.formatEmpty(creator);
+        updater = vm.formatEmpty(updater);
+        return h('Row', {
+            slot: 'content',
+            class: 'date',
             attrs: {
-                title: showText
+                title: '创建：' + stime + ' ' + creator + '\n更新：' + etime + ' ' + updater
             }
-        }, showText);
+        }, [
+            h('p', [
+                '创建：',
+                ctime ? h('Time', {props: {time: ctime}}) : '-',
+                ' ' + creator
+            ]),
+            h('p', [
+                '更新：',
+                utime ? h('Time', {props: {time: utime}}) : '-',
+                ' ' + updater
+            ])
+        ]);
+    };
+    
+    /**
+     * render(images).
+     * @param h
+     * @param url
+     * @param title
+     * @param sub
+     * @param extend
+     * @returns {*}
+     * @see renderColumn
+     */
+    Vue.prototype.renderImage = function(h, url, title, sub, extend) {
+        const vm = this,
+            attrs = title ? {
+                title: title,
+                alt: title
+            } : {};
+        return h('Row', {
+            slot: 'content',
+            class: 'attach'
+        }, [
+            h('Row', {
+                class: 'attach-image'
+            }, [
+                h('img', {
+                    attrs: attrs,
+                    directives: [{
+                        name: 'lazy',
+                        value: url
+                            ? (vm.G.regExps.url.test(url)
+                                ? url
+                                : vm.G.files.server.download + url)
+                            : ''
+                    }, {name: 'viewer'}]
+                })
+            ]),
+            title ? h('Row', [
+                h('p', title),
+                sub ? h('p', {
+                    attrs: {title: vm.formatEmpty(sub)},
+                    class: 'gray'
+                }, vm.formatEmpty(sub)) : '',
+                extend ? extend : ''
+            ]) : ''
+        ]);
+    };
+    
+    /**
+     * render(action).
+     * @param h
+     * @param params
+     * @returns {*}
+     * @see renderColumn
+     */
+    Vue.prototype.renderAction = function(h, params) {
+        const template = [];
+        for(let i = 0; i < params.length; i++){
+            const item = params[i];
+            if(Array.isArray(item)){
+                const actions = [];
+                for(let k = 0; k < item.length; k++){
+                    const cur = item[k],
+                        callback = cur.func ? {
+                            click: () => {cur.func.call();}
+                        } : {};
+                    actions.push(
+                        h('a', {
+                            class: 'action-item',
+                            props: cur.props ? cur.props : {},
+                            attrs: cur.attrs ? cur.attrs : {},
+                            on: callback
+                        }, cur.name)
+                    );
+                }
+                const render = h('Poptip', {
+                    props: {
+                        trigger: 'hover',
+                        placement: 'bottom'
+                    }
+                }, [
+                    h('span', ['更多', h('icon', {props: {type: 'ios-arrow-down'}})]),
+                    h('Row', {
+                        slot: 'content'
+                    }, actions)
+                ]);
+                template.push(render);
+            }else{
+                const callback = item.func ? {
+                    click: () => {item.func.call();}
+                } : {},
+                    render = h('span', {
+                        props: item.props ? item.props : {},
+                        attrs: item.attrs ? item.attrs : {},
+                        on: callback
+                    }, item.name);
+                template.push(render);
+            }
+        }
+        return h('Row', {
+            slot: 'content',
+            class: 'action'
+        }, template);
     };
 
     /**
@@ -739,5 +898,26 @@ exports.install = (Vue) => {
             if(id) result.push(id);
         });
         return result;
+    };
+    
+    /**
+     * adapt.
+     * @returns {*}
+     */
+    Vue.prototype.adaptView = function() {
+        const vm = this,
+            width = parseInt(vm.$root['contentWidth']);
+        if(!isNaN(width)){
+            if(width <= 982){
+                vm.$set(vm.G.adapter, 'type', 's');
+                vm.$set(vm.G.adapter, 'span', 24);
+            }else if(width > 1470){
+                vm.$set(vm.G.adapter, 'type', 'l');
+                vm.$set(vm.G.adapter, 'span', 8);
+            }else{
+                vm.$set(vm.G.adapter, 'type', 'm');
+                vm.$set(vm.G.adapter, 'span', 12);
+            }
+        }
     };
 };

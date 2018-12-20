@@ -7,11 +7,10 @@
 <script>
     const OperationLogsComponent = {
         data() {
-            const vm = this;
             return {
                 spinShow: false,
                 page: 'optLog.html',
-                url: vm.G.domains.webservices
+                url: process.env.WEB_SERVICES
             };
         },
         methods: {
@@ -49,7 +48,7 @@
                             }else parameter.push(n.toString() + '=' + params[n]);
                         }
                     }
-                    const url = vm.G.domains.webservices + '/' + vm.page + '?' + parameter.join('&');
+                    const url = process.env.WEB_SERVICES + '/' + vm.page + '?' + parameter.join('&');
                     vm.$set(vm, 'url', url);
                 }
             }
@@ -61,6 +60,7 @@
             hosts.shift();
             document.domain = hosts.join('.');
             vm.parseUrlParams();
+            window.vueObj = this;
         }
     };
     export default OperationLogsComponent;
