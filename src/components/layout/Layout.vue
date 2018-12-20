@@ -68,18 +68,27 @@
             if(app) vm.$set(vm.G.id, 'app', app);
             if(pro && !isNaN(pro)) vm.$set(vm.G.id, 'pro', pro);
             if(soa) vm.$set(vm.G.id, 'soa', soa);
+            /** axios' header */
             axios.defaults.headers = {
                 'Content-Type': 'application/json;charset=utf-8',
                 'App-Id': vm.G.id.app,
                 'Pro-Id': vm.G.id.pro,
                 'SOA-Pro-Id': vm.G.id.soa
             };
+            /** cookie(collapse) */
             const cookie = vm.getCookie(vm.G.cookie.collapse.name);
             if(cookie && vm.trim(cookie) !== 'false'){
                 vm.$set(vm, 'collapse', cookie);
                 vm.$set(vm.G.menu, 'collapsed', cookie);
             }
+            /** embed */
             if(typeof embed !== 'undefined' && embed !== null) vm.$set(vm.G, 'embed', embed);
+            /** window resize */
+            vm.$root.$on('resize', () => {
+                vm.$nextTick(() => {vm.adaptView();});
+            });
+            /** global vue instance */
+            window.instance = this;
         },
         watch: {
             '$route': function() {
