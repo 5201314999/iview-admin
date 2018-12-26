@@ -1,9 +1,7 @@
 <template>
 	<Row class="layout-draggable">
 		<Card>
-			<Row slot="title" class="wi-card-title">
-				<icon type="ios-create-outline" /> Draggable
-			</Row>
+			<Row slot="title" class="wi-card-title"><icon type="ios-create-outline" /> Draggable</Row>
 			<wi-draggable :rows="rows" :exec="exec" :init="true" :config="{
 				commonly: true
 			}"></wi-draggable>

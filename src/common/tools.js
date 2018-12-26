@@ -287,7 +287,7 @@ exports.install = (Vue) => {
     Vue.prototype.addClass = function (obj, cls) {
         const name = obj.className,
             blank = name !== '' ? ' ' : '';
-        obj.className = name + blank + cls;
+        obj.className = name.replace(cls, '') + blank + cls;
     };
 
     /**
@@ -569,23 +569,22 @@ exports.install = (Vue) => {
     /**
      * render(column).
      * @param h
-     * @param text
+     * @param value
+     * @param classes
      * @param align
      * @returns {*}
      * @see renderDate
      * @see renderImage
      * @see renderAction
      */
-    Vue.prototype.renderColumn = function(h, text, align) {
+    Vue.prototype.renderColumn = function(h, value, classes, align) {
         const vm = this;
-        text = vm.formatEmpty(text);
+        value = vm.formatEmpty(value);
         return h('Row', {
-            class: 'wi-table-cell-text',
-            style: {
-                'text-align': align || 'left'
-            },
-            attrs: {title: text}
-        }, text);
+            class: classes ? classes : 'wi-table-cell-text',
+            style: {'text-align': align || 'left'},
+            attrs: {title: value}
+        }, value);
     };
     
     /**
@@ -689,8 +688,8 @@ exports.install = (Vue) => {
                             click: () => {cur.func.call();}
                         } : {};
                     actions.push(
-                        h('a', {
-                            class: 'action-item',
+                        h(cur.tag ? cur.tag : 'a', {
+                            class: cur.class ? cur.class : 'action-item',
                             props: cur.props ? cur.props : {},
                             attrs: cur.attrs ? cur.attrs : {},
                             on: callback
@@ -713,9 +712,10 @@ exports.install = (Vue) => {
                 const callback = item.func ? {
                     click: () => {item.func.call();}
                 } : {},
-                    render = h('span', {
+                    render = h(item.tag ? item.tag : 'span', {
                         props: item.props ? item.props : {},
                         attrs: item.attrs ? item.attrs : {},
+                        class: item.class ? item.class : '',
                         on: callback
                     }, item.name);
                 template.push(render);
@@ -803,9 +803,9 @@ exports.install = (Vue) => {
      * @param empty
      * @returns {string}
      */
-    Vue.prototype.formatDate = function(date, formatter = 'yyyy-MM-dd HH:mm:ss', empty = '-') {
+    Vue.prototype.formatDate = function(date, formatter = 'YYYY-MM-DD HH:mm:ss', empty = '-') {
         const vm = this;
-        if(vm.isEmpty(date)){
+        if(!vm.isEmpty(date)){
             return dateFns.format(date, formatter);
         }
         return empty;

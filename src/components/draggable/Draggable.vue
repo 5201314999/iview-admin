@@ -1,10 +1,10 @@
 <template>
-	<Row class="wi-draggable" ref="draggable">
+	<Row class="wi-draggable" :class="setDraggableClass" ref="draggable">
 		<Card :id="classes.drag.source" v-if="!setting.only">
 			<div class="wi-search">
 				<!-- search & layout -->
 				<Row class="wi-search-left">
-					<Select v-model="search.height" :style="{width: '100px'}" @on-change="handleComponentSearch" class="wi-select">
+					<Select v-model="search.height" :style="{width: '100px'}" @on-change="handleComponentSearch" class="wi-select" filterable>
 						<Option v-for="(item, index) in height" :label="item" :value="item" :key="index"></Option>
 					</Select>
 					<Button type="primary" size="large" class="ml15" @click="getCommonLayout" v-if="setting.commonly">常用布局</Button>
@@ -48,7 +48,7 @@
 						<Row class="wi-common-layout-content" ref="preview" :style="{padding: '0 ' + Math.round((960 - template.width) * setting.base.ratio) + 'px'}">
 							<Row class="wi-common-layout-row" ref="row">
 								<Row v-for="(list, index) in template.list" :style="{'margin-top' : index > 0 ? Math.round(setting.base.row * setting.base.ratio) + 'px' : 0}" :key="index" class="wi-common-layout-list">
-									<Row v-for="(item, key) in list['layoutRowModules']" :style="{'margin-left': key > 0 ? Math.round(setting.base.block * setting.base.ratio) + 'px' : 0}" :key="key" class="wi-common-layout-item">
+									<Row v-for="(item, key) in list[mapping.row.blocks]" :style="{'margin-left': key > 0 ? Math.round(setting.base.block * setting.base.ratio) + 'px' : 0}" :key="key" class="wi-common-layout-item">
 										<Row class="wi-common-layout-block" v-for="(block, i) in item.blocks" :key="i" :style="{width: Math.round(block.width * setting.base.ratio) + 'px', height: Math.round(block.height * setting.base.ratio) + 'px', 'margin-top': (i > 0 ? setting.base.space * setting.base.ratio + 'px' : 0)}" v-html="block.width + ' * ' + block.height"></Row>
 									</Row>
 								</Row>
@@ -66,20 +66,20 @@
 				</Modal>
 			</div>
 			<!-- source -->
-			<Row class="wi-draggable-box">
-				<Row class="wi-draggable-prev">
+			<Row :class="classes.drag.box" data-name="source">
+				<Row :class="classes.drag.prev + ' ' + classes.disabled" @click.native="handleComponentPrev">
 					<icon type="ios-arrow-back"></icon>
 				</Row>
-				<Row class="wi-draggable-content">
-					<Row class="wi-draggable-list" id="source" ref="source">
-						<Row class="wi-draggable-item" v-for="(item, index) in items" :key="prefix + item.id + '-' + $unique()" :data-index="item.id" :data-num="item.number" :data-width="item.width" :data-height="item.height" :style="{'margin-right': index === items.length - 1 ? '0' : (setting.base.block * setting.ratio) + 'px'}">
+				<Row :class="classes.drag.content">
+					<Row :class="classes.drag.list" id="source" ref="source">
+						<Row :class="classes.drag.item" v-for="(item, index) in items" :key="prefix + item.id + '-' + $unique()" :data-index="item.id" :data-num="item.number" :data-width="item.width" :data-height="item.height" :style="{'margin-right': index === items.length - 1 ? '0' : (setting.base.block * setting.ratio) + 'px'}">
 							<Row v-for="(block, key) in item.data" :style="{width: block.width + 'px', height: block.height + 'px', 'margin-bottom': block.space + 'px'}" :key="item.id + '-' + key" :class="classes.drag.single" :data-width="block.source.width" :data-height="block.source.height">
 								{{ block.source.width }} * {{ block.source.height }}
 							</Row>
 						</Row>
 					</Row>
 				</Row>
-				<Row class="wi-draggable-next">
+				<Row :class="classes.drag.next + ' ' + classes.disabled" @click.native="handleComponentNext">
 					<icon type="ios-arrow-forward"></icon>
 				</Row>
 			</Row>
@@ -88,20 +88,25 @@
 		<Row class="wi-tabs wi-draggable-tabs" :class="setting.only ? '' : 'mt20'">
 			<Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="switchComponentRow">
 				<TabPane label="第 1 行推荐" name="target-1">
-					<Row class="wi-draggable-container" id="target-row-1">
-						<Row class="wi-draggable-box wi-draggable-target">
-							<Row class="wi-draggable-prev">
+					<Row :class="classes.drag.container" id="target-row-1">
+						<Row :class="classes.drag.box + ' wi-draggable-target'" data-name="target-1">
+							<Row :class="classes.drag.prev" @click.native="handleComponentPrev">
 								<icon type="ios-arrow-back"></icon>
 							</Row>
-							<Row class="wi-draggable-content">
-								<Row class="wi-draggable-list" id="target-1"></Row>
-								<span :class="classes.drag.line" :style="{left: ((1920 - setting.base.left) * setting.base.ratio) + 'px'}" v-if="drag.rows.width.nums['target-1'] <= 1"></span>
-								<span :class="classes.drag.align" ref="align" :style="{left: ((1920 - (setting.base.left * 2)) * setting.base.ratio) + 'px'}" v-if="drag.rows.width.nums['target-1'] <= 1"></span>
+							<Row :class="classes.drag.content">
+								<!-- list -->
+								<Row :class="classes.drag.list" id="target-1"></Row>
+								<!-- cross line -->
+								<Row :class="classes.drag.line" :style="{left: ((1920 - setting.base.left) * setting.base.ratio) + 'px'}" v-if="drag.pages.target['target-1'] <= 1"></Row>
+								<!-- align line -->
+								<Row :class="classes.drag.align" ref="align" :style="{left: ((1920 - (setting.base.left * 2)) * setting.base.ratio) + 'px'}" v-if="drag.pages.target['target-1'] <= 1"></Row>
+								<!-- shadow -->
+								<Row :class="classes.shadow.single" @click.native="removeDraggableBlockShadow"></Row>
 							</Row>
-							<Row class="wi-draggable-next">
+							<Row :class="classes.drag.next" @click.native="handleComponentNext">
 								<icon type="ios-arrow-forward"></icon>
 							</Row>
-							<Row class="wi-draggable-tip" ref="tip" v-if="!setting.only">选择组件，拖放至此处</Row>
+							<Row class="wi-draggable-tip" ref="tip" v-if="!setting.only && drag.tip">选择组件，拖放至此处</Row>
 						</Row>
 					</Row>
 				</TabPane>
@@ -112,15 +117,19 @@
 <script>
     import Vue from 'vue';
     import Sortable from 'sortablejs';
-    import  {on, off} from 'iview/src/utils/dom';
-
     const bus = new Vue();
     const name = 'wi-component-row';
-
     const RecommendRowComponent = {};
-
     const DraggableComponent = {
         name: 'wi-draggable',
+	    computed: {
+            setDraggableClass() {
+                const vm = this,
+	                click = vm.click ? vm.classes.drag.click : '',
+	                only = vm.setting.only ? (click ? ' ' : '') + vm.classes.drag.only : '';
+                return click + only;
+            }
+	    },
         props: {
         	exec: {
         		type: [String, Number, Boolean],
@@ -141,6 +150,10 @@
             click: {
                 type: Boolean,
                 defalut: false
+            },
+	        active: {
+                type: Number,
+                default: 1
             }
         },
         data() {
@@ -156,7 +169,7 @@
 			        condition: {queryParam: ''}
 		        },
 		        height: [],
-		        items: [],
+		        items: [],              // source list.
 		        component: [],
 		        classes: {
         			layout: prefix + 'layout',
@@ -178,8 +191,9 @@
 				        line: prefix + 'draggable-screen-line',
 				        align: prefix + 'draggable-align-line',
 				        through: prefix + 'draggable-align-line-through',
-				        only: prefix + 'draggable-only-target',
-				        dragging: prefix + 'draggable-dragging'
+				        only: prefix + 'draggable-only',
+				        dragging: prefix + 'draggable-dragging',
+				        click: prefix + 'draggable-click'
 			        },
 			        shadow: {
         				single: prefix + 'draggable-item-shadow',
@@ -207,7 +221,7 @@
         			elements: {},
 			        data: {},
         			pages: {
-        				source: 0,
+        				source: 1,
 				        target: {'target-1': 1}
 			        },
 			        instance: {         // sortable instance object.
@@ -220,9 +234,7 @@
         				num: 1,         // row's number. (actual)
 				        width: {        // row's width.
         					width: 0,
-					        nums: {
-        						'target-1': 1
-					        }
+					        nums: {'target-1': 1}
 				        },
 				        height: {}      // row's height.
 			        },
@@ -235,7 +247,62 @@
         				id: 1,
         				value: 'target-1'
 			        },
-			        cross: {}
+			        cross: {},
+			        shadow: {},
+			        tip: true
+		        },
+		        mapping: {
+        		    row: {
+        		        id: 'layoutRowId',
+			            blocks: 'layoutRowModules',
+			            group: 'groupRowId'
+		            },
+			        content: {
+        		        title: 'showTitle',
+				        sub: 'showSubTitle',
+				        pos: 'titlePosition'
+			        },
+			        space: {
+        		        left: 'leftMargin',
+				        top: 'topMargin',
+				        group: 'recGroupInterval',
+				        row: 'recRowInterval',
+				        block: 'recModuleInterval',
+				        pos: 'recPositionInterval'
+			        },
+			        module: {
+        		        id: 'moduleId',
+				        gid: 'groupRowModuleId',
+				        pid: 'recPositionId',
+				        init: 'recInitData',
+        		        number: 'positionNum',
+				        width: 'moduleWidth',
+				        height: 'moduleHeight',
+				        position: 'recPositions'
+			        },
+			        attrs: {
+        		        id: 'data-id',
+				        mid: 'data-mid',
+				        key: 'data-key',
+        		        row: 'data-row',
+				        num: 'data-num',
+				        pos: 'data-pos',
+        		        index: 'data-index',
+				        type: 'data-type',
+				        width: 'data-width',
+				        height: 'data-height',
+				        name: 'data-name',
+				        relate: 'data-relate',
+				        direct: 'data-direct'
+			        },
+			        field: {
+        		        id: 'recContentId',
+        		        cover: {
+        		            one: 'image1Url',
+			                two: 'image2Url'
+		                },
+				        poster: 'posterUrl'
+			        }
 		        },
 		        template: {
         			condition: {
@@ -278,12 +345,12 @@
         		vm.setComponentBaseData();
         		vm.$api.get(vm.setting.api.base, {}, (res) => {
         			if(res['ret']['retCode'].toString() === '0'){
-        				const top = res.data['topMargin'],
-					        left = res.data['leftMargin'],
-					        group = res.data['recGroupInterval'],
-					        row = res.data['recRowInterval'],
-					        block = res.data['recModuleInterval'],
-					        space = res.data['recPositionInterval'];
+        				const top = res.data[vm.mapping.space.top],
+					        left = res.data[vm.mapping.space.left],
+					        group = res.data[vm.mapping.space.row],
+					        row = res.data[vm.mapping.space.row],
+					        block = res.data[vm.mapping.space.block],
+					        space = res.data[vm.mapping.space.pos];
         				vm.$set(vm.setting, 'base', {
         					left: left,
 					        top: top,
@@ -343,24 +410,11 @@
         				vm.$set(vm, 'items', list);
         				list = vm.parseComponentData(res.data, false);
         				vm.$set(vm, 'items', list);
-        				const source = document.getElementById(vm.classes.drag.source);
+        				const source = vm.$refs.source;
         				if(source){
-        					const parent = source.parentNode,
-						        width = parent.clientWidth,
-						        parents = parent.parentNode,
-						        $next = parents.getElementsByClassName(vm.classes.drag.next);
-        					let total = 0;
-        					list.map((data) => {
-        						total += data.width;
-					        });
-        					if($next){
-        						const next = $next[0];
-        						if(total < width){
-        							vm.addClass(next, vm.classes.disabled);
-						        }else{
-        							vm.removeClass(next, vm.classes.disabled);
-						        }
-					        }
+        				    const parent = source.$el.parentNode,
+					            parents = parent.parentNode;
+        				    vm.$nextTick(() => {vm.switchComponentSource(parents);});
 				        }
 			        }else{
         				vm.$error(res['ret']['retMsg']);
@@ -390,14 +444,14 @@
 		        };
         		datas.map((item) => {
         			const data = [],
-				        num = parseInt(item['positionNum']),
-				        width = parseInt(item['moduleWidth']),
-				        height = parseInt(item['moduleHeight']),
-				        mid = parseInt(item['moduleId']);
+				        num = parseInt(item[vm.mapping.module.number]),
+				        width = parseInt(item[vm.mapping.module.width]),
+				        height = parseInt(item[vm.mapping.module.height]),
+				        mid = parseInt(item[vm.mapping.module.id]);
         			let h;
-        			if(item['recPositions']){
+        			if(item[vm.mapping.module.position]){
         				/* one block, many position. */
-        				item['recPositions'].map((pos, k) => {
+        				item[vm.mapping.module.position].map((pos, k) => {
         					h = Math.round((pos.height * ratio) * 100) / 100;
         					let one = {
         						mid: mid,
@@ -408,9 +462,9 @@
         							width: width,
 							        height: pos.height
 						        },
-						        position: pos['recPositionId'],
-						        relate: item['groupRowModuleId'],
-						        initData: pos['recInitData'] ? pos['recInitData'] : []
+						        position: pos[vm.mapping.module.pid],
+						        relate: item[vm.mapping.module.gid],
+						        initData: pos[vm.mapping.module.init] ? pos[vm.mapping.module.init] : []
 					        };
         					if(k === num - 1) one.space = 0;
         					data.push(one);
@@ -503,8 +557,8 @@
 	        				/** commonly layout. */
 	        				for(let k = 0; k < items.length; k++){
 	        					const item = items[k],
-							        id = parseInt(item.getAttribute('data-index')),
-							        w = parseInt(item.getAttribute('data-width'));
+							        id = parseInt(item.getAttribute(vm.mapping.attrs.index)),
+							        w = parseInt(item.getAttribute(vm.mapping.attrs.width));
 	        					if(!isNaN(id) && id > 0) commonly.push(id);
 	        					if(!isNaN(w) && w > 0) width += Math.round(w * vm.setting.base.ratio);
 	        					if(k < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
@@ -513,10 +567,12 @@
 				        }else{
 	        				/** `title` setting */
 	        				if(target){
-	        					name = target[0].getAttribute('data-name');
-	        					if(name === vm.drag.tabs.value)
-	        						setting = JSON.parse(JSON.stringify(vm.template.form.validata));
-	        					else setting = JSON.parse(JSON.stringify(vm.template.form.data[name]));
+	        					name = target[0].getAttribute(vm.mapping.attrs.name);
+	        					if(name === vm.drag.tabs.value){
+	        					    setting = JSON.parse(JSON.stringify(vm.template.form.validate));
+						        }else{
+	        					    setting = JSON.parse(JSON.stringify(vm.template.form.data[name]));
+						        }
 	        					if(setting){
 	        						params = {
 	        							showTitle: setting.title,
@@ -539,21 +595,21 @@
 	        				/** recommend rows' layout. */
 	        				for(let n = 0; n < items.length; n++){
 	        					const item = items[n],
-							        id = parseInt(item.getAttribute('data-index')),
-							        row = parseInt(item.getAttribute('data-row')),
-							        num = parseInt(item.getAttribute('data-num')),
-							        w = parseInt(item.getAttribute('data-width')),
-							        height = parseInt(item.getAttribute('data-height')),
+							        id = parseInt(item.getAttribute(vm.mapping.attrs.index)),
+							        row = parseInt(item.getAttribute(vm.mapping.attrs.row)),
+							        num = parseInt(item.getAttribute(vm.mapping.attrs.num)),
+							        w = parseInt(item.getAttribute(vm.mapping.attrs.width)),
+							        height = parseInt(item.getAttribute(vm.mapping.attrs.height)),
 							        blocks = item.getElementsByClassName(vm.classes.drag.single),
 							        temporary = [];
 	        					let relate = 0;
 	        					for(let m = 0; m < blocks.length; m++){
 	        						const block = blocks[m],
 								        variable = {
-	        							    width: parseInt(block.getAttribute('data-width')),
-									        height: parseInt(block.getAttribute('data-height')),
-									        position: parseInt(block.getAttribute('data-pos')),
-									        relate: parseInt(block.getAttribute('data-relate'))
+	        							    width: parseInt(block.getAttribute(vm.mapping.attrs.width)),
+									        height: parseInt(block.getAttribute(vm.mapping.attrs.height)),
+									        position: parseInt(block.getAttribute(vm.mapping.attrs.pos)),
+									        relate: parseInt(block.getAttribute(vm.mapping.attrs.relate))
 								        };
 	        						if(variable.relate) relate = variable.relate;
 	        						let single = {
@@ -595,33 +651,6 @@
 			        }
 		        }
 	        	return validate ? (vm.setting.template ? template : rows) : [];
-	        },
-	        
-	        updateComponentAlignLine() {
-	        	const vm = this,
-			        container = document.getElementsByClassName(vm.classes.tabs.container),
-			        standard = Math.round((1920 - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
-	        	let tabs = null, length = 0;
-	        	if(container && container.length > 0){
-	        		const body = container[0];
-	        		tabs = body.getElementsByClassName(vm.classes.tabs.pane);
-	        		length = tabs.length;
-	        		for(let i = 0; i < length; i++){
-	        			const cur = tabs[i],
-					        items = cur.getElementsByClassName(vm.classes.drag.item),
-					        align = cur.getElementsByClassName(vm.classes.drag.align);
-	        			let width = 0, alignment;
-	        			if(align) alignment = align[0];
-	        			for(let n = 0; n < items.length; n++){
-                            const item = items[n],
-						        w = parseInt(item.getAttribute('data-width'));
-                            width += Math.round(w * vm.setting.base.ratio);
-                            if(n < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
-				        }
-	        			if(width < standard) vm.removeClass(alignment, vm.classes.drag.through);
-	        			else vm.addClass(alignment, vm.classes.drag.through);
-			        }
-	        	}
 	        },
 	
 	        /**
@@ -666,7 +695,7 @@
 	         */
 	        getComponentWidth(data, spacing) {
 	        	let width = 0;
-	        	data.map((item) => {
+	        	data.forEach((item) => {
 	        		if(item.data && item.data.length > 0){
 	        			width += (item.data[0].width + spacing);
 			        }
@@ -676,36 +705,11 @@
 	        },
 	        
 	        /**
-	         * Calculating the page's number based on the number of component.
-             * @param node currently clicked object
-             * @param num component's number
-	         */
-	        getComponentPages(node, num) {
-	        	const vm = this,
-			        number = typeof num !== 'undefined' ? parseInt(num) : vm.items.length,
-			        width = vm.getComponentNodeWidth(node, vm.classes.drag.content),
-			        items = node.getElementsByClassName(vm.classes.drag.item);
-	        	let widths = {
-	        		item: 0,
-			        total: 0
-		        };
-	        	if(number > 0){
-	        		for(let i = 0; i < number; i++){
-	        			if(items.hasOwnProperty(i)){
-	        				const cur = items[i],
-						        temp = parseInt(cur.getAttribute('data-width'));
-	        				if(!isNaN(temp)) widths.item += temp * vm.setting.base.ratio;
-				        }
-			        }
-		        }
-	        	widths.total = widths.item + (vm.setting.base.block * vm.setting.base.ratio) * (number - 1);
-	        	return Math.ceil(widths.total / width);
-	        },
-	        
-	        /**
-             * get component node's client width
+             * get component node's client width.
              * @param node currently clicked object
              * @param name class' name
+             * @returns {number}
+	         * @see getComponentPages
              */
 	        getComponentNodeWidth(node, name) {
 	        	const element = node.getElementsByClassName(name);
@@ -714,6 +718,33 @@
 	        		return elem.clientWidth;
 		        }
 	        	return 0;
+	        },
+	        
+	        /**
+             * Calculating the row's number based on the number of component.
+             * @param node node currently clicked object
+             * @returns {number}
+	         * @see getComponentNodeWidth
+             */
+	        getComponentPages(node) {
+	            if(!node) return 1;
+	        	const vm = this,
+			        width = vm.getComponentNodeWidth(node, vm.classes.drag.content),
+			        items = node.getElementsByClassName(vm.classes.drag.item),
+			        number = items.length;
+	        	let widths = {
+	        		item: 0,
+			        total: 0
+		        };
+	        	for(let i = 0; i < number; i++){
+                    if(items.hasOwnProperty(i)){
+                        const cur = items[i],
+					        temp = parseInt(cur.getAttribute(vm.mapping.attrs.width));
+                        if(!isNaN(temp)) widths.item += temp * vm.setting.base.ratio;
+			        }
+		        }
+	        	widths.total = widths.item + (vm.setting.base.block * vm.setting.base.ratio) * (number - 1);
+	        	return Math.ceil(widths.total / width);
 	        },
 	        
 	        /**
@@ -735,22 +766,348 @@
 	        updateComponentBodyWidth() {},
 	        
 	        /**
+             * set draggable data for component.
+             * `pages`, `height`, `width` etc.
+	         * @see handleComponentNext
+             */
+	        setComponentDraggableData() {
+	            const vm = this;
+	            bus.$emit('set-draggable-data', vm.drag);
+	        },
+	        
+	        /**
+             * update align line.
+             * caculation formula: (1920 - (base'left + base' right)) * ratio = align line.
+             * if total width of blocks large than this value, alignment line be turn green.
+             * @see initDraggableTarget
+             */
+	        updateComponentAlignLine() {
+	        	const vm = this,
+			        container = document.getElementsByClassName(vm.classes.tabs.container),
+			        standard = Math.round((1920 - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
+	        	let tabs = null, length = 0;
+	        	if(container && container.length > 0){
+	        		const body = container[0];
+	        		tabs = body.getElementsByClassName(vm.classes.tabs.pane);
+	        		length = tabs.length;
+	        		for(let i = 0; i < length; i++){
+	        			const cur = tabs[i],
+					        items = cur.getElementsByClassName(vm.classes.drag.item),
+					        align = cur.getElementsByClassName(vm.classes.drag.align);
+	        			let width = 0, alignment;
+	        			if(align) alignment = align[0];
+	        			if(alignment){
+	        			    for(let n = 0; n < items.length; n++){
+	                            const item = items[n],
+							        w = parseInt(item.getAttribute(vm.mapping.attrs.width));
+	                            width += Math.round(w * vm.setting.base.ratio);
+	                            if(n < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
+					        }
+		                    if(width < standard){
+		                        vm.removeClass(alignment, vm.classes.drag.through);
+					        }else{
+		                        if(!vm.hasClass(alignment, vm.classes.drag.through)){
+		                            vm.addClass(alignment, vm.classes.drag.through);
+					            }
+					        }
+				        }
+			        }
+	        	}
+	        },
+	        
+	        /**
              * search ( refresh ).
              * when click the search button, get data and refresh layout.
              * @see getComponentData
              */
 	        handleComponentSearch() {
 	        	const vm = this,
-			        source = vm.$refs.source;
+			        $source = vm.$refs.source;
 	        	vm.getComponentData();
-	        	if(source) source.style.marginLeft = 0;
+	        	if($source){
+	        	    const source = $source.$el,
+			            parent = source.parentNode,
+			            parents = parent.parentNode;
+	        	    source.style.marginLeft = '0';
+	        	    vm.$set(vm.drag.pages, 'source', 1);
+	        	    vm.$nextTick(() => {vm.switchComponentSource(parents);});
+		        }
 	        },
 	        
-	        switchComponentRow() {},
+	        /**
+             * switch on the previous row.
+             * @param event
+             * @see handleComponentNext
+             */
+	        handleComponentPrev(event) {
+	            const vm = this,
+		            parent = event.currentTarget.parentNode,
+		            parents = parent.parentNode,
+		            $list = parent.getElementsByClassName(vm.classes.drag.list),
+		            $shadow = parents.getElementsByClassName(vm.classes.shadow.single),
+		            name = parent.getAttribute(vm.mapping.attrs.name),
+		            isTarget = name.indexOf('target') > -1;
+	            let list = null, shadow = null;
+	            if($list && $list.length > 0) list = $list[0];
+	            if($shadow && $shadow.length > 0) shadow = $shadow[0];
+	            if(isTarget){
+	                /** target list */
+	                let num = vm.drag.pages.target[name]
+		                ? parseInt(JSON.parse(JSON.stringify(vm.drag.pages.target[name])))
+		                : 1;
+	                if(num > 1){
+	                    num -= 1;
+	                    vm.$set(vm.drag.pages.target, name, num);
+	                    if(shadow){
+	                        const offset = shadow.offsetLeft,
+		                        style = [
+		                            `top: ${shadow.offsetTop}px;`,
+			                        `left: ${offset + vm.drag.rows.width.width}px;`,
+			                        `width: ${shadow.clientWidth}px;`,
+			                        `height: ${shadow.clientHeight}px;`,
+			                        `display: block;`
+		                        ];
+	                        shadow.removeAttribute('style');
+	                        shadow.setAttribute('style', style.join(''))
+	                    }
+	                }
+	                if(list) list.style.marginLeft = - ((num - 1) * vm.drag.rows.width.width) + 'px';
+	                if(num === 1){
+	                    vm.$nextTick(() => {
+	                        vm.updateComponentAlignLine();
+	                    });
+	                }
+	                const number = vm.getComponentPages(parent);
+	                vm.switchComponentTarget(parent, number, name);
+	            }else{
+	                /** source list */
+	                let num = parseInt(JSON.parse(JSON.stringify(vm.drag.pages.source)));
+	                if(num > 1){
+	                    num -= 1;
+	                    vm.$set(vm.drag.pages, 'source', num);
+	                }
+	                if(list) list.style.marginLeft = - ((num - 1) * vm.drag.rows.width.width) + 'px';
+	                vm.switchComponentSource(parent);
+	            }
+	        },
 	        
-	        switchComponentTarget(node) {},
+	        /**
+             * switch on the next row.
+             * @param event
+             * @see handleComponentPrev
+             */
+	        handleComponentNext(event) {
+	            const vm = this,
+		            parent = event.currentTarget.parentNode,
+		            parents = parent.parentNode,
+		            $list = parent.getElementsByClassName(vm.classes.drag.list),
+		            $shadow = parents.getElementsByClassName(vm.classes.shadow.single),
+		            name = parent.getAttribute(vm.mapping.attrs.name),
+		            isTarget = name.indexOf('target') > -1;
+	            let list = null, shadow =  null;
+	            if($list && $list.length > 0) list = $list[0];
+	            if($shadow && $shadow.length > 0) shadow = $shadow[0];
+	            if(isTarget){
+	                /** target list */
+	                const number = vm.getComponentPages(parent),
+		                width = list ? list.parentNode['clientWidth'] : 0;
+	                let num = vm.drag.pages.target[name] ? vm.drag.pages.target[name] : 1;
+	                if(width > 0 && width !== vm.drag.rows.width.width){
+	                    vm.$set(vm.drag.rows.width, 'width', width);
+	                }
+	                if(num < number){
+	                    if(shadow){
+	                        const offset = shadow.offsetLeft,
+		                        style = [
+		                            `top: ${shadow.offsetTop}px;`,
+			                        `left: ${offset - vm.drag.rows.width.width}px;`,
+			                        `width: ${shadow.clientWidth}px;`,
+			                        `height: ${shadow.clientHeight}px;`,
+			                        `display: block;`
+		                        ];
+	                        shadow.removeAttribute('style');
+	                        shadow.setAttribute('style', style.join(''))
+	                    }
+	                    if(list){
+	                        list.style.marginLeft = - (num * vm.drag.rows.width.width) + 'px';
+		                    num += 1;
+		                    vm.$set(vm.drag.pages.target, name, num);
+	                    }
+	                    vm.switchComponentTarget(parent, number, name);
+	                    vm.setComponentDraggableData();
+	                }
+	            }else{
+	                /** source list */
+	                const number = vm.getComponentPages(parent);
+	                let num = parseInt(JSON.parse(JSON.stringify(vm.drag.pages.source)));
+	                if(num < number){
+	                    if(list) list.style.marginLeft = - (num * vm.drag.rows.width.width) + 'px';
+	                    num += 1;
+	                    vm.$set(vm.drag.pages, 'source', num);
+	                }
+	                vm.switchComponentSource(parent, number);
+	            }
+	        },
 	        
-	        switchComponentSource() {},
+	        /**
+             * reset/set default data of title.
+             * content's title.
+             * @param id
+	         * @see switchComponentRow
+             */
+	        resetComponentTitleContent(id) {
+	            const vm = this,
+                    data = {
+                        title: '0',
+                        subTitle: '1',
+                        position: '1'
+                    };
+                vm.$set(vm.template.form, 'validate', data);
+                if(id) vm.$set(vm.template.form.data, id, data);
+	        },
+	        
+	        /**
+             * remove `active` state
+             * all of block and shadow.
+             * @see switchComponentRow
+             */
+	        removeComponentBlockActive() {
+	            const vm = this,
+		            containers = document.getElementsByClassName(vm.classes.tabs.container);
+	            if(containers){
+	                const container = containers[0],
+		                blocks = container.getElementsByClassName(vm.classes.drag.single),
+		                shadows = container.getElementsByClassName(vm.classes.shadow.single);
+	                for(let i = 0; i < blocks.length; i++){
+	                    const block = blocks[i];
+	                    if(block) vm.removeClass(block, vm.classes.drag.active);
+	                }
+	                if(shadows){
+	                    const active = vm.active ? vm.active - 1 : shadows.length - 1,
+		                    shadow = shadows[active];
+	                    if(shadow){
+	                        vm.removeClass(shadow, vm.classes.shadow.active);
+	                        shadow.setAttribute('style', 'display: none;');
+	                    }
+	                }
+	            }
+	        },
+	        
+	        /**
+             * switch tab.
+             * To get datas when click the tab.(emit: `switch-tab`)
+             * @param name {string}
+	         * @see resetComponentTitleContent
+	         * @see removeComponentBlockActive
+             */
+	        switchComponentRow(name) {
+	            const vm = this,
+		            target = document.getElementById(name),
+		            names = name.split('-'),
+		            active = names[1] ? parseInt(names[1]) : 1;
+	            if(target){
+	                let exist = {};
+	                vm.$set(vm.template.form, 'disabled', false);
+	                if(vm.template.form.exist && vm.template.form.exist[name]){
+	                    exist = JSON.parse(JSON.stringify(vm.template.form.exist[name]));
+	                    const title = parseInt(exist.title),
+		                    sub = parseInt(exist.subTitle);
+	                    if(title && !sub) vm.$set(vm.template.form, 'disabled', true);
+	                }
+	                if(vm.template.form.data[name]){
+	                    vm.$set(vm.template.form, 'validate', JSON.parse(JSON.stringify(vm.template.form.data[name])));
+	                }else{
+	                    vm.resetComponentTitleContent();
+	                }
+	                const items = target.getElementsByClassName(vm.classes.drag.item);
+	                if(items && items.length > 0){
+	                    const item = items[0],
+		                    height = parseInt(item.getAttribute(vm.mapping.attrs.height));
+	                    if(!isNaN(height) && height > 0 && !vm.setting.only && height !== vm.search.height){
+	                        vm.$set(vm.search, 'height', height);
+                            vm.$set(vm.search, 'temp', height);
+                            vm.getComponentData();
+	                    }
+	                }
+	            }
+	            const row = vm.rows[active - 1];
+	            let data = {name: name, active: active};
+	            if(row) data.id = row[vm.mapping.row.id];
+	            vm.$set(vm.drag.tabs, 'id', active);
+	            vm.$set(vm.drag.tabs, 'value', name);
+	            vm.$emit('switch-tab', data);
+	            vm.removeComponentBlockActive();
+	        },
+	        
+	        /**
+             * switch state (source list).
+             * @param node parent node.
+             * @param number page number.
+	         * @see handleComponentPrev
+             * @see handleComponentNext
+             */
+	        switchComponentSource(node, number) {
+	            node = node ? node : (vm.$refs.source
+		            ? vm.$refs.source.$el.parentNode.parentNode
+		            : null);
+	            const vm = this,
+		            disabled = vm.classes.disabled,
+		            num = vm.drag.pages.source,
+		            $next = node.getElementsByClassName(vm.classes.drag.next),
+		            $prev = node.getElementsByClassName(vm.classes.drag.prev);
+	            let next, prev;
+	            if($next && $next.length > 0) next = $next[0];
+	            if($prev && $prev.length > 0) prev = $prev[0];
+	            if(prev && next){
+	                number = !vm.isEmpty(number) && !isNaN(number) ? number : vm.getComponentPages(node);
+	                if(num > 1){
+	                    vm.removeClass(prev, disabled);
+	                    if(num < number) vm.removeClass(next, disabled);
+	                    else vm.addClass(next, disabled);
+	                }else{
+	                    vm.addClass(prev, disabled);
+	                    if(number > 1) vm.removeClass(next, disabled);
+	                    else vm.addClass(next, disabled);
+	                }
+	            }
+	        },
+	        
+	        /**
+             * switch state (target list).
+             * @param node parent node.
+             * @param number page number.
+             * @param dest target name.
+             * @see handleComponentPrev
+             * @see handleComponentNext
+             */
+	        switchComponentTarget(node, number, dest) {
+	            const vm = this,
+		            disabled = vm.classes.disabled,
+		            num = vm.drag.pages.target[dest] ? vm.drag.pages.target[dest] : 1,
+		            $next = node.getElementsByClassName(vm.classes.drag.next),
+		            $prev = node.getElementsByClassName(vm.classes.drag.prev);
+	            let next, prev;
+	            if($next && $next.length > 0) next = $next[0];
+	            if($prev && $prev.length > 0) prev = $prev[0];
+	            if(prev && next){
+	                number = number ? number : vm.getComponentPages(node);
+	                if(num > 1){
+		                vm.removeClass(prev, disabled);
+		                if(num === number){
+		                    if(!vm.hasClass(next, disabled)) vm.addClass(next, disabled);
+		                }else{
+		                    vm.removeClass(next, disabled);
+		                }
+		            }else{
+		                if(!vm.hasClass(prev, disabled)) vm.addClass(prev, disabled);
+		                if(number > 1){
+		                    vm.removeClass(next, disabled);
+		                }else{
+		                    if(!vm.hasClass(next, disabled)) vm.addClass(next, disabled);
+		                }
+		            }
+	            }
+	        },
 	
 	        /**
 	         * get common layout.
@@ -802,12 +1159,12 @@
 	        	let list = [],
 			        widths = [];
 	        	datas.map((data) => {
-	        		const modules = data['layoutRowModules'];
+	        		const modules = data[vm.mapping.row.blocks];
 	        		let w = 0;
 	        		modules.map((module, k) => {
-	        			const num = module['positionNum'],
-					        width = module['moduleWidth'],
-					        height = module['moduleHeight'];
+	        			const num = module[vm.mapping.module.number],
+					        width = module[vm.mapping.module.width],
+					        height = module[vm.mapping.module.height];
 	        			if(num > 1){
 	        				const spacing = vm.setting.base.space * (num - 1),
 						        h = Math.round((height - spacing) / num * 100) / 100;
@@ -850,7 +1207,7 @@
 	        selectCommonLayout(event) {
 	        	const vm = this,
 			        elem = event.target,
-			        id = parseInt(elem.getAttribute('data-id'));
+			        id = parseInt(elem.getAttribute(vm.mapping.attrs.id));
 	        	if(!isNaN(id) && id > 0){
 	        		if(vm.template.active !== id){
 	        			vm.$set(vm.template, 'active', id);
@@ -883,7 +1240,7 @@
 	        switchCommonLayoutSearch(event) {
 	        	const vm = this,
 			        elem = event.target,
-			        direct = vm.trim(elem.getAttribute('data-direct')),
+			        direct = vm.trim(elem.getAttribute(vm.mapping.attrs.direct)),
 			        info = {single: 150, total: 960, spacing: 12},
 			        length = vm.template.data.length,
 			        max = info.single * length + info.spacing * (length - 1),
@@ -911,6 +1268,29 @@
 	        },
 	        
 	        switchCommonLayoutPreview() {},
+	        
+	        /**
+             * Communication between components.
+             * via the common Vue object called `bus`
+             */
+	        handleBroadcast() {
+	            const vm = this;
+	            bus.$on('prev-action', (event) => {
+	                vm.handleComponentPrev(event);
+	            });
+	            bus.$on('next-action', (event) => {
+	                vm.handleComponentNext(event);
+	            });
+	            bus.$on('init-target-draggable', () => {
+	                vm.$nextTick(() => {
+	                
+	                });
+	            });
+	            vm.$on('init-finish', () => {
+	                const data = vm.wrapComponentData();
+	                vm.$emit('finish', data, true);
+	            });
+	        },
 	        
 	        /**
 	         * reset draggable setting.
@@ -941,8 +1321,25 @@
 	        },
 	        
 	        /**
+             * current tab's container.
+             * via `this.drag.tabs.value` variable.
+             * @returns {Element}
+             */
+	        getDraggableContainer() {
+	            const vm = this,
+		            containers = document.getElementsByClassName(vm.classes.drag.container),
+		            values = JSON.parse(JSON.stringify(vm.drag.tabs.value)).split('-'),
+		            active = parseInt(values[values.length - 1]);
+	            let current = null;
+	            if(isNaN(active)) current = containers[0];
+	            else current = containers[active - 1];
+	            return current;
+	        },
+	        
+	        /**
 	         * init draggable (edit).
 	         * via `recommend-layout-id`.
+	         * @see initDraggableBlock
 	         */
 	        initDraggable() {
 	        	const vm = this,
@@ -956,32 +1353,32 @@
 	        		if(tip && tip.$el) vm.addClass(tip.$el, vm.classes.hidden);
 	        		vm.rows.map((item, i) => {
 	        			const id = 'target-' + vm.drag.rows.num;
-	        			let data = item['layoutRowModules'],
-					        rowId = item['layoutRowId'];
+	        			let data = item[vm.mapping.row.blocks],
+					        rowId = item[vm.mapping.row.id];
 	        			if(i > 0){
 	        				if(add) add.$el.click();
 	        				else vm.setDraggable();
 				        }
-	        			if(typeof item.showTitle !== 'undefined'){
+	        			if(typeof item[vm.mapping.content.title] !== 'undefined'){
 	        				data = item['modules'];
-	        				rowId = item['groupRowId'];
+	        				rowId = item[vm.mapping.row.group];
 	        				const title = {
-	        					title: item.showTitle.toString(),
-						        subTitle: item['showSubTitle'].toString(),
-						        position: item['titlePosition'].toString()
+	        					title: item[vm.mapping.content.title].toString(),
+						        subTitle: item[vm.mapping.content.title.sub].toString(),
+						        position: item[vm.mapping.content.pos].toString()
 					        };
 	        				vm.$set(vm.template.form.data, id, title);
 	        				vm.$set(vm.template.form.exist, id, title);
 	        				if(i === vm.rows.length - 1){
 	        					vm.$set(vm.template.form, 'validate', title);
-	        					if(item.showTitle){
-	        						if(item['showSubTitle']) vm.$set(vm.template.form, 'disabled', false);
+	        					if(item[vm.mapping.content.title]){
+	        						if(item[vm.mapping.content.sub]) vm.$set(vm.template.form, 'disabled', false);
 	        						else vm.$set(vm.template.form, 'disabled', true);
 						        }else{
 	        						vm.$set(vm.template.form, 'disabled', true);
 						        }
 					        }else{
-	        					if(!item.showTitle) vm.$set(vm.template.form.data[id], 'subTitle', '1');
+	        					if(!item[vm.mapping.content.title]) vm.$set(vm.template.form.data[id], 'subTitle', '1');
 					        }
 				        }
 	        			const list = vm.parseComponentData(data, rowId),
@@ -1000,7 +1397,7 @@
 				        };
 			        });
 	        		vm.$nextTick(() => {
-	        			if(vm.setting.only) vm.initDraggableSource();
+	        			if(!vm.setting.only) vm.initDraggableSource();
 	        			if(Object.keys(template).length > 0){
 	        				Object.keys(template).forEach((key) => {
 	        					const cur = template[key],
@@ -1032,13 +1429,16 @@
 	        				if(vm.click || vm.init){
 	        					const length = vm.drag.blocks.template.length;
 	        					if(length > 0){
-	        						vm.drag.blocks.template.map((templet, t) => {
+	        						vm.drag.blocks.template.forEach((templet, t) => {
 	        							const ids = templet.id.split('-'),
 									        row = parseInt(ids[1]);
 	        							vm.drag.blocks.instance.push(new Vue({
 									        el: '#' + templet.id,
 									        data() {return {values: vm.drag.blocks.values};},
-									        render: Vue.compile(templet.template).render
+									        render: Vue.compile(templet.template).render,
+									        methods: {
+									            click(event) {vm.handleDraggableBlockClick(event);}
+									        }
 								        }));
 	        							vm.initDraggableTarget(row);
 	        							if(t === length - 1) last = templet.id;
@@ -1050,8 +1450,8 @@
 	        						if(temp){
 	        							const items = temp.getElementsByClassName(vm.classes.drag.item);
 	        							if(items.length > 0){
-	        								const first = items[0],
-										        height = parseInt(first.getAttribute('data-height'));
+	        								const item = items[0],
+										        height = parseInt(item.getAttribute(vm.mapping.attrs.height));
 	        								if(!isNaN(height) && height > 0 && !vm.setting.only){
 	        									vm.$set(vm.search, 'height', height);
 	        									vm.$set(vm.search, 'temp', height);
@@ -1070,152 +1470,13 @@
 			        });
 		        }
 	        },
-	
-	        /**
-	         * init recommend rows' template.
-	         * @param data
-	         * @param id {*} `container` id.
-	         * @returns {string}
-	         */
-	        initDraggableBlock(data, id) {
-	        	const vm = this,
-			        templates = [],
-			        icon = '<icon type="ios-add-circle-outline"></icon>';
-		        data.map((item) => {
-		        	const items = item.data,
-				        template = [],
-				        element = [];
-		        	let right = (vm.setting.base.block * vm.setting.base.ratio) + 'px',
-				        attrs = [
-				        	`data-index="${item.id}"`,
-					        `data-num="${item.number}"`,
-					        `data-row="${item.lid}"`,
-					        `data-width="${item.width}"`,
-					        `data-height="${item.height}"`,
-					        `class="${vm.classes.drag.item}"`,
-					        `style="margin-right: ${right}"`
-				        ];
-		        	template.push(`<Row ${attrs.join(' ')}>`);
-		        	/** recommend position (block) */
-		        	items.map((part) => {
-		        		const text = part.source.width + ' * ' + part.source.height,
-					        style = [
-					        	`width: ${part.width}px;`,
-						        `height: ${part.height}px;`,
-						        `margin-bottom: ${part.space}px;`
-					        ],
-					        content = vm.click
-						        ? (vm.setting.text ? `<Row>${text}</Row>` : icon)
-						        : (vm.init ? `<Row>${text}</Row>` : text),
-					        params = [],
-					        string = {},
-					        id = vm.$unique();
-		        		/** set `carousel` `v-model` values. */
-		        		vm.$set(vm.drag.blocks.values, id, 0);
-		        		/** whether can click or not. */
-		        		if(vm.init || vm.click){
-		        			/** attributes data */
-		        			const key = vm.prefix + id,
-						        attributes = [
-						        	`id="${key}"`,
-							        `data-id="${item.id}"`,
-							        `data-mid="${part.mid}"`,
-							        `data-row="${item.lid}"`,
-							        `data-pos="${part.position}"`,
-							        `data-relate="${part.relate}"`,
-							        `data-key="${key}"`,
-							        `data-width="${part.source.width}"`,
-							        `data-height="${part.source.height}"`,
-							        `class="${vm.classes.drag.single}"`
-						        ];
-		        			/** node */
-		        			const initData = part.initData,
-						        carousel = [],
-						        len = initData.length,
-						        type = len > 0 ? initData[0]['recType'] : false;
-		        			if(type) attributes.push(`data-type="${type}"`);
-		        			params.push(attributes.join(' '));
-		        			/** style */
-		        			if(vm.click && content === icon && len !== 1){
-		        				style.push(`font-size="${part.height}px;"`);
-					        }
-		        			/** convert to `string` */
-		        			string.params = params.join('');
-		        			string.style = style.join('');
-		        			if(len <= 0){
-		        				/** none (add icon or text) */
-		        				element.push(
-		        					`<Row ${string.params} style="${string.style}">${content}</Row>`
-						        );
-					        }else if(len === 1){
-		        				/** single image */
-		        				const single = initData[0];
-		        				let cover = single['image1Url']
-							        ? `<img src="${single['image1Url']}" class="${vm.classes.block.cover}" />`
-							        : ``;
-		        				cover += single['image2Url']
-							        ? `<img src="${single['image2Url']}" class="${vm.classes.block.cover}" />`
-							        : ``;
-		        				element.push(
-		        					`<Row ${string.params} style="${string.style}">`,
-							            `<Row class="${vm.classes.drag.image}">`,
-							                `<img src="${single['posterUrl']}" class="${vm.classes.block.image}" data-index="${single['recContentId']}" />`,
-							                cover,
-							            `</Row>`,
-							        `</Row>`
-						        );
-					        }else if(len > 1){
-		        				/** carousel */
-		        				initData.map((single) => {
-		        					let cover = single['image1Url']
-								        ? `<img src="${single['image1Url']}" class="${vm.classes.block.cover}" />`
-								        : ``;
-		        					cover += single['image2Url']
-								        ? `<img src="${single['image2Url']}" class="${vm.classes.block.cover}" />`
-								        : ``;
-		        					carousel.push(
-		        						`<CarouselItem>`,
-								            `<img src="${single['posterUrl']}" class="${vm.classes.block.image}" data-index="${single['recContentId']}" />`,
-								            cover,
-								        `</CarouselItem>`
-							        );
-						        });
-		        				const setting = [
-		        					`:autoplay="${vm.setting.carousel.auto}"`,
-							        `:autoplay-speed="${vm.setting.carousel.speed}"`,
-							        `:radius-dot="${vm.setting.carousel.radiuDot}"`,
-							        `v-model="values['${id}']" loop`
-						        ];
-		        				element.push(
-		        					`<Row ${string.params} style="${string.style}">`,
-							            `<Carousel ${setting.join(' ')}>`,
-							                `${carousel.join('')}`,
-							            `</Carousel>`,
-							        `</Row>`
-						        );
-					        }
-				        }else{
-		        			/** normal, can not click. */
-		        			string.params = params.join('');
-		        			string.style = style.join('');
-		        			element.push(
-		        				`<Row class="${vm.classes.drag.single}" ${string.params} style="${string.style}">${content}</Row>`
-					        )
-				        }
-			        });
-		        	template.push(element.join('') + '</Row>');
-		        	templates.push(template.join(''));
-		        });
-		        /** `template` records. */
-		        if(vm.init || vm.click){
-		        	vm.drag.blocks.template.push({
-				        id: id,
-				        template: `<Row id="${id}" class="${vm.classes.drag.list}" clearfix>${templates.join('')}</Row>`
-			        });
-		        }
-		        return templates.join('');
-	        },
 	        
+	        /**
+             * init component draggable container(source)
+             * original draggable list.
+             * start: whether the height is equal with destination list's height.
+             * end: update the align line of components.
+             */
 	        initDraggableSource() {
 	        	document.body.ondrop = function (event) {
                     event.preventDefault();
@@ -1223,10 +1484,37 @@
                 };
 	        	const vm = this,
 			        source = document.getElementById('source'),
-			        start = (event) => {
-	        		
+			        getList = () => {
+	        	        const current = vm.getDraggableContainer(),
+			                list = current ? document.getElementById(vm.drag.tabs.value) : {};
+	        	        return {
+	        	            object: list,
+			                length: list.children ? list.children.length : 0
+		                };
 			        },
-			        end = () => {};
+			        start = (event) => {
+	        	        const list = getList();
+	        	        if(list.length > 0){
+	        	            const items = list.object.getElementsByClassName(vm.classes.drag.item);
+	        	            if(items && items.length > 0){
+	        	                const item = items[0],
+			                        originalHeight = parseInt(item.getAttribute(vm.mapping.attrs.height)),
+			                        compareHeight = parseInt(event.item.getAttribute(vm.mapping.attrs.height));
+	        	                if(!isNaN(originalHeight) && originalHeight !== compareHeight){
+	        	                    vm.$error(`<Row>高度不一致 ( <span class="red">注：</span>清空当前推荐行内的组件或选择高度一致的组件，当前高度为 <span class="theme">${originalHeight}</span> )</Row>`, 380);
+	        	                    return false;
+		                        }
+		                    }
+		                }else vm.$set(vm.drag, 'tip', false);
+			        },
+			        end = () => {
+	        	        const data = vm.wrapComponentData(),
+			                list = getList();
+	        	        if(data) vm.$emit('get-data', data);
+	        	        vm.updateComponentAlignLine();
+	        	        vm.updateComponentBodyWidth();
+	        	        if(list.length <= 0) vm.$set(vm.drag, 'tip', false);
+			        };
 	        	vm.drag.instance.source = Sortable.create(source, {
 			        group: {
 			        	name: 'source',
@@ -1241,16 +1529,40 @@
 		        });
 	        },
 	        
+	        /**
+             * init component draggable container(target)
+             * Control of the switcher when the component is adding or removing.
+             * @param id
+             */
 	        initDraggableTarget(id) {
 	        	const vm = this;
 	        	id = id && !isNaN(id) ? 'target-' + id : 'target-' + vm.drag.rows.num;
 	        	vm.setComponentBodyWidth(id);
 	        	const target = document.getElementById(id),
+			        updateObject = (event, children) => {
+		                const temp = [],
+			                source = vm.$refs.source;
+                        let i = 0, n = 0;
+                        for(; i < children.length; i++){
+                            temp.push(children[i].cloneNode(true));
+                        }
+                        target.innerHTML = '';
+                        for(; n < temp.length; n++){
+                            temp[n].style.marginRight = (vm.setting.base.block * vm.setting.base.ratio) + 'px';
+                            target.appendChild(temp[n]);
+                        }
+                        if(source) source.$el.insertBefore(event.item, event.clone);
+                        event.clone.remove();
+			        },
 			        add = (event) => {
 	        		    const parent = target.parentNode,
 				            parents = parent.parentNode,
 				            children = target.children,
 				            number = vm.getComponentPages(parents);
+	        		    updateObject(event, children);
+	        		    vm.switchComponentTarget(parents, number, id);
+	        		    parent.scrollLeft = 0;
+	        		    vm.setComponentBodyWidth(id);
 			        },
 			        update = () => {
 	        		    const parent = target.parentNode,
@@ -1291,7 +1603,8 @@
 					        },
 					        onEnd() {
 	        					const data = vm.wrapComponentData();
-	        					vm.$emit('get-data', []);
+	        					vm.$emit('get-data', data);
+	        					if(vm.drag.pages.target[id] && vm.drag.pages.target[id] <= 1) vm.updateComponentAlignLine();
 	        					vm.initDraggableBody(true);
 					        },
 					        onRemove() {update();}
@@ -1301,7 +1614,7 @@
 	        },
 	
 	        /**
-	         * init component container(draggable)
+	         * init component draggable container(body)
              * mainly use to delete for all `target item`.
 	         * @param disabled
 	         */
@@ -1311,34 +1624,287 @@
 	        	disabled = typeof disabled !== 'undefined' ? disabled : false;
 	        	if(layout){
 	        		const container = layout[0];
-	        		vm.drag.instance.layout = Sortable.create(container, {
-	        			group: {
-	        				name: 'layout',
-					        pull: true,
-					        put: ['target']
-				        },
-				        animation: 120,
-				        ghostClass: vm.classes.drag.dragging,
-				        disabled: disabled,
-				        onAdd(event) {
-	        				/** remove item & delete rows.data[$child] */
-	        				const data = vm.drag.data[vm.drag.tabs.value];
-	        				if(data){
-                            	const item = event.item,
-		                            id = item ? parseInt(item.getAttribute('data-index')) : 0;
-                            	if(!isNaN(id) && id > 0){
-                            		data.map((block, key) => {
-                            			if(block.id === id){
-                            				data.splice(key, 1);
-                            				return false;
-			                            }
-		                            });
+	        		if(disabled && Object.keys(vm.drag.instance.layout).length > 0){
+	        		    vm.drag.instance.layout.option('disabled', disabled);
+			        }else{
+	        		    vm.drag.instance.layout = Sortable.create(container, {
+		                    group: {
+		                        name: 'layout',
+						        pull: true,
+						        put: ['target']
+					        },
+					        animation: 120,
+					        ghostClass: vm.classes.drag.dragging,
+					        disabled: disabled,
+					        sort: false,
+					        onAdd(event) {
+		                        /** remove item & delete rows.data[$child] */
+		                        const data = vm.drag.data[vm.drag.tabs.value],
+							        item = event.item;
+		                        if(data){
+	                                const id = item ? parseInt(item.getAttribute(vm.mapping.attrs.index)) : 0;
+	                                if(!isNaN(id) && id > 0){
+	                                    data.map((block, key) => {
+	                                        if(block.id === id){
+	                                            data.splice(key, 1);
+	                                            return false;
+				                            }
+			                            });
+		                            }
 	                            }
-                            }
-	        				event.item.remove();
-                        }
+		                        item.remove();
+	                        }
+				        });
+			        }
+		        }
+	        },
+	        
+	        /**
+	         * init recommend rows' template.
+	         * @param data
+	         * @param id {*} `container` id.
+	         * @returns {string}
+	         * @see handleDraggableBlockClick
+	         */
+	        initDraggableBlock(data, id) {
+	        	const vm = this,
+			        templates = [],
+			        icon = '<icon type="ios-add-circle-outline"></icon>';
+		        data.forEach((item) => {
+		        	const items = item.data,
+				        template = [],
+				        element = [];
+		        	let right = (vm.setting.base.block * vm.setting.base.ratio) + 'px',
+				        attrs = [
+				        	`${vm.mapping.attrs.index}="${item.id}"`,
+					        `${vm.mapping.attrs.num}="${item.number}"`,
+					        `${vm.mapping.attrs.row}="${item.lid}"`,
+					        `${vm.mapping.attrs.width}="${item.width}"`,
+					        `${vm.mapping.attrs.height}="${item.height}"`,
+					        `class="${vm.classes.drag.item}"`,
+					        `style="margin-right: ${right}"`
+				        ];
+		        	template.push(`<Row ${attrs.join(' ')}>`);
+		        	/** recommend position (block) */
+		        	items.forEach((part) => {
+		        		const text = part.source.width + ' * ' + part.source.height,
+					        style = [
+					        	`width: ${part.width}px;`,
+						        `height: ${part.height}px;`,
+						        `margin-bottom: ${part.space}px;`
+					        ],
+					        content = vm.click
+						        ? (vm.setting.text ? `<Row>${text}</Row>` : icon)
+						        : (vm.init ? `<Row>${text}</Row>` : text),
+					        params = [],
+					        string = {},
+					        id = vm.$unique();
+		        		/** set `carousel` `v-model` values. */
+		        		vm.$set(vm.drag.blocks.values, id, 0);
+		        		/** whether can click or not. */
+		        		if(vm.init || vm.click){
+		        			/** attributes data */
+		        			const key = vm.prefix + id,
+						        attributes = [
+						        	`id="${key}"`,
+							        `${vm.mapping.attrs.id}="${item.id}"`,
+							        `${vm.mapping.attrs.mid}="${part.mid}"`,
+							        `${vm.mapping.attrs.row}="${item.lid}"`,
+							        `${vm.mapping.attrs.pos}="${part.position}"`,
+							        `${vm.mapping.attrs.relate}="${part.relate}"`,
+							        `${vm.mapping.attrs.key}="${key}"`,
+							        `${vm.mapping.attrs.width}="${part.source.width}"`,
+							        `${vm.mapping.attrs.height}="${part.source.height}"`,
+							        `class="${vm.classes.drag.single}"`
+						        ];
+		        			/** click event */
+		        			if(vm.click) attributes.push(`@click.native="click"`);
+		        			/** node */
+		        			const initData = part.initData,
+						        carousel = [],
+						        len = initData.length,
+						        type = len > 0 ? initData[0]['recType'] : false;
+		        			if(type) attributes.push(`${vm.mapping.attrs.type}="${type}"`);
+		        			params.push(attributes.join(' '));
+		        			/** style */
+		        			if(vm.click && content === icon && len !== 1){
+		        				style.push(`font-size: ${Math.round(part.height * vm.setting.base.ratio)}px;`);
+					        }
+		        			/** convert to `string` */
+		        			string.params = params.join('');
+		        			string.style = style.join('');
+		        			if(len <= 0){
+		        				/** none (add icon or text) */
+		        				element.push(
+		        					`<Row ${string.params} style="${string.style}">${content}</Row>`
+						        );
+					        }else if(len === 1){
+		        				/** single image */
+		        				const single = initData[0];
+		        				let cover = single[vm.mapping.field.cover.one]
+							        ? `<img src="${single[vm.mapping.field.cover.one]}" class="${vm.classes.block.cover}" />`
+							        : ``;
+		        				cover += single[vm.mapping.field.cover.two]
+							        ? `<img src="${single[vm.mapping.field.cover.two]}" class="${vm.classes.block.cover}" />`
+							        : ``;
+		        				element.push(
+		        					`<Row ${string.params} style="${string.style}">`,
+							            `<Row class="${vm.classes.drag.image}">`,
+							                `<img src="${single[vm.mapping.field.poster]}" class="${vm.classes.block.image}" ${vm.mapping.attrs.index}="${single[vm.mapping.field.id]}" />`,
+							                cover,
+							            `</Row>`,
+							        `</Row>`
+						        );
+					        }else if(len > 1){
+		        				/** carousel */
+		        				initData.forEach((single) => {
+		        					let cover = single[vm.mapping.field.cover.one]
+								        ? `<img src="${single[vm.mapping.field.cover.one]}" class="${vm.classes.block.cover}" />`
+								        : ``;
+		        					cover += single[vm.mapping.field.cover.two]
+								        ? `<img src="${single[vm.mapping.field.cover.two]}" class="${vm.classes.block.cover}" />`
+								        : ``;
+		        					carousel.push(
+		        						`<CarouselItem>`,
+								            `<img src="${single[vm.mapping.field.poster]}" class="${vm.classes.block.image}" ${vm.mapping.attrs.index}="${single[vm.mapping.field.id]}" />`,
+								            cover,
+								        `</CarouselItem>`
+							        );
+						        });
+		        				const setting = [
+		        					`:autoplay="${vm.setting.carousel.auto}"`,
+							        `:autoplay-speed="${vm.setting.carousel.speed}"`,
+							        `:radius-dot="${vm.setting.carousel.radiuDot}"`,
+							        `v-model="values['${id}']" loop`
+						        ];
+		        				element.push(
+		        					`<Row ${string.params} style="${string.style}">`,
+							            `<Carousel ${setting.join(' ')}>`,
+							                `${carousel.join('')}`,
+							            `</Carousel>`,
+							        `</Row>`
+						        );
+					        }
+				        }else{
+		        			/** normal, can not click. */
+		        			string.params = params.join('');
+		        			string.style = style.join('');
+		        			element.push(
+		        				`<Row class="${vm.classes.drag.single}" ${string.params} style="${string.style}">${content}</Row>`
+					        )
+				        }
+			        });
+		        	template.push(element.join('') + '</Row>');
+		        	templates.push(template.join(''));
+		        });
+		        /** `template` records. */
+		        if(vm.init || vm.click){
+		        	vm.drag.blocks.template.push({
+				        id: id,
+				        template: `<Row id="${id}" class="${vm.classes.drag.list}" clearfix>${templates.join('')}</Row>`
 			        });
 		        }
+		        return templates.join('');
+	        },
+	        
+	        /**
+             * handle block's click event.
+             * @param event
+	         * @see setDraggableBlockShadow
+	         * @see getDraggableBlockShadowData
+             */
+	        handleDraggableBlockClick(event) {
+	            const vm = this,
+		            elem = vm.hasClass(event.target, vm.classes.drag.single) ? event.target : event.target.parentNode;
+	            if(elem && !vm.hasClass(elem, vm.classes.drag.active)){
+	                vm.removeComponentBlockActive();
+	                vm.addClass(elem, vm.classes.drag.active);
+	                const data = vm.getDraggableBlockShadowData(elem);
+                    vm.$set(vm.drag, 'shadow', data);
+                    vm.setDraggableBlockShadow(elem);
+		            vm.$emit('click-call', data);
+	            }
+	        },
+	        
+	        /**
+             * get block' shadow data to callback.
+             * @param elem
+             */
+	        getDraggableBlockShadowData(elem) {
+	            const vm = this;
+	            let data = {};
+	            if(elem){
+	                const row = elem.getAttribute(vm.mapping.attrs.row),
+		                id = elem.getAttribute(vm.mapping.attrs.id),
+		                mid = elem.getAttribute(vm.mapping.attrs.mid),
+		                key = elem.getAttribute(vm.mapping.attrs.key),
+		                pos = elem.getAttribute(vm.mapping.attrs.pos),
+		                type = elem.getAttribute(vm.mapping.attrs.type);
+		            data = {
+	                    id: key,
+	                    recRowId: row,
+	                    recModuleId: id,
+	                    recRowModuleId: mid,
+	                    pos: pos,
+	                    type: type
+	                };
+	            }
+	            return data;
+	        },
+    
+            /**
+             * show block' shadow.
+             * @param node
+             * @see removeDraggableBlockShadow
+             */
+	        setDraggableBlockShadow(node) {
+	            const vm = this,
+		            offset = node.parentNode.offsetLeft,
+		            parent = node.parentNode.parentNode,
+		            parents = parent.parentNode,
+		            id = parent.getAttribute('id'),
+		            left = vm.drag.pages.target[id] && vm.drag.pages.target[id] > 1
+			            ? offset - ((vm.drag.pages.target[id] - 1) * vm.drag.rows.width.width)
+			            : offset,
+		            top = node.offsetTop,
+		            width = Math.round(node.getAttribute(vm.mapping.attrs.width) * vm.setting.base.ratio),
+		            height = Math.round(node.getAttribute(vm.mapping.attrs.height) * vm.setting.base.ratio);
+	            if(parents && vm.hasClass(parents, vm.classes.drag.content)){
+	                const elem = parents.getElementsByClassName(vm.classes.shadow.single)[0],
+		                style = [];
+	                if(elem){
+	                    elem.removeAttribute('style');
+	                    vm.removeClass(elem, vm.classes.shadow.active);
+	                    style.push(
+	                        `top: ${top}px;`,
+		                    `left: ${left}px;`,
+		                    `width: ${width}px;`,
+		                    `height: ${height}px;`
+	                    );
+	                    elem.setAttribute('style', style.join(''));
+	                    vm.addClass(elem, vm.classes.shadow.active);
+	                }
+	            }
+	        },
+	        
+	        /**
+             * remove block' shadow.
+             * @param event
+	         * @see setDraggableBlockShadow
+             */
+	        removeDraggableBlockShadow(event) {
+	            const vm = this,
+		            elem = event.target;
+	            if(elem && vm.hasClass(elem, vm.classes.shadow.active)){
+	                vm.removeClass(elem, vm.classes.shadow.active);
+	                const item = document.getElementById(vm.drag.shadow.id);
+	                let data = {};
+	                if(item){
+	                    data = vm.getDraggableBlockShadowData(item);
+	                    vm.removeClass(item, vm.classes.drag.active);
+	                }
+	                vm.$emit('click-cancel', data);
+	            }
 	        },
 	
 	        /**
@@ -1359,7 +1925,7 @@
 				        layout: api.layout ? vm.trim(api.layout) : vm.G.api.draggable.layout
 			        },
 			        base: {},
-			        only: false,
+			        only: typeof config.only !== 'undefined' ? config.only : false,
 			        commonly: typeof config.commonly !== 'undefined' ? config.commonly : false,
 			        carousel: {
 	        			auto: typeof carousel.auto !== 'undefined' ? carousel.auto : true,
@@ -1379,6 +1945,7 @@
         mounted() {
         	const vm = this;
         	vm.getComponentBaseData();
+        	vm.handleBroadcast();
         },
         destoryed() {}
     };

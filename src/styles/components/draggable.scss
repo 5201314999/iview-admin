@@ -18,18 +18,18 @@
         .wi-draggable-prev,
         .wi-draggable-next{
             padding: 20px 1px;
-            background: #EDEDED;
-            border-radius: 4px;
+            background: rgba(140, 140, 140, 0.25);
             display: flex;
             align-items: center;
             cursor: pointer;
+            z-index: 1000;
             &.disabled{
                 cursor: not-allowed;
-                background: #F2F2F2;
+                background: rgba(218, 218, 218, 0.25);
             }
             i{
                 font-size: 26px;
-                color: #D6D6D6;
+                color: $white;
             }
         }
         .wi-draggable-prev{
@@ -55,7 +55,7 @@
             margin: 0 17px;
             position: relative;
             overflow: hidden;
-            z-index: 201811291950;
+            z-index: 999;
             .wi-draggable-list{
                 width: 100%;
                 min-width: 100000px;
@@ -64,7 +64,7 @@
                 flex-direction: row;
                 align-items: center;
                 will-change: margin;
-                transition: margin .3s ease-in-out;
+                transition: margin .4s ease;
                 .wi-draggable-item{
                     margin-right: 17px;
                     cursor: move;
@@ -74,13 +74,13 @@
                     opacity: 1;
                     outline: 0;
                     .wi-draggable-item-one{
-                        background: #EDEDED;
+                        background: rgba(140, 140, 140, 0.25);
                         margin-bottom: 10px;
                         overflow: hidden;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        color: #929292;
+                        color: rgba(0, 0, 0, .65);
                         .wi-draggable-item-image, img{
                             width: 100%;
                             height: 100%;
@@ -155,6 +155,38 @@
                         display: inline-block;
                         color: $red;
                     }
+                }
+            }
+        }
+    }
+    .ivu-select-dropdown{
+        z-index: 1010;
+    }
+    .wi-draggable-item-shadow{
+        position: absolute;
+        box-shadow: inset 0 0 2px 2px $theme;
+        z-index: 100;
+        cursor: pointer;
+        display: none;
+        will-change: left;
+        transition: left 0.4s ease;
+        &.wi-draggable-item-shadow-active{
+            display: block;
+        }
+    }
+    &.wi-draggable-only,
+    &.wi-draggable-click{
+        .wi-draggable-item-one{
+            cursor: pointer;
+            i.ivu-icon{
+                font-size: .8em;
+                color: $white;
+            }
+            &.wi-draggable-item-active{
+                background: $white !important;
+                color: $theme !important;
+                i.ivu-icon{
+                    color: $theme;
                 }
             }
         }
