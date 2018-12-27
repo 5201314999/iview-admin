@@ -139,7 +139,7 @@
                 z-index: 201810231106;
             }
             .ivu-tabs-tab{
-                .ivu-icon.ivu-icon-ios-close-outline{
+                i.ivu-icon{
                     margin-right: 0;
                     margin-left: 15px;
                     font-size: 18px;
@@ -151,7 +151,7 @@
                     display: none;
                 }
                 &.ivu-tabs-tab-active{
-                    .ivu-icon.ivu-icon-ios-close-outline{
+                    i.ivu-icon{
                         display: inline-block;
                         color: $red;
                     }

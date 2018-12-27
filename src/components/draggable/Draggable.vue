@@ -11,7 +11,7 @@
 				</Row>
 				<!-- create button -->
 				<Row class="wi-search-right">
-					<Button type="primary" size="large" ref="create">
+					<Button type="primary" size="large" ref="create" @click="createDraggable">
                         <icon type="plus-round" class="mr5"></icon>添加推荐行
                     </Button>
 				</Row>
@@ -72,7 +72,7 @@
 				</Row>
 				<Row :class="classes.drag.content">
 					<Row :class="classes.drag.list" id="source" ref="source">
-						<Row :class="classes.drag.item" v-for="(item, index) in items" :key="prefix + item.id + '-' + $unique()" :data-index="item.id" :data-num="item.number" :data-width="item.width" :data-height="item.height" :style="{'margin-right': index === items.length - 1 ? '0' : (setting.base.block * setting.ratio) + 'px'}">
+						<Row :class="classes.drag.item" v-for="(item, index) in items" :key="prefix.common + item.id + '-' + $unique()" :data-index="item.id" :data-num="item.number" :data-width="item.width" :data-height="item.height" :style="{'margin-right': index === items.length - 1 ? '0' : (setting.base.block * setting.ratio) + 'px'}">
 							<Row v-for="(block, key) in item.data" :style="{width: block.width + 'px', height: block.height + 'px', 'margin-bottom': block.space + 'px'}" :key="item.id + '-' + key" :class="classes.drag.single" :data-width="block.source.width" :data-height="block.source.height">
 								{{ block.source.width }} * {{ block.source.height }}
 							</Row>
@@ -86,29 +86,32 @@
 		</Card>
 		<!-- target -->
 		<Row class="wi-tabs wi-draggable-tabs" :class="setting.only ? '' : 'mt20'">
-			<Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="switchComponentRow">
-				<TabPane label="第 1 行推荐" name="target-1">
-					<Row :class="classes.drag.container" id="target-row-1">
-						<Row :class="classes.drag.box + ' wi-draggable-target'" data-name="target-1">
+			<Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="switchComponentTab">
+				<TabPane label="第 1 行推荐" :name="name">
+					<Row :class="classes.drag.container" :id="prefix.row + '1'">
+						<Row :class="classes.drag.box + ' wi-draggable-target'" :data-name="name">
 							<Row :class="classes.drag.prev" @click.native="handleComponentPrev">
 								<icon type="ios-arrow-back"></icon>
 							</Row>
 							<Row :class="classes.drag.content">
 								<!-- list -->
-								<Row :class="classes.drag.list" id="target-1"></Row>
+								<Row :class="classes.drag.list" :id="name"></Row>
 								<!-- cross line -->
-								<Row :class="classes.drag.line" :style="{left: ((1920 - setting.base.left) * setting.base.ratio) + 'px'}" v-if="drag.pages.target['target-1'] <= 1"></Row>
+								<Row :class="classes.drag.line" :style="{left: ((setting.base.screen - setting.base.left) * setting.base.ratio) + 'px'}" v-if="drag.pages.target[name] <= 1"></Row>
 								<!-- align line -->
-								<Row :class="classes.drag.align" ref="align" :style="{left: ((1920 - (setting.base.left * 2)) * setting.base.ratio) + 'px'}" v-if="drag.pages.target['target-1'] <= 1"></Row>
+								<Row :class="classes.drag.align" ref="align" :style="{left: ((setting.base.screen - (setting.base.left * 2)) * setting.base.ratio) + 'px'}" v-if="drag.pages.target[name] <= 1"></Row>
 								<!-- shadow -->
 								<Row :class="classes.shadow.single" @click.native="removeDraggableBlockShadow"></Row>
 							</Row>
 							<Row :class="classes.drag.next" @click.native="handleComponentNext">
 								<icon type="ios-arrow-forward"></icon>
 							</Row>
-							<Row class="wi-draggable-tip" ref="tip" v-if="!setting.only && drag.tip">选择组件，拖放至此处</Row>
+							<Row class="wi-draggable-tip" v-if="!setting.only && drag.tips[name]">选择组件，拖放至此处</Row>
 						</Row>
 					</Row>
+				</TabPane>
+				<TabPane v-for="(element, index) in drag.elements" :label="createDraggableLabel(element)" :name="prefix.target + element.key" :key="index">
+					<Row :is="element.component" v-bind="element.props"></Row>
 				</TabPane>
 			</Tabs>
 		</Row>
@@ -117,9 +120,189 @@
 <script>
     import Vue from 'vue';
     import Sortable from 'sortablejs';
+    /** common instance */
     const bus = new Vue();
-    const name = 'wi-component-row';
-    const RecommendRowComponent = {};
+    /** common variables */
+    const component = 'wi-row-component',
+	    prefix = {
+            common: 'wi-',
+		    target: 'target-',
+		    row: 'target-row-',
+	    },
+	    classes = {
+		    layout: prefix.common + 'layout',
+		    container: prefix.common + 'container',
+		    drag: {
+		        container: prefix.common + 'draggable-container',
+		        body: prefix.common + 'draggable-body',
+		        box: prefix.common + 'draggable-box',
+		        prev: prefix.common + 'draggable-prev',
+		        next: prefix.common + 'draggable-next',
+		        content: prefix.common + 'draggable-content',
+		        list: prefix.common + 'draggable-list',
+		        source: prefix.common + 'draggable-source',
+		        target: prefix.common + 'draggable-target',
+		        item: prefix.common + 'draggable-item',
+		        single: prefix.common + 'draggable-item-one',
+		        active: prefix.common + 'draggable-item-active',
+		        image: prefix.common + 'draggable-item-image',
+		        line: prefix.common + 'draggable-screen-line',
+		        align: prefix.common + 'draggable-align-line',
+		        through: prefix.common + 'draggable-align-line-through',
+		        only: prefix.common + 'draggable-only',
+		        dragging: prefix.common + 'draggable-dragging',
+		        click: prefix.common + 'draggable-click'
+		    },
+		    shadow: {
+		        single: prefix.common + 'draggable-item-shadow',
+		        active: prefix.common + 'draggable-item-shadow-active'
+		    },
+		    tabs: {
+		        container: prefix.common + 'draggable-tabs',
+		        pane: 'ivu-tabs-tabpane',
+		        tab: 'ivu-tabs-tab',
+		        active: 'ivu-tabs-tab-active',
+		        icon: 'ios-close-circle-outline'
+		    },
+		    block: {
+		        prefix: prefix.common + 'draggable-block',
+		        image: prefix.common + 'draggable-item-block-image',
+		        cover: prefix.common + 'draggable-item-block-image-cover'
+		    },
+		    template: {
+		        active: prefix.common + 'search-item-active'
+		    },
+		    disabled: 'disabled',
+		    hidden: 'hidden'
+		},
+	    mapping = {
+            row: {
+                id: 'layoutRowId',
+	            blocks: 'layoutRowModules',
+	            group: 'groupRowId'
+            },
+	        content: {
+                title: 'showTitle',
+		        sub: 'showSubTitle',
+		        pos: 'titlePosition'
+	        },
+	        space: {
+                left: 'leftMargin',
+		        top: 'topMargin',
+		        group: 'recGroupInterval',
+		        row: 'recRowInterval',
+		        block: 'recModuleInterval',
+		        pos: 'recPositionInterval'
+	        },
+	        module: {
+                id: 'moduleId',
+		        gid: 'groupRowModuleId',
+		        pid: 'recPositionId',
+		        init: 'recInitData',
+                number: 'positionNum',
+		        width: 'moduleWidth',
+		        height: 'moduleHeight',
+		        position: 'recPositions'
+	        },
+	        attrs: {
+                id: 'data-id',
+		        mid: 'data-mid',
+		        key: 'data-key',
+                row: 'data-row',
+		        num: 'data-num',
+		        pos: 'data-pos',
+                index: 'data-index',
+		        type: 'data-type',
+		        width: 'data-width',
+		        height: 'data-height',
+		        name: 'data-name',
+		        relate: 'data-relate',
+		        direct: 'data-direct'
+	        },
+	        field: {
+                id: 'recContentId',
+                cover: {
+                    one: 'image1Url',
+	                two: 'image2Url'
+                },
+		        poster: 'posterUrl'
+	        }
+        },
+	    base = {
+            left: 87,
+	        top: 206,
+	        group: 60,
+	        row: 40,
+	        block: 30,
+	        space: 20,
+	        ratio: 0.5,
+		    screen: 1920
+	    };
+    /** row component */
+    const RowComponent = Vue.extend({
+	    props: {
+	        num: {type: Number}
+	    },
+	    data() {
+	        return {
+	            prefix: prefix,
+		        setting: {base: base},
+	            classes: classes,
+		        drag: {
+	                pages: {target: {}},
+			        tips: {}
+		        }
+	        };
+	    },
+	    methods: {
+	        handleComponentPrev(event) {
+	            bus.$emit('prev-action', event);
+	        },
+		    handleComponentNext(event) {
+	            bus.$emit('next-action', event);
+		    },
+		    handleBroadcast() {
+	            const vm = this;
+			    bus.$on('set-base-data', (data) => {
+		            vm.$set(vm, 'setting', data);
+		        });
+		        bus.$on('set-draggable-data', (data, current) => {
+			        vm.$set(vm, 'drag', data);
+			        vm.$nextTick(() => {
+			            vm.updateComponentAlignLine(current);
+			        });
+		        });
+		    },
+		    updateComponentAlignLine(active) {
+	            bus.$emit('update-align-line-action', active);
+		    },
+		    removeDraggableBlockShadow(event) {
+	            bus.$emit('remove-shadow-action', event);
+		    }
+	    },
+	    mounted() {
+	        const vm = this;
+	        vm.handleBroadcast();
+	    },
+	    template: `<Row :class="classes.drag.container" :id="prefix.row + num">
+	<Row :class="classes.drag.box + ' ' + classes.drag.target" :data-name="prefix.target + num">
+		<Row :class="classes.drag.prev" @click.native="handleComponentPrev">
+			<icon type="ios-arrow-back"></icon>
+		</Row>
+		<Row :class="classes.drag.content">
+			<Row :class="classes.drag.list" :id="prefix.target + num"></Row>
+			<Row :class="classes.drag.line" :style="{left: ((setting.base.screen - setting.base.left) * setting.base.ratio) + 'px'}" v-if="drag.pages.target[prefix.target + num] <= 1"></Row>
+			<Row :class="classes.drag.align" ref="align" :style="{left: ((setting.base.screen - (setting.base.left * 2)) * setting.base.ratio) + 'px'}" v-if="drag.pages.target[prefix.target + num] <= 1"></Row>
+			<Row :class="classes.shadow.single" @click.native="removeDraggableBlockShadow"></Row>
+		</Row>
+		<Row :class="classes.drag.next" @click.native="handleComponentNext">
+			<icon type="ios-arrow-forward"></icon>
+		</Row>
+		<Row class="wi-draggable-tip" v-if="!setting.only && drag.tips[prefix.target + num]">选择组件，拖放至此处</Row>
+	</Row>
+</Row>`
+    });
+    /** draggable component */
     const DraggableComponent = {
         name: 'wi-draggable',
 	    computed: {
@@ -153,14 +336,15 @@
             },
 	        active: {
                 type: Number,
-                default: 1
+                default: 0
             }
         },
         data() {
         	const vm = this,
-		        prefix = 'wi-';
+		        name = 'target-1';
         	return {
         		prefix: prefix,
+		        name: name,
         		isInit: true,
 		        setting: vm.parseComponentConfiguration(),
 		        search: {
@@ -171,52 +355,7 @@
 		        height: [],
 		        items: [],              // source list.
 		        component: [],
-		        classes: {
-        			layout: prefix + 'layout',
-			        container: prefix + 'container',
-			        drag: {
-        				container: prefix + 'draggable-container',
-				        body: prefix + 'draggable-body',
-				        box: prefix + 'draggable-box',
-				        prev: prefix + 'draggable-prev',
-				        next: prefix + 'draggable-next',
-				        content: prefix + 'draggable-content',
-				        list: prefix + 'draggable-list',
-				        source: prefix + 'draggable-source',
-				        target: prefix + 'draggable-target',
-				        item: prefix + 'draggable-item',
-				        single: prefix + 'draggable-item-one',
-				        active: prefix + 'draggable-item-active',
-				        image: prefix + 'draggable-item-image',
-				        line: prefix + 'draggable-screen-line',
-				        align: prefix + 'draggable-align-line',
-				        through: prefix + 'draggable-align-line-through',
-				        only: prefix + 'draggable-only',
-				        dragging: prefix + 'draggable-dragging',
-				        click: prefix + 'draggable-click'
-			        },
-			        shadow: {
-        				single: prefix + 'draggable-item-shadow',
-				        active: prefix + 'draggable-item-shadow-active'
-			        },
-			        tabs: {
-        				container: prefix + 'draggable-tabs',
-				        pane: 'ivu-tabs-tabpane',
-				        tab: 'ivu-tabs-tab',
-				        active: 'ivu-tabs-tab-active',
-				        icon: 'ios-close-outline'
-			        },
-			        block: {
-        				prefix: prefix + 'draggable-block',
-				        image: prefix + 'draggable-item-block-image',
-				        cover: prefix + 'draggable-item-block-image-cover'
-			        },
-			        template: {
-        				active: prefix + 'search-item-active'
-			        },
-			        disabled: 'disabled',
-			        hidden: 'hidden'
-		        },
+		        classes: classes,
 		        drag: {
         			elements: {},
 			        data: {},
@@ -224,19 +363,17 @@
         				source: 1,
 				        target: {'target-1': 1}
 			        },
-			        instance: {         // sortable instance object.
+			        instance: {             // sortable instance object.
         				layout: {},
 				        source: {},
 				        target: {}
 			        },
 			        rows: {
-        				id: 1,          // row's number.
-        				num: 1,         // row's number. (actual)
-				        width: {        // row's width.
-        					width: 0,
-					        nums: {'target-1': 1}
-				        },
-				        height: {}      // row's height.
+        				id: prefix.common + vm.$unique(),   // row's id.
+				        key: 1,                             // row's number.(actual)
+        				num: 2,                             // row's number.
+				        width: 0,                           // row's width.
+				        height: {}                          // row's height.
 			        },
 			        blocks: {
         				template: [],
@@ -245,65 +382,13 @@
 			        },
 			        tabs: {
         				id: 1,
-        				value: 'target-1'
+        				value: name
 			        },
 			        cross: {},
 			        shadow: {},
-			        tip: true
+			        tips: {'target-1': true}
 		        },
-		        mapping: {
-        		    row: {
-        		        id: 'layoutRowId',
-			            blocks: 'layoutRowModules',
-			            group: 'groupRowId'
-		            },
-			        content: {
-        		        title: 'showTitle',
-				        sub: 'showSubTitle',
-				        pos: 'titlePosition'
-			        },
-			        space: {
-        		        left: 'leftMargin',
-				        top: 'topMargin',
-				        group: 'recGroupInterval',
-				        row: 'recRowInterval',
-				        block: 'recModuleInterval',
-				        pos: 'recPositionInterval'
-			        },
-			        module: {
-        		        id: 'moduleId',
-				        gid: 'groupRowModuleId',
-				        pid: 'recPositionId',
-				        init: 'recInitData',
-        		        number: 'positionNum',
-				        width: 'moduleWidth',
-				        height: 'moduleHeight',
-				        position: 'recPositions'
-			        },
-			        attrs: {
-        		        id: 'data-id',
-				        mid: 'data-mid',
-				        key: 'data-key',
-        		        row: 'data-row',
-				        num: 'data-num',
-				        pos: 'data-pos',
-        		        index: 'data-index',
-				        type: 'data-type',
-				        width: 'data-width',
-				        height: 'data-height',
-				        name: 'data-name',
-				        relate: 'data-relate',
-				        direct: 'data-direct'
-			        },
-			        field: {
-        		        id: 'recContentId',
-        		        cover: {
-        		            one: 'image1Url',
-			                two: 'image2Url'
-		                },
-				        poster: 'posterUrl'
-			        }
-		        },
+		        mapping: mapping,
 		        template: {
         			condition: {
         				queryParam: null,
@@ -342,7 +427,7 @@
 	         */
         	getComponentBaseData() {
         		const vm = this;
-        		vm.setComponentBaseData();
+        		vm.$set(vm.setting, 'base', base);
         		vm.$api.get(vm.setting.api.base, {}, (res) => {
         			if(res['ret']['retCode'].toString() === '0'){
         				const top = res.data[vm.mapping.space.top],
@@ -358,10 +443,12 @@
 					        row: row,
 					        block: block,
 					        space: space,
-					        ratio: 0.5
+					        ratio: 0.5,
+					        screen: 1920
 				        });
         				if(!vm.init) vm.getComponentHeightData();
         	            if(!vm.setting.only) vm.initDraggableSource();
+        	            vm.emitComponentBaseData();
 			        }else{
         				vm.$error(res['ret']['retMsg']);
         				return false;
@@ -371,22 +458,29 @@
         			return false;
 		        });
 	        },
-	
+	        
 	        /**
-	         * basic information (default).
-	         * manually.
-	         */
-	        setComponentBaseData() {
-        		const vm = this;
-        		vm.$set(vm.setting, 'base', {
-        			left: 87,
-			        top: 206,
-			        group: 60,
-			        row: 40,
-			        block: 30,
-			        space: 20,
-			        ratio: 0.5
-		        });
+             * component base data.
+             * via common object `bus`.
+	         * @see getComponentBaseData
+             */
+	        emitComponentBaseData() {
+	            const vm = this;
+	            bus.$emit('set-base-data', vm.setting);
+	        },
+	        
+	        /**
+             * set draggable data for component.
+             * `pages`, `height`, `width` etc.
+	         * @param current {*} active tab (boolean) or name (string).
+	         * @see handleComponentNext
+             */
+	        emitComponentDraggableData(current) {
+	            const vm = this;
+	            bus.$emit('set-draggable-data', vm.drag, current
+		            ? ((typeof current).toUpperCase() === 'BOOLEAN' ? vm.drag.tabs.value : current)
+		            : null
+	            );
 	        },
 	        
 	        /**
@@ -541,7 +635,7 @@
 	        checkComponentData() {
 	        	const vm = this, rows = [],
 			        container = document.getElementsByClassName(vm.classes.tabs.container),
-			        standard = Math.round((1920 - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
+			        standard = Math.round((vm.setting.base.screen - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
 	        	let tabs = null, length = 0, validate = true,
 			        params = {}, template = [];
 	        	if(container && container.length > 0){
@@ -553,6 +647,32 @@
 					        items = cur.getElementsByClassName(vm.classes.drag.item),
 					        target = cur.getElementsByClassName(vm.classes.drag.box);
 	        			let width = 0, name, setting;
+	        			/** `title` setting */
+                        if(target){
+                            name = target[0].getAttribute(vm.mapping.attrs.name);
+                            setting = JSON.parse(JSON.stringify(vm.template.form.data[name]));
+                            if(name === vm.drag.tabs.value){
+                                setting = JSON.parse(JSON.stringify(vm.template.form.validate));
+					        }
+                            if(setting){
+                                params = {
+                                    showTitle: setting.title,
+							        titlePosition: setting.position,
+							        showSubTitle: setting.subTitle
+						        };
+					        }else{
+                                params = {
+                                    showTitle: JSON.parse(JSON.stringify(vm.template.form.validate.title)),
+                                    titlePosition: JSON.parse(JSON.stringify(vm.template.form.validate.position)),
+                                    showSubTitle: JSON.parse(JSON.stringify(vm.template.form.validate.subTitle))
+						        };
+					        }
+                            if(!parseInt(params.showTitle)){
+                                /** restoring the defaults. */
+                                params.titlePosition = '1';
+                                params.subTitle = '1';
+					        }
+				        }
 	        			if(vm.setting.template){
 	        				/** commonly layout. */
 	        				for(let k = 0; k < items.length; k++){
@@ -565,33 +685,6 @@
 					        }
 	        				template.push(commonly);
 				        }else{
-	        				/** `title` setting */
-	        				if(target){
-	        					name = target[0].getAttribute(vm.mapping.attrs.name);
-	        					if(name === vm.drag.tabs.value){
-	        					    setting = JSON.parse(JSON.stringify(vm.template.form.validate));
-						        }else{
-	        					    setting = JSON.parse(JSON.stringify(vm.template.form.data[name]));
-						        }
-	        					if(setting){
-	        						params = {
-	        							showTitle: setting.title,
-								        titlePosition: setting.position,
-								        showSubTitle: setting.subTitle
-							        };
-						        }else{
-	        						params = {
-	        							showTitle: JSON.parse(JSON.stringify(vm.template.form.validate.title)),
-	        							titlePosition: JSON.parse(JSON.stringify(vm.template.form.validate.position)),
-	        							showSubTitle: JSON.parse(JSON.stringify(vm.template.form.validate.subTitle))
-							        };
-						        }
-	        					if(!parseInt(params.showTitle)){
-	        						/** restoring the defaults. */
-	        						params.titlePosition = '1';
-	        						params.subTitle = '1';
-						        }
-					        }
 	        				/** recommend rows' layout. */
 	        				for(let n = 0; n < items.length; n++){
 	        					const item = items[n],
@@ -757,62 +850,124 @@
 	        	if(body){
 	        		const parent = body.parentNode,
 				        width = parent.clientWidth;
-	        		vm.$set(vm.drag.rows.width, 'width', width);
-	        		vm.$set(vm.drag.rows.width, 'nums', {});
-	        		vm.$set(vm.drag.rows.width['nums'], id, 1);
+	        		vm.$set(vm.drag.rows, 'width', width);
 		        }
-	        },
-	        
-	        updateComponentBodyWidth() {},
-	        
-	        /**
-             * set draggable data for component.
-             * `pages`, `height`, `width` etc.
-	         * @see handleComponentNext
-             */
-	        setComponentDraggableData() {
-	            const vm = this;
-	            bus.$emit('set-draggable-data', vm.drag);
 	        },
 	        
 	        /**
              * update align line.
-             * caculation formula: (1920 - (base'left + base' right)) * ratio = align line.
+             * caculation formula: (screen - (base'left + base' right)) * ratio = align line.
              * if total width of blocks large than this value, alignment line be turn green.
+	         * @param id {string}
              * @see initDraggableTarget
              */
-	        updateComponentAlignLine() {
+	        updateComponentAlignLine(id) {
 	        	const vm = this,
-			        container = document.getElementsByClassName(vm.classes.tabs.container),
-			        standard = Math.round((1920 - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
-	        	let tabs = null, length = 0;
-	        	if(container && container.length > 0){
-	        		const body = container[0];
-	        		tabs = body.getElementsByClassName(vm.classes.tabs.pane);
-	        		length = tabs.length;
-	        		for(let i = 0; i < length; i++){
-	        			const cur = tabs[i],
-					        items = cur.getElementsByClassName(vm.classes.drag.item),
-					        align = cur.getElementsByClassName(vm.classes.drag.align);
-	        			let width = 0, alignment;
-	        			if(align) alignment = align[0];
-	        			if(alignment){
-	        			    for(let n = 0; n < items.length; n++){
-	                            const item = items[n],
-							        w = parseInt(item.getAttribute(vm.mapping.attrs.width));
-	                            width += Math.round(w * vm.setting.base.ratio);
-	                            if(n < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
-					        }
-		                    if(width < standard){
-		                        vm.removeClass(alignment, vm.classes.drag.through);
-					        }else{
-		                        if(!vm.hasClass(alignment, vm.classes.drag.through)){
-		                            vm.addClass(alignment, vm.classes.drag.through);
-					            }
-					        }
+			        standard = Math.round((vm.setting.base.screen - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio),
+			        update = (elements, alignment) => {
+	        	        let width = 0;
+	        	        for(let n = 0; n < elements.length; n++){
+                            const element = elements[n],
+						        w = parseInt(element.getAttribute(vm.mapping.attrs.width));
+                            width += Math.round(w * vm.setting.base.ratio);
+                            if(n < elements.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
 				        }
-			        }
-	        	}
+	                    if(width < standard){
+	                        vm.removeClass(alignment, vm.classes.drag.through);
+				        }else{
+	                        if(!vm.hasClass(alignment, vm.classes.drag.through)){
+	                            vm.addClass(alignment, vm.classes.drag.through);
+				            }
+				        }
+			        };
+	        	if(id){
+	        	    const current = document.getElementById(id);
+	        	    if(current){
+	        	        const items = current.getElementsByClassName(vm.classes.drag.item),
+			                parent = current.parentNode,
+			                align = parent.getElementsByClassName(vm.classes.drag.align);
+	        	        let alignment;
+	                    if(align) alignment = align[0];
+	                    if(alignment) update(items, alignment);
+		            }
+		        }else{
+	        	    const container = document.getElementsByClassName(vm.classes.tabs.container);
+		            let tabs = null, length = 0;
+		            if(container && container.length > 0){
+		                const body = container[0];
+		                    tabs = body.getElementsByClassName(vm.classes.tabs.pane);
+		                    length = tabs.length;
+		                for(let i = 0; i < length; i++){
+		                    const cur = tabs[i],
+						        items = cur.getElementsByClassName(vm.classes.drag.item),
+						        align = cur.getElementsByClassName(vm.classes.drag.align);
+		                    let alignment;
+		                    if(align) alignment = align[0];
+		                    if(alignment) update(items, alignment);
+				        }
+		            }
+		        }
+	        },
+	        
+	        /**
+             * update row tip (nothing).
+             * @param all whether is updated all.
+             */
+	        updateComponentNoneTip(all) {
+	            const vm = this;
+	            if(all){
+	                const container = document.getElementsByClassName(vm.classes.tabs.container);
+		            let tabs = null, length = 0;
+		            if(container && container.length > 0){
+		                const body = container[0];
+		                    tabs = body.getElementsByClassName(vm.classes.tabs.pane);
+		                    length = tabs.length;
+		                for(let i = 0; i < length; i++){
+		                    const cur = tabs[i],
+			                    box = cur.getElementsByClassName(vm.classes.drag.box),
+			                    name = box ? box[0].getAttribute(vm.mapping.attrs.name) : null,
+						        items = cur.getElementsByClassName(vm.classes.drag.item);
+		                    if(items && items.length > 0) vm.$set(vm.drag.tips, name, false);
+				        }
+		            }
+	            }else{
+	                const id = vm.drag.tabs.value,
+		                container = document.getElementById(id);
+	                if(container){
+	                    const items = container.getElementsByClassName(vm.classes.drag.item);
+	                    if(items && items.length > 0) vm.$set(vm.drag.tips, id, false);
+	                    else vm.$set(vm.drag.tips, id, true);
+	                }
+	            }
+	        },
+	        
+	        /**
+             * update row offset.
+             * turn back to previous page if the `total width` less than `row's width * current pages` when remove component.
+	         * @see initDraggableTarget
+             */
+	        updateComponentDraggableOffset() {
+	            const vm = this,
+		            id = vm.drag.tabs.value,
+		            list = document.getElementById(id);
+	            if(list){
+	                const items = list.getElementsByClassName(vm.classes.drag.item),
+		                parent = list.parentNode.parentNode,
+		                length = items.length,
+		                page = vm.drag.pages.target[id];
+	                let total = 0;
+	                for(let i = 0; i < length; i++){
+	                    const item = items[i],
+		                    width = Math.ceil(item.getAttribute(vm.mapping.attrs.width) * vm.setting.base.ratio);
+	                    total += width;
+	                }
+	                if(total < ((page - 1) * vm.drag.rows.width)){
+	                    vm.$set(vm.drag.pages.target, id, page - 1);
+	                    vm.emitComponentDraggableData();
+	                    const prev = parent.getElementsByClassName(vm.classes.drag.prev);
+	                    if(prev && prev.length > 0) prev[0].click();
+	                }
+	            }
 	        },
 	        
 	        /**
@@ -862,7 +1017,7 @@
 	                        const offset = shadow.offsetLeft,
 		                        style = [
 		                            `top: ${shadow.offsetTop}px;`,
-			                        `left: ${offset + vm.drag.rows.width.width}px;`,
+			                        `left: ${offset + vm.drag.rows.width}px;`,
 			                        `width: ${shadow.clientWidth}px;`,
 			                        `height: ${shadow.clientHeight}px;`,
 			                        `display: block;`
@@ -871,14 +1026,10 @@
 	                        shadow.setAttribute('style', style.join(''))
 	                    }
 	                }
-	                if(list) list.style.marginLeft = - ((num - 1) * vm.drag.rows.width.width) + 'px';
-	                if(num === 1){
-	                    vm.$nextTick(() => {
-	                        vm.updateComponentAlignLine();
-	                    });
-	                }
+	                if(list) list.style.marginLeft = - ((num - 1) * vm.drag.rows.width) + 'px';
 	                const number = vm.getComponentPages(parent);
 	                vm.switchComponentTarget(parent, number, name);
+	                vm.emitComponentDraggableData(true);
 	            }else{
 	                /** source list */
 	                let num = parseInt(JSON.parse(JSON.stringify(vm.drag.pages.source)));
@@ -886,7 +1037,7 @@
 	                    num -= 1;
 	                    vm.$set(vm.drag.pages, 'source', num);
 	                }
-	                if(list) list.style.marginLeft = - ((num - 1) * vm.drag.rows.width.width) + 'px';
+	                if(list) list.style.marginLeft = - ((num - 1) * vm.drag.rows.width) + 'px';
 	                vm.switchComponentSource(parent);
 	            }
 	        },
@@ -912,7 +1063,7 @@
 	                const number = vm.getComponentPages(parent),
 		                width = list ? list.parentNode['clientWidth'] : 0;
 	                let num = vm.drag.pages.target[name] ? vm.drag.pages.target[name] : 1;
-	                if(width > 0 && width !== vm.drag.rows.width.width){
+	                if(width > 0 && width !== vm.drag.rows.width){
 	                    vm.$set(vm.drag.rows.width, 'width', width);
 	                }
 	                if(num < number){
@@ -920,7 +1071,7 @@
 	                        const offset = shadow.offsetLeft,
 		                        style = [
 		                            `top: ${shadow.offsetTop}px;`,
-			                        `left: ${offset - vm.drag.rows.width.width}px;`,
+			                        `left: ${offset - vm.drag.rows.width}px;`,
 			                        `width: ${shadow.clientWidth}px;`,
 			                        `height: ${shadow.clientHeight}px;`,
 			                        `display: block;`
@@ -929,19 +1080,19 @@
 	                        shadow.setAttribute('style', style.join(''))
 	                    }
 	                    if(list){
-	                        list.style.marginLeft = - (num * vm.drag.rows.width.width) + 'px';
+	                        list.style.marginLeft = - (num * vm.drag.rows.width) + 'px';
 		                    num += 1;
 		                    vm.$set(vm.drag.pages.target, name, num);
 	                    }
 	                    vm.switchComponentTarget(parent, number, name);
-	                    vm.setComponentDraggableData();
+	                    vm.emitComponentDraggableData(true);
 	                }
 	            }else{
 	                /** source list */
 	                const number = vm.getComponentPages(parent);
 	                let num = parseInt(JSON.parse(JSON.stringify(vm.drag.pages.source)));
 	                if(num < number){
-	                    if(list) list.style.marginLeft = - (num * vm.drag.rows.width.width) + 'px';
+	                    if(list) list.style.marginLeft = - (num * vm.drag.rows.width) + 'px';
 	                    num += 1;
 	                    vm.$set(vm.drag.pages, 'source', num);
 	                }
@@ -953,7 +1104,7 @@
              * reset/set default data of title.
              * content's title.
              * @param id
-	         * @see switchComponentRow
+	         * @see switchComponentTab
              */
 	        resetComponentTitleContent(id) {
 	            const vm = this,
@@ -963,13 +1114,14 @@
                         position: '1'
                     };
                 vm.$set(vm.template.form, 'validate', data);
+                vm.$set(vm.template.form, 'disabled', false);
                 if(id) vm.$set(vm.template.form.data, id, data);
 	        },
 	        
 	        /**
              * remove `active` state
              * all of block and shadow.
-             * @see switchComponentRow
+             * @see switchComponentTab
              */
 	        removeComponentBlockActive() {
 	            const vm = this,
@@ -1000,7 +1152,7 @@
 	         * @see resetComponentTitleContent
 	         * @see removeComponentBlockActive
              */
-	        switchComponentRow(name) {
+	        switchComponentTab(name) {
 	            const vm = this,
 		            target = document.getElementById(name),
 		            names = name.split('-'),
@@ -1016,9 +1168,7 @@
 	                }
 	                if(vm.template.form.data[name]){
 	                    vm.$set(vm.template.form, 'validate', JSON.parse(JSON.stringify(vm.template.form.data[name])));
-	                }else{
-	                    vm.resetComponentTitleContent();
-	                }
+	                }else vm.resetComponentTitleContent(name);
 	                const items = target.getElementsByClassName(vm.classes.drag.item);
 	                if(items && items.length > 0){
 	                    const item = items[0],
@@ -1034,7 +1184,6 @@
 	            let data = {name: name, active: active};
 	            if(row) data.id = row[vm.mapping.row.id];
 	            vm.$set(vm.drag.tabs, 'id', active);
-	            vm.$set(vm.drag.tabs, 'value', name);
 	            vm.$emit('switch-tab', data);
 	            vm.removeComponentBlockActive();
 	        },
@@ -1281,10 +1430,17 @@
 	            bus.$on('next-action', (event) => {
 	                vm.handleComponentNext(event);
 	            });
-	            bus.$on('init-target-draggable', () => {
+	            bus.$on('remove-shadow-action', (event) => {
+	                vm.removeDraggableBlockShadow(event);
+	            });
+	            bus.$on('init-draggable-target-action', () => {
 	                vm.$nextTick(() => {
-	                
+	                    const row = vm.drag.rows.id - 1;
+	                    vm.initDraggableTarget(row);
 	                });
+	            });
+	            bus.$on('update-align-line-action', (active) => {
+	                vm.updateComponentAlignLine(active);
 	            });
 	            vm.$on('init-finish', () => {
 	                const data = vm.wrapComponentData();
@@ -1306,18 +1462,88 @@
 	        /**
 	         * create a new row that can draggable.
 	         * via update `elements` variable (insert in the queue head).
+	         * @see createDraggableLabel
 	         */
-	        setDraggable() {
-	        	const vm = this;
+	        createDraggable() {
+	        	const vm = this,
+			        label = parseInt(JSON.parse(JSON.stringify(vm.drag.rows.key))) + 1;
 	        	vm.$set(vm.drag.elements, vm.drag.rows.num, {
-	        		id: vm.drag.rows.id,
-			        component: name,
-			        props: {num: vm.drag.rows.num}
+	        		id: prefix.common + vm.$unique(),
+			        key: label,             // actual number.
+			        component: component,
+			        num: vm.drag.rows.num,  // for showing.
+			        props: {num: label}
 		        });
-	        	const num = vm.drag.rows.num + 1,
-			        id = vm.drag.rows.id + 1;
+	        	const key = parseInt(JSON.parse(JSON.stringify(vm.drag.rows.key))) + 1,
+			        num = parseInt(JSON.parse(JSON.stringify(vm.drag.rows.num))) + 1,
+			        row = prefix.target + label;
 	        	vm.$set(vm.drag.rows, 'num', num);
-	        	vm.$set(vm.drag.rows, 'id', id);
+	        	vm.$set(vm.drag.rows, 'key', key);
+	        	/** default datas */
+	        	if(vm.drag.pages.target[row]) vm.$set(vm.drag.pages.target, row, 1);
+	        	if(typeof vm.drag.tips[row] === 'undefined') vm.$set(vm.drag.tips, row, true);
+	        	/** default selection */
+	        	vm.$set(vm.drag.tabs, 'value', prefix.target + label);
+	        	if(vm.active) vm.$set(vm.drag.tabs, 'value', prefix.target + vm.active);
+	        },
+	        
+	        /**
+             * create component row's label.
+             * used function (`h`) to compile for render customized content.
+             * @param elem
+             * @returns {function(*): *}
+             */
+	        createDraggableLabel(elem) {
+	            const vm = this,
+		            label = '第 ' + elem.num + ' 行推荐';
+	            return (h) => {
+	                return h('Row', [
+	                    h('span', label),
+		                vm.setting.only ? '' : h('icon', {
+		                    props: {type: vm.classes.tabs.icon},
+		                    attrs: {
+		                        'data-id': elem.id,
+			                    title: '删除'
+		                    },
+		                    on: {
+		                        click: (event) => {
+		                            const parent = event.currentTarget.parentNode.parentNode,
+                                        brother = parent.previousSibling,
+                                        id = event.currentTarget.getAttribute(vm.mapping.attrs.id),
+                                        elements = JSON.parse(JSON.stringify(vm.drag.elements));
+		                            brother.click();
+		                            let temp = 0, name = prefix.target;
+		                            for(const i in elements){
+		                                if(elements.hasOwnProperty(i)){
+                                            if(elements[i].id === id){
+                                                temp = elements[i].num;
+                                                name += elements[i].key;
+                                                delete elements[i];
+                                                break;
+                                            }
+		                                }
+		                            }
+		                            let rows = {};
+		                            if(Object.keys(elements).length > 0){
+		                                for(const k in elements){
+		                                    if(elements.hasOwnProperty(k)){
+		                                        if(elements[k].num <= temp){
+		                                            rows[elements[k].num] = elements[k];
+		                                        }else{
+		                                            --elements[k].num;
+		                                            rows[elements[k].num] = elements[k];
+		                                        }
+		                                    }
+		                                }
+		                            }
+		                            if(vm.template.form.data[name]) delete vm.template.form.data[name];
+		                            vm.$set(vm.drag, 'elements', rows);
+		                            vm.drag.rows.num--;
+		                        }
+		                    }
+		                })
+	                ]);
+	            };
 	        },
 	        
 	        /**
@@ -1327,13 +1553,11 @@
              */
 	        getDraggableContainer() {
 	            const vm = this,
-		            containers = document.getElementsByClassName(vm.classes.drag.container),
-		            values = JSON.parse(JSON.stringify(vm.drag.tabs.value)).split('-'),
-		            active = parseInt(values[values.length - 1]);
-	            let current = null;
-	            if(isNaN(active)) current = containers[0];
-	            else current = containers[active - 1];
-	            return current;
+		            name = vm.drag.tabs.value,
+		            names = name.split('-'),
+		            id = prefix.row + names[names.length - 1],
+		            container = document.getElementById(id);
+	            return container ? container : null;
 	        },
 	        
 	        /**
@@ -1348,16 +1572,15 @@
 	        	let height = 0;
 	        	vm.getComponentHeightData();
 	        	if(vm.rows && vm.rows.length > 0){
+	        	    vm.$set(vm.drag.tips, vm.name, false);
 	        		vm.resetDraggable();
-	        		const tip = vm.$refs.tip;
-	        		if(tip && tip.$el) vm.addClass(tip.$el, vm.classes.hidden);
-	        		vm.rows.map((item, i) => {
-	        			const id = 'target-' + vm.drag.rows.num;
+	        		vm.rows.forEach((item, i) => {
+	        			const id = i > 0 ? (prefix.target + vm.drag.rows.num) :vm.name;
 	        			let data = item[vm.mapping.row.blocks],
 					        rowId = item[vm.mapping.row.id];
 	        			if(i > 0){
 	        				if(add) add.$el.click();
-	        				else vm.setDraggable();
+	        				else vm.createDraggable();
 				        }
 	        			if(typeof item[vm.mapping.content.title] !== 'undefined'){
 	        				data = item['modules'];
@@ -1375,16 +1598,17 @@
 	        						if(item[vm.mapping.content.sub]) vm.$set(vm.template.form, 'disabled', false);
 	        						else vm.$set(vm.template.form, 'disabled', true);
 						        }else{
+	        					    vm.resetComponentTitleContent();
 	        						vm.$set(vm.template.form, 'disabled', true);
 						        }
 					        }else{
 	        					if(!item[vm.mapping.content.title]) vm.$set(vm.template.form.data[id], 'subTitle', '1');
 					        }
-				        }
+				        }else vm.resetComponentTitleContent(id);
 	        			const list = vm.parseComponentData(data, rowId),
 					        width = vm.getComponentWidth(list, vm.setting.base.block);
 	        			if(list.length > 0){
-	        				list.map((block, index) => {
+	        				list.forEach((block, index) => {
 	        					if(index === 0) height = block.height > height ? block.height : height;
 	        					if(!vm.drag.data[id]) vm.$set(vm.drag.data, id, []);
 	        					vm.drag.data[id].push(block);
@@ -1407,7 +1631,6 @@
 	        						node = container.parentNode.parentNode;
 	        						vm.$set(vm.drag.rows.height, key, cur.height);
 	        						vm.$set(vm.drag.pages.target, key, 1);
-	        						vm.$set(vm.drag.rows.width['nums'], key, 1);
 	        						container.innerHTML = cur.template;
 	        						/** re initialization */
 	        						if(!vm.click && !vm.init){
@@ -1420,7 +1643,7 @@
 	        						vm.switchComponentTarget(node);
 						        }
 					        });
-	        				bus.$emit('init-target-draggable');
+	        				bus.$emit('init-draggable-target-action');
 	        				/**
 					         * search the source list.
 					         * set height accordding to the last recommend row.
@@ -1444,23 +1667,21 @@
 	        							if(t === length - 1) last = templet.id;
 							        });
 						        }
-	        					vm.$nextTick(() => {
-	        						last = last ? last : 'target-1';
-	        						const temp = document.getElementById(last);
-	        						if(temp){
-	        							const items = temp.getElementsByClassName(vm.classes.drag.item);
-	        							if(items.length > 0){
-	        								const item = items[0],
-										        height = parseInt(item.getAttribute(vm.mapping.attrs.height));
-	        								if(!isNaN(height) && height > 0 && !vm.setting.only){
-	        									vm.$set(vm.search, 'height', height);
-	        									vm.$set(vm.search, 'temp', height);
-	        									vm.getComponentData();
-									        }
+	        					last = last ? last : vm.name;
+                                const temp = document.getElementById(last);
+                                if(temp){
+                                    const items = temp.getElementsByClassName(vm.classes.drag.item);
+                                    if(items.length > 0){
+                                        const item = items[0],
+									        height = parseInt(item.getAttribute(vm.mapping.attrs.height));
+                                        if(!isNaN(height) && height > 0 && !vm.setting.only){
+                                            vm.$set(vm.search, 'height', height);
+                                            vm.$set(vm.search, 'temp', height);
+                                            vm.getComponentData();
 								        }
 							        }
-						        });
-	        					vm.updateComponentAlignLine();
+						        }
+                                vm.updateComponentNoneTip(true);
 	        					vm.$emit('init-finish');
 					        }
 				        }else{
@@ -1484,12 +1705,13 @@
                 };
 	        	const vm = this,
 			        source = document.getElementById('source'),
+			        name = vm.drag.tabs.value,
 			        getList = () => {
 	        	        const current = vm.getDraggableContainer(),
-			                list = current ? document.getElementById(vm.drag.tabs.value) : {};
+			                list = current ? document.getElementById(name) : {children: []};
 	        	        return {
 	        	            object: list,
-			                length: list.children ? list.children.length : 0
+			                length: list.children.length
 		                };
 			        },
 			        start = (event) => {
@@ -1505,15 +1727,15 @@
 	        	                    return false;
 		                        }
 		                    }
-		                }else vm.$set(vm.drag, 'tip', false);
+		                }
+	        	        vm.$set(vm.drag.tips, name, false);
+	        	        vm.emitComponentDraggableData(true);
 			        },
 			        end = () => {
-	        	        const data = vm.wrapComponentData(),
-			                list = getList();
+	        	        const data = vm.wrapComponentData();
 	        	        if(data) vm.$emit('get-data', data);
-	        	        vm.updateComponentAlignLine();
-	        	        vm.updateComponentBodyWidth();
-	        	        if(list.length <= 0) vm.$set(vm.drag, 'tip', false);
+	        	        vm.updateComponentNoneTip();
+	        	        vm.emitComponentDraggableData(true);
 			        };
 	        	vm.drag.instance.source = Sortable.create(source, {
 			        group: {
@@ -1536,7 +1758,7 @@
              */
 	        initDraggableTarget(id) {
 	        	const vm = this;
-	        	id = id && !isNaN(id) ? 'target-' + id : 'target-' + vm.drag.rows.num;
+	        	id = prefix.target + (id && !isNaN(id) ? id : vm.drag.rows.num);
 	        	vm.setComponentBodyWidth(id);
 	        	const target = document.getElementById(id),
 			        updateObject = (event, children) => {
@@ -1570,18 +1792,21 @@
 				            number = vm.getComponentPages(parents),
 				            width = {
 	        		    	    old: vm.drag.pages.target[id] ? vm.drag.pages.target[id] : 0,
-					            new: (number - 1) * vm.drag.rows.width.width
+					            new: (number - 1) * vm.drag.rows.width
 				            },
 				            first = width.old === 0 && width.new === 0;
 	        		    if(first && width.old > width.new){
 	        		    	target.style.marginLeft = '-' + width.new + 'px';
-	        		    	const temp = width.new <= 0 ? vm.drag.rows.width.width : width.new;
+	        		    	const temp = width.new <= 0 ? vm.drag.rows.width : width.new;
 	        		    	target.style.width = temp + 'px';
 	        		    	vm.$set(vm.drag.pages.target, id, width.new);
 			            }
 	        		    vm.switchComponentTarget(parents, number, id);
+	        		    vm.emitComponentDraggableData(true);
+	        		    vm.updateComponentDraggableOffset();
 	        		    parent.scrollLeft = 0;
 			        };
+	        	vm.emitComponentDraggableData();
 	        	if(target){
 	        		if(vm.click || vm.only){
 	        			vm.$set(vm.drag.instance.target, id, {});
@@ -1604,7 +1829,8 @@
 					        onEnd() {
 	        					const data = vm.wrapComponentData();
 	        					vm.$emit('get-data', data);
-	        					if(vm.drag.pages.target[id] && vm.drag.pages.target[id] <= 1) vm.updateComponentAlignLine();
+	        					vm.emitComponentDraggableData(true);
+	        					vm.updateComponentNoneTip();
 	        					vm.initDraggableBody(true);
 					        },
 					        onRemove() {update();}
@@ -1704,7 +1930,7 @@
 		        		/** whether can click or not. */
 		        		if(vm.init || vm.click){
 		        			/** attributes data */
-		        			const key = vm.prefix + id,
+		        			const key = vm.prefix.target + id,
 						        attributes = [
 						        	`id="${key}"`,
 							        `${vm.mapping.attrs.id}="${item.id}"`,
@@ -1864,7 +2090,7 @@
 		            parents = parent.parentNode,
 		            id = parent.getAttribute('id'),
 		            left = vm.drag.pages.target[id] && vm.drag.pages.target[id] > 1
-			            ? offset - ((vm.drag.pages.target[id] - 1) * vm.drag.rows.width.width)
+			            ? offset - ((vm.drag.pages.target[id] - 1) * vm.drag.rows.width)
 			            : offset,
 		            top = node.offsetTop,
 		            width = Math.round(node.getAttribute(vm.mapping.attrs.width) * vm.setting.base.ratio),
@@ -1942,8 +2168,13 @@
         		if(vm.init) vm.initDraggable();
 	        }
         },
+	    created() {
+            const vm = this;
+            vm.resetComponentTitleContent(vm.name);
+	    },
         mounted() {
         	const vm = this;
+        	Vue.component(component, RowComponent);
         	vm.getComponentBaseData();
         	vm.handleBroadcast();
         },
