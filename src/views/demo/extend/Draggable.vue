@@ -2,8 +2,8 @@
 	<Row class="layout-draggable">
 		<Card>
 			<Row slot="title" class="wi-card-title"><icon type="ios-create-outline" /> Draggable</Row>
-			<wi-draggable :rows="rows" :exec="exec" :init="true" :config="{
-				commonly: true
+			<wi-draggable :rows="rows" :exec="exec" :init="true" v-on:template-data="getTemplateData" :config="{
+				template: {referenced: true}
 			}"></wi-draggable>
 		</Card>
 	</Row>
@@ -35,7 +35,12 @@
         			vm.$error(err);
                     return false;
 		        });
-	        }
+	        },
+		    getTemplateData(data) {
+        	    const vm = this;
+        	    vm.$set(vm, 'rows', data);
+        	    vm.$set(vm, 'exec', vm.$unique());
+		    }
 	    },
 	    mounted() {
         	const vm = this;
