@@ -1,6 +1,6 @@
 <template>
 	<Row class="wi-draggable" :class="setDraggableClass" ref="draggable">
-		<Card :id="classes.drag.source" v-if="!setting.assembled">
+		<Card :id="classes.drag.source" v-if="setting.assembled">
 			<!-- search -->
 			<div class="wi-search">
 				<!-- search & layout -->
@@ -86,7 +86,7 @@
 			</Row>
 		</Card>
 		<!-- target -->
-		<Row class="wi-tabs wi-draggable-tabs" :class="setting.assembled ? '' : 'mt20'">
+		<Row class="wi-tabs wi-draggable-tabs" :class="setting.assembled ? 'mt20' : ''">
 			<Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="switchComponentTab">
 				<TabPane label="第 1 行推荐" :name="name">
 					<Row :class="classes.drag.container" :id="prefix.row + '1'">
@@ -107,7 +107,7 @@
 							<Row :class="classes.drag.next" @click.native="handleComponentNext">
 								<icon type="ios-arrow-forward"></icon>
 							</Row>
-							<Row class="wi-draggable-tip" v-if="!setting.assembled && drag.tips[name]">选择组件，拖放至此处</Row>
+							<Row class="wi-draggable-tip" v-if="setting.assembled && drag.tips[name]">选择组件，拖放至此处</Row>
 						</Row>
 					</Row>
 				</TabPane>
@@ -173,7 +173,7 @@
 	 *          [ ratio [Number]]: 缩放比例(scaling ratio).
 	 *          [ screen [Number]]: 屏幕尺寸(screen size).
 	 *          ``` ------------------------------------------------------------
-	 *      [ assembled [Boolean]]: 是否是组装的状态, 默认为`false`
+	 *      [ assembled [Boolean]]: 是否是组装的状态, 默认为`true`
 	 *      [ template [Object]]: 常用布局模板配置(the configuaration of common templates):
 	 *          ``` ------------------------------------------------------------
 	 *          3.1.3. `template` 参数说明(parameters of called `template`):
@@ -408,7 +408,10 @@
 	        vm.handleBroadcast();
 	    },
 	    mounted() {
-	        bus.$emit(broadcast.init);
+	        const vm = this;
+	        vm.$nextTick(() => {
+	            bus.$emit(broadcast.init);
+	        });
 	    },
 	    template: `<Row :class="classes.drag.container" :id="prefix.row + num">
 	<Row :class="classes.drag.box + ' ' + classes.drag.target" :data-name="prefix.target + num">
@@ -424,7 +427,7 @@
 		<Row :class="classes.drag.next" @click.native="handleComponentNext">
 			<icon type="ios-arrow-forward"></icon>
 		</Row>
-		<Row class="wi-draggable-tip" v-if="!setting.assembled && drag.tips[prefix.target + num]">选择组件，拖放至此处</Row>
+		<Row class="wi-draggable-tip" v-if="setting.assembled && drag.tips[prefix.target + num]">选择组件，拖放至此处</Row>
 	</Row>
 </Row>`
     });
@@ -435,7 +438,7 @@
             setDraggableClass() {
                 const vm = this,
 	                click = vm.click ? classes.drag.click : '',
-	                assembled = vm.setting.assembled ? (click ? ' ' : '') + classes.drag.assembled : '';
+	                assembled = !vm.setting.assembled ? (click ? ' ' : '') + classes.drag.assembled : '';
                 return click + assembled;
             }
 	    },
@@ -580,8 +583,10 @@
 					        screen: 1920
 				        });
         				if(!vm.init) vm.getComponentHeightData();
-        	            if(!vm.setting.assembled) vm.initDraggableSource();
-        	            vm.emitComponentBaseData();
+        	            vm.$nextTick(() => {
+        	                vm.emitComponentBaseData();
+        	                if(vm.setting.assembled) vm.initDraggableSource();
+        	            });
 			        }else{
         				vm.$error(res['ret']['retMsg']);
         				return false;
@@ -605,20 +610,20 @@
 	        /**
              * set draggable data for component.
              * `pages`, `height`, `width` etc.
-	         * @param current {*} active tab (boolean) or name (string).
+	         * @param active {*} active tab (boolean) or name (string).
 	         * @see handleComponentNext
              */
-	        emitComponentDraggableData(current) {
+	        emitComponentDraggableData(active) {
 	            const vm = this;
-	            current = current ? ((typeof current).toUpperCase() === 'BOOLEAN' ? vm.drag.tabs.value : current) : null;
-	            const values = current ? current.split('-') : vm.drag.tabs.value.split('-'),
+	            active = active ? ((typeof active).toUpperCase() === 'BOOLEAN' ? vm.drag.tabs.value : active) : null;
+	            const values = active ? active.split('-') : vm.drag.tabs.value.split('-'),
 		            id = parseInt(values[values.length - 1]);
 	            if(!isNaN(id) && id === 1){
 	                vm.updateComponentAlignLine(vm.name);
 	            }else{
 	                bus.$emit(broadcast.drag, {
 		                drag: vm.drag,
-			            active: current
+			            active: active
 		            });
 	            }
 	        },
@@ -790,10 +795,12 @@
 	        			/** `title` setting */
                         if(target){
                             name = target[0].getAttribute(mapping.attrs.name);
-                            setting = JSON.parse(JSON.stringify(vm.template.form.data[name]));
                             if(name === vm.drag.tabs.value){
                                 setting = JSON.parse(JSON.stringify(vm.template.form.validate));
-					        }
+					        }else{
+                                setting = JSON.parse(JSON.stringify(vm.template.form.data[name]
+	                                ? vm.template.form.data[name] : {}));
+                            }
                             if(setting){
                                 params = {
                                     showTitle: setting.title,
@@ -892,7 +899,7 @@
 	         */
 	        getComponentHeightData() {
 	        	const vm = this;
-	        	if(!vm.setting.assembled){
+	        	if(vm.setting.assembled){
 	        		vm.$api.get(vm.setting.api.height, {}, (res) => {
 	        			if(res['ret']['retCode'].toString() === '0'){
 	        				const height = parseInt(res.data[0]);
@@ -1103,7 +1110,6 @@
 	                }
 	                if(total < ((page - 1) * vm.drag.rows.width)){
 	                    vm.$set(vm.drag.pages.target, id, page - 1);
-	                    vm.emitComponentDraggableData();
 	                    const prev = parent.getElementsByClassName(classes.drag.prev);
 	                    if(prev && prev.length > 0) prev[0].click();
 	                }
@@ -1313,7 +1319,7 @@
 	                if(items && items.length > 0){
 	                    const item = items[0],
 		                    height = parseInt(item.getAttribute(mapping.attrs.height));
-	                    if(!isNaN(height) && height > 0 && !vm.setting.assembled && height !== vm.search.height){
+	                    if(!isNaN(height) && height > 0 && vm.setting.assembled && height !== vm.search.height){
 	                        vm.$set(vm.search, 'height', height);
                             vm.$set(vm.search, 'temp', height);
                             vm.getComponentData();
@@ -1679,7 +1685,7 @@
 	            });
 	            bus.$on(broadcast.init, () => {
 	                vm.$nextTick(() => {
-	                    const row = vm.drag.rows.id - 1;
+	                    const row = vm.drag.rows.num - 1;
 	                    vm.initDraggableTarget(row);
 	                });
 	            });
@@ -1724,11 +1730,12 @@
 	        	vm.$set(vm.drag.rows, 'num', num);
 	        	vm.$set(vm.drag.rows, 'key', key);
 	        	/** default datas */
-	        	if(vm.drag.pages.target[row]) vm.$set(vm.drag.pages.target, row, 1);
+	        	if(!vm.drag.pages.target[row]) vm.$set(vm.drag.pages.target, row, 1);
 	        	if(typeof vm.drag.tips[row] === 'undefined') vm.$set(vm.drag.tips, row, true);
 	        	/** default selection */
 	        	vm.$set(vm.drag.tabs, 'value', prefix.target + label);
 	        	if(vm.active) vm.$set(vm.drag.tabs, 'value', prefix.target + vm.active);
+	        	vm.$nextTick(() => {vm.emitComponentBaseData();});
 	        },
 	        
 	        /**
@@ -1743,7 +1750,7 @@
 	            return (h) => {
 	                return h('Row', [
 	                    h('span', label),
-		                vm.setting.assembled ? '' : h('icon', {
+		                !vm.setting.assembled ? '' : h('icon', {
 		                    props: {type: classes.tabs.icon},
 		                    attrs: {
 		                        'data-id': elem.id,
@@ -1788,20 +1795,6 @@
 		                })
 	                ]);
 	            };
-	        },
-	        
-	        /**
-             * current tab's container.
-             * via `this.drag.tabs.value` variable.
-             * @returns {Element}
-             */
-	        getDraggableContainer() {
-	            const vm = this,
-		            name = vm.drag.tabs.value,
-		            names = name.split('-'),
-		            id = prefix.row + names[names.length - 1],
-		            container = document.getElementById(id);
-	            return container ? container : null;
 	        },
 	        
 	        /**
@@ -1865,7 +1858,7 @@
 				        };
 			        });
 	        		vm.$nextTick(() => {
-	        			if(!vm.setting.assembled) vm.initDraggableSource();
+	        			if(vm.setting.assembled) vm.initDraggableSource();
 	        			if(Object.keys(template).length > 0){
 	        				Object.keys(template).forEach((key) => {
 	        					const cur = template[key],
@@ -1918,7 +1911,7 @@
                                     if(items.length > 0){
                                         const item = items[0],
 									        height = parseInt(item.getAttribute(mapping.attrs.height));
-                                        if(!isNaN(height) && height > 0 && !vm.setting.assembled){
+                                        if(!isNaN(height) && height > 0 && vm.setting.assembled){
                                             vm.$set(vm.search, 'height', height);
                                             vm.$set(vm.search, 'temp', height);
                                             vm.getComponentData();
@@ -1948,11 +1941,10 @@
                     event.stopPropagation();
                 };
 	        	const vm = this,
-			        source = document.getElementById('source'),
-			        name = vm.drag.tabs.value,
+			        source = vm.$refs.source.$el,
 			        getList = () => {
-	        	        const current = vm.getDraggableContainer(),
-			                list = current ? document.getElementById(name) : {children: []};
+	        	        const current = document.getElementById(vm.drag.tabs.value),
+			                list = current ? current : {children: []};
 	        	        return {
 	        	            object: list,
 			                length: list.children.length
@@ -1972,8 +1964,6 @@
 		                        }
 		                    }
 		                }
-	        	        vm.$set(vm.drag.tips, name, false);
-	        	        vm.emitComponentDraggableData(true);
 			        },
 			        end = () => {
 	        	        const data = vm.wrapComponentData();
@@ -1985,7 +1975,7 @@
 			        group: {
 			        	name: 'source',
 				        pull: 'clone',
-				        put: ['none']
+				        put: false
 			        },
 			        animation: 120,
 			        ghostClass: classes.drag.dragging,
@@ -2002,7 +1992,7 @@
              */
 	        initDraggableTarget(id) {
 	        	const vm = this;
-	        	id = (id && !isNaN(id) ? id : vm.drag.rows.num);
+	        	id = (id && !isNaN(id) ? id : vm.drag.rows.num - 1);
 	        	const name = prefix.target + id;
 	        	vm.setComponentBodyWidth(name);
 	        	const target = document.getElementById(name),
@@ -2047,13 +2037,12 @@
 	        		    	vm.$set(vm.drag.pages.target, name, width.new);
 			            }
 	        		    vm.switchComponentTarget(parents, number, name);
-	        		    vm.emitComponentDraggableData(true);
 	        		    vm.updateComponentDraggableOffset();
 	        		    parent.scrollLeft = 0;
 			        };
 	        	vm.emitComponentDraggableData();
 	        	if(target){
-	        		if(vm.click || vm.setting.assembled){
+	        		if(vm.click || !vm.setting.assembled){
 	        			vm.$set(vm.drag.instance.target, name, {});
 			        }else{
 	        			vm.drag.instance.target[name] = Sortable.create(target, {
@@ -2064,9 +2053,7 @@
 					        },
 					        animation: 120,
 					        ghostClass: classes.drag.dragging,
-					        onStart() {
-	        					vm.initDraggableBody();
-					        },
+					        onStart() {vm.initDraggableBody();},
 					        onAdd(event) {
 	        					add(event);
 	        					event.item.style.marginRight = vm.setting.base.block * vm.setting.base.ratio + 'px';
@@ -2074,9 +2061,9 @@
 					        onEnd() {
 	        					const data = vm.wrapComponentData();
 	        					vm.$emit(broadcast.callback.layout, data);
-	        					vm.emitComponentDraggableData(true);
 	        					vm.updateComponentNoneTip();
 	        					vm.initDraggableBody(true);
+	        					vm.emitComponentDraggableData(true);
 					        },
 					        onRemove() {update();}
 				        });
@@ -2393,7 +2380,7 @@
 				        layout: api.layout ? vm.trim(api.layout) : vm.G.api.draggable.layout
 			        },
 			        base: {},
-			        assembled: typeof config.assembled !== 'undefined' ? config.assembled : false,
+			        assembled: typeof config.assembled !== 'undefined' ? config.assembled : true,
 			        template: {
 	        		    referenced: typeof template.referenced !== 'undefined' ? template.referenced : false
 			        },
