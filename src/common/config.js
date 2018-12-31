@@ -141,7 +141,9 @@ const api = {
         list: '/module-manager/module/height/{height}/module-list',
         height: '/module-manager/module/height-list',
         template: '/layout-manager/layout/{id}',
-	    layout: '/layout-manager/layouts'
+	    templates: '/layout-manager/layouts',
+        layout: '/rec-group-manager/rec-group/{id}/layout',
+        content: '/rec-group-manager/rec-group/{id}/rec-content-list'
     }
 };
 /**

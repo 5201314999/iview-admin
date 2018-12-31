@@ -1,5 +1,6 @@
 <template>
 	<Row class="wi-draggable" :class="setDraggableClass" ref="draggable">
+		<!-- source & modal & search -->
 		<Card :id="classes.drag.source" v-if="setting.assembled">
 			<!-- search -->
 			<div class="wi-search">
@@ -116,6 +117,47 @@
 				</TabPane>
 			</Tabs>
 		</Row>
+		<!-- title content -->
+		<Row :class="classes.template.container">
+			<Row :class="classes.template.title">内容标题样式</Row>
+			<Form :model="template.form.validate" :rules="template.form.rules" :class="'wi-form ' + classes.template.form">
+				<Row :class="classes.template.item">
+					<Col span="8">
+						<FormItem prop="title" label="标题样式" :class="classes.template.select">
+							<Select v-model="template.form.validate.title">
+								<Option value="1">展示标题</Option>
+								<Option value="0">隐藏标题</Option>
+							</Select>
+						</FormItem>
+					</Col>
+					<template v-if="template.form.validate.title === '1'">
+						<Col span="8">
+							<FormItem prop="position" label="标题位置" :class="classes.template.select">
+								<Select v-model="template.form.validate.position">
+									<Option value="1">图中</Option>
+									<Option value="2">图外</Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="8">
+							<FormItem prop="subTitle" label="展示副标题" :class="classes.template.radio">
+								<RadioGroup v-model="template.form.validate.subTitle" size="large">
+			                        <template v-if="template.form.disabled">
+				                        <Radio label="1" disabled><span>是</span></Radio>
+			                            <Radio label="0" disabled><span>否</span></Radio>
+			                        </template>
+									<template v-else>
+										<Radio label="1"><span>是</span></Radio>
+			                            <Radio label="0"><span>否</span></Radio>
+									</template>
+			                    </RadioGroup>
+							</FormItem>
+						</Col>
+					</template>
+				</Row>
+				
+			</Form>
+		</Row>
 	</Row>
 </template>
 <script>
@@ -148,7 +190,8 @@
 	 * [ finish [Callback]]: 初始化完成后的回调(callback after initialization).
 	 * [ reacquire [Any]]: 执行再次获取组件数据的状态标识(change this value to trigger reacquisition of data).
 	 * [ layout-data [Callback]]: 获取组件数据的回调(get componet's data if `reacquire` is changed).
-	 * [ template-data [Callback]]: 获取`常用模板`数据的回调
+	 * [ template-data [Callback]]: 获取`常用模板`数据的回调(get common template data when select the single one).
+	 * [ filling [String | Boolean]]: 执行数据填充(filling block content if the value is changed).
 	 * [ config [Object]]: 其它配置选项, 具体见如下说明(other configuration, see the specific instructions below).
 	 *      ``` --------------------------------------------------------------------------------
 	 *      3.1. `config` 参数说明(parameters of called config):
@@ -218,6 +261,90 @@
 	 *          }
 	 *      }
 	 *      ``` --------------------------------------------------------------------------------
+	 *
+	 * 4. 数据结构(data structure):
+	 *  [rows [Array | Object]]: 初始化数据(initialization data)
+	 *  ```
+	 *  eg (Array).
+	 *  [
+	 *      {
+	 *          layoutRowId: 288,
+	 *          layoutRowModules: [
+	 *              {
+	 *                  groupRowModuleId: 3035,
+	 *                  moduleId: 55,
+	 *                  moduleHeight: 488,
+	 *                  moduleWidth: 1300,
+	 *                  positionNum: 1,
+	 *                  recPositions: [
+	 *                      {
+	 *                          width: 488,
+	 *                          height: 1300,
+	 *                          recPositionId: 3158,
+	 *                          recInitData: [
+	 *                              {
+	 *                                  contentShow: '致我们终将逝去的青春,
+	 *                                  contentValue: '36654',
+	 *                                  posterUrl: 'https://dev-file.tvflnet.com//F17/04/100/a.jpg',
+	 *                                  recContentId: 1308,
+	 *                                  recGroupId: 288,
+	 *                                  recPositionId: 3158,
+	 *                                  showTitle: null,
+	 *                                  ...
+	 *                              },
+	 *                              ...
+	 *                          ]
+	 *                      },
+	 *                      ...
+	 *                  ]
+	 *              },
+	 *              ...
+	 *          ],
+	 *          showTitle: 0,
+	 *          showSubTitle: 1,
+	 *          titlePosition: 1
+	 *      }
+	 *      {...}
+	 *  ]
+	 *
+	 *
+	 *  note: the draggable component will automatically parse this data structure into eligible to `rows`
+	 *  and initialization.
+	 *  使用 `object` 结构的 `rows` 数据, 只需赋值如下结构的数据, 组件将会自动解析该数据进行初始化操作.
+	 *  eg (Object).
+	 *  {
+	 *      layout: {
+	 *          groupRows: [
+	 *              {
+	 *                  groupRowId: 288,
+	 *                  showTitle: 0,
+	 *                  showSubTitle: 1,
+	 *                  titlePosition: 1,
+	 *                  isCrossScreen: 0,
+	 *                  modules: [
+	 *                      {
+	 *                          groupRowModuleId: 3035,
+	 *                          moduleId: 55
+	 *                          // @see rows(Array).
+	 *                          ...
+	 *                      },
+	 *                      ...
+	 *                  ]
+	 *              },
+	 *              ...
+	 *          ]
+	 *      },
+	 *      content: [
+	 *          {
+	 *              contentShow: '致我们终将逝去的青春,
+	 *              contentValue: '36654',
+	 *              // @see rows(Array).
+	 *              ...
+	 *          },
+	 *          ...
+	 *      ]
+	 *  }
+	 *  ```
 	 */
     import Vue from 'vue';
     import Sortable from 'sortablejs';
@@ -252,7 +379,7 @@
 		        through: prefix.common + 'draggable-align-line-through',
 		        assembled: prefix.common + 'draggable-assembled',
 		        dragging: prefix.common + 'draggable-dragging',
-		        click: prefix.common + 'draggable-click'
+		        click: prefix.common + 'draggable-click',
 		    },
 		    shadow: {
 		        single: prefix.common + 'draggable-item-shadow',
@@ -275,6 +402,12 @@
 		        content: 'ivu-modal-content'
 		    },
 		    template: {
+		        container: prefix.common + 'template-form',
+			    title: prefix.common + 'template-form-title',
+			    form: prefix.common + 'template-form-content',
+			    item: prefix.common + 'item ' + prefix.common + 'form-item',
+			    select: prefix.common + 'select',
+			    radio: prefix.common + 'radio',
 		        active: prefix.common + 'search-item-active'
 		    },
 		    disabled: 'disabled',
@@ -284,7 +417,8 @@
             row: {
                 id: 'layoutRowId',
 	            blocks: 'layoutRowModules',
-	            group: 'groupRowId'
+	            group: 'groupRowId',
+	            list: 'groupRows'
             },
 	        content: {
                 title: 'showTitle',
@@ -301,6 +435,7 @@
 	        },
 	        module: {
                 id: 'moduleId',
+		        list: 'modules',
 		        gid: 'groupRowModuleId',
 		        pid: 'recPositionId',
 		        init: 'recInitData',
@@ -324,13 +459,15 @@
 		        relate: 'data-relate',
 		        direct: 'data-direct'
 	        },
-	        field: {
+	        fields: {
                 id: 'recContentId',
                 cover: {
+                    default: 'imageUrl',
                     one: 'image1Url',
 	                two: 'image2Url'
                 },
-		        poster: 'posterUrl'
+		        poster: 'posterUrl',
+		        pos: 'recPositionId'
 	        }
         },
 	    base = {
@@ -410,7 +547,7 @@
 	    mounted() {
 	        const vm = this;
 	        vm.$nextTick(() => {
-	            bus.$emit(broadcast.init);
+	            bus.$emit(broadcast.init, vm.num);
 	        });
 	    },
 	    template: `<Row :class="classes.drag.container" :id="prefix.row + num">
@@ -452,7 +589,7 @@
                 default: () => {}
             },
 	        rows: {
-            	type: Array,
+            	type: [Array, Object],
 		        default: () => []
 	        },
 	        init: {
@@ -469,7 +606,11 @@
 	        active: {
                 type: Number,
                 default: 0
-            }
+            },
+	        filling: {
+        	    type: [String, Boolean],
+		        default: false
+	        }
         },
         data() {
         	const vm = this,
@@ -681,84 +822,86 @@
 			        height: 0,
 			        space: 0
 		        };
-        		datas.map((item) => {
-        			const data = [],
-				        num = parseInt(item[mapping.module.number]),
-				        width = parseInt(item[mapping.module.width]),
-				        height = parseInt(item[mapping.module.height]),
-				        mid = parseInt(item[mapping.module.id]);
-        			let h;
-        			if(item[mapping.module.position]){
-        				/* one block, many position. */
-        				item[mapping.module.position].map((pos, k) => {
-        					h = Math.round((pos.height * ratio) * 100) / 100;
-        					let one = {
-        						mid: mid,
-						        width: width * ratio,
-						        space: space * ratio,
-						        height: h,
-						        source: {
-        							width: width,
-							        height: pos.height
-						        },
-						        position: pos[mapping.module.pid],
-						        relate: item[mapping.module.gid],
-						        initData: pos[mapping.module.init] ? pos[mapping.module.init] : []
-					        };
-        					if(k === num - 1) one.space = 0;
-        					data.push(one);
-				        });
-			        }else{
-        				if(temp.width <= 0) temp.width = width * ratio;
-        				if(temp.space <= 0) temp.space = space * ratio;
-        				temp.height = height * ratio > temp.height ? height * ratio : temp.height;
-        				if(num > 1){
-        					for(let n = 0; n < num; n++){
-        						const high = Math.round((height - space * (num - 1)) / num * 100) / 100;
-        						h = Math.round((high * ratio) * 100) / 100;
-        						let one = {
-        							mid: mid,
+        		if(datas && datas.length > 0){
+        		    datas.forEach((item) => {
+	                    const data = [],
+					        num = parseInt(item[mapping.module.number]),
+					        width = parseInt(item[mapping.module.width]),
+					        height = parseInt(item[mapping.module.height]),
+					        mid = parseInt(item[mapping.module.id]);
+	                    let h;
+	                    if(item[mapping.module.position]){
+	                        /* one block, many position. */
+	                        item[mapping.module.position].map((pos, k) => {
+	                            h = Math.round((pos.height * ratio) * 100) / 100;
+	                            let one = {
+	                                mid: mid,
 							        width: width * ratio,
 							        space: space * ratio,
 							        height: h,
 							        source: {
-        								width: width,
-								        height: high
+	                                    width: width,
+								        height: pos.height
+							        },
+							        position: pos[mapping.module.pid],
+							        relate: item[mapping.module.gid],
+							        initData: pos[mapping.module.init] ? pos[mapping.module.init] : []
+						        };
+	                            if(k === num - 1) one.space = 0;
+	                            data.push(one);
+					        });
+				        }else{
+	                        if(temp.width <= 0) temp.width = width * ratio;
+	                        if(temp.space <= 0) temp.space = space * ratio;
+	                        temp.height = height * ratio > temp.height ? height * ratio : temp.height;
+	                        if(num > 1){
+	                            for(let n = 0; n < num; n++){
+	                                const high = Math.round((height - space * (num - 1)) / num * 100) / 100;
+	                                h = Math.round((high * ratio) * 100) / 100;
+	                                let one = {
+	                                    mid: mid,
+								        width: width * ratio,
+								        space: space * ratio,
+								        height: h,
+								        source: {
+	                                        width: width,
+									        height: high
+								        },
+								        position: 0,
+								        relate: 0,
+								        initData: []
+							        };
+	                                if(n === num - 1) one.space = 0;
+	                                data.push(one);
+						        }
+					        }else{
+	                            h = Math.round(height * ratio * 100) / 100;
+	                            let one = {
+	                                mid: mid,
+							        width: width * ratio,
+							        height: h,
+							        space: 0,
+							        source: {
+	                                    width: width,
+								        height: height
 							        },
 							        position: 0,
 							        relate: 0,
 							        initData: []
 						        };
-        						if(n === num - 1) one.space = 0;
-        						data.push(one);
+	                            data.push(one);
 					        }
-				        }else{
-        					h = Math.round(height * ratio * 100) / 100;
-        					let one = {
-        						mid: mid,
-						        width: width * ratio,
-						        height: h,
-						        space: 0,
-						        source: {
-        							width: width,
-							        height: height
-						        },
-						        position: 0,
-						        relate: 0,
-						        initData: []
-					        };
-        					data.push(one);
 				        }
-			        }
-        			list.push({
-				        id: item.moduleId,
-				        number: num,
-				        width: width,
-				        height: height,
-				        data: data,
-				        lid: id ? id : null
+	                    list.push({
+					        id: item.moduleId,
+					        number: num,
+					        width: width,
+					        height: height,
+					        data: data,
+					        lid: id ? id : null
+				        });
 			        });
-		        });
+		        }
         		return list;
 	        },
 	        
@@ -1444,6 +1587,9 @@
 	            if(vm.template.active > 0){
 	                vm.$set(vm.template, 'modal', false);
 	                vm.$set(vm.template, 'referenced', true);
+	                vm.$set(vm.drag.tabs, 'value', vm.name);
+	                vm.$set(vm.drag.rows, 'num', 2);
+	                vm.$set(vm.drag, 'elements', {});
 	                vm.$emit(broadcast.callback.template, vm.template.list);
 	            }else{
 	                vm.$Message.error('请选择常用模板');
@@ -1683,9 +1829,9 @@
 	            bus.$on(broadcast.shadow, (event) => {
 	                vm.removeDraggableBlockShadow(event);
 	            });
-	            bus.$on(broadcast.init, () => {
+	            bus.$on(broadcast.init, (data) => {
 	                vm.$nextTick(() => {
-	                    const row = vm.drag.rows.num - 1;
+	                    const row = data ? data : vm.drag.rows.key;
 	                    vm.initDraggableTarget(row);
 	                });
 	            });
@@ -1800,18 +1946,20 @@
 	        /**
 	         * init draggable (edit).
 	         * via `recommend-layout-id`.
+	         * @param rows {Array}
 	         * @see initDraggableBlock
 	         */
-	        initDraggable() {
+	        initDraggable(rows) {
 	        	const vm = this,
 			        template = {},
 			        add = vm.$refs.create;
 	        	let height = 0;
+	        	rows = typeof rows !== 'undefined' ? rows : vm.rows;
 	        	vm.getComponentHeightData();
-	        	if(vm.rows && vm.rows.length > 0){
+	        	if(rows && rows.length > 0){
 	        	    vm.$set(vm.drag.tips, vm.name, false);
 	        		vm.resetDraggable();
-	        		vm.rows.forEach((item, i) => {
+	        		rows.forEach((item, i) => {
 	        			const id = i > 0 ? (prefix.target + vm.drag.rows.num) :vm.name;
 	        			let data = item[mapping.row.blocks],
 					        rowId = item[mapping.row.id];
@@ -1820,16 +1968,15 @@
 	        				else vm.createDraggable();
 				        }
 	        			if(typeof item[mapping.content.title] !== 'undefined'){
-	        				data = item['modules'];
 	        				rowId = item[mapping.row.group];
 	        				const title = {
 	        					title: item[mapping.content.title].toString(),
-						        subTitle: item[mapping.content.title.sub].toString(),
+						        subTitle: item[mapping.content.sub].toString(),
 						        position: item[mapping.content.pos].toString()
 					        };
 	        				vm.$set(vm.template.form.data, id, title);
 	        				vm.$set(vm.template.form.exist, id, title);
-	        				if(i === vm.rows.length - 1){
+	        				if(i === rows.length - 1){
 	        					vm.$set(vm.template.form, 'validate', title);
 	        					if(item[mapping.content.title]){
 	        						if(item[mapping.content.sub]) vm.$set(vm.template.form, 'disabled', false);
@@ -1992,7 +2139,7 @@
              */
 	        initDraggableTarget(id) {
 	        	const vm = this;
-	        	id = (id && !isNaN(id) ? id : vm.drag.rows.num - 1);
+	        	id = (id && !isNaN(id) ? id : vm.drag.rows.key);
 	        	const name = prefix.target + id;
 	        	vm.setComponentBodyWidth(name);
 	        	const target = document.getElementById(name),
@@ -2199,16 +2346,16 @@
 					        }else if(len === 1){
 		        				/** single image */
 		        				const single = initData[0];
-		        				let cover = single[mapping.field.cover.one]
-							        ? `<img src="${single[mapping.field.cover.one]}" class="${classes.block.cover}" />`
+		        				let cover = single[mapping.fields.cover.one]
+							        ? `<img src="${single[mapping.fields.cover.one]}" class="${classes.block.cover}" />`
 							        : ``;
-		        				cover += single[mapping.field.cover.two]
-							        ? `<img src="${single[mapping.field.cover.two]}" class="${classes.block.cover}" />`
+		        				cover += single[mapping.fields.cover.two]
+							        ? `<img src="${single[mapping.fields.cover.two]}" class="${classes.block.cover}" />`
 							        : ``;
 		        				element.push(
 		        					`<Row ${string.params} style="${string.style}">`,
 							            `<Row class="${classes.drag.image}">`,
-							                `<img src="${single[mapping.field.poster]}" class="${classes.block.image}" ${mapping.attrs.index}="${single[mapping.field.id]}" />`,
+							                `<img src="${single[mapping.fields.poster]}" class="${classes.block.image}" ${mapping.attrs.index}="${single[mapping.fields.id]}" />`,
 							                cover,
 							            `</Row>`,
 							        `</Row>`
@@ -2216,15 +2363,15 @@
 					        }else if(len > 1){
 		        				/** carousel */
 		        				initData.forEach((single) => {
-		        					let cover = single[mapping.field.cover.one]
-								        ? `<img src="${single[mapping.field.cover.one]}" class="${classes.block.cover}" />`
+		        					let cover = single[mapping.fields.cover.one]
+								        ? `<img src="${single[mapping.fields.cover.one]}" class="${classes.block.cover}" />`
 								        : ``;
-		        					cover += single[mapping.field.cover.two]
-								        ? `<img src="${single[mapping.field.cover.two]}" class="${classes.block.cover}" />`
+		        					cover += single[mapping.fields.cover.two]
+								        ? `<img src="${single[mapping.fields.cover.two]}" class="${classes.block.cover}" />`
 								        : ``;
 		        					carousel.push(
 		        						`<CarouselItem>`,
-								            `<img src="${single[mapping.field.poster]}" class="${classes.block.image}" ${mapping.attrs.index}="${single[mapping.field.id]}" />`,
+								            `<img src="${single[mapping.fields.poster]}" class="${classes.block.image}" ${mapping.attrs.index}="${single[mapping.fields.id]}" />`,
 								            cover,
 								        `</CarouselItem>`
 							        );
@@ -2377,13 +2524,14 @@
 				        list: api.list ? vm.trim(api.list) : vm.G.api.draggable.list,
 				        height: api.height ? vm.trim(api.height) : vm.G.api.draggable.height,
 				        template: api.template ? vm.trim(api.template) : vm.G.api.draggable.template,
-				        layout: api.layout ? vm.trim(api.layout) : vm.G.api.draggable.layout
+				        templates: api.templates ? vm.trim(api.templates) : vm.G.api.draggable.templates
 			        },
 			        base: {},
 			        assembled: typeof config.assembled !== 'undefined' ? config.assembled : true,
 			        template: {
 	        		    referenced: typeof template.referenced !== 'undefined' ? template.referenced : false
 			        },
+			        title: typeof config.title !== 'undefined' ? config.title : false,
 			        carousel: {
 	        			auto: typeof carousel.auto !== 'undefined' ? carousel.auto : true,
 				        speed: carousel.speed ? parseInt(carousel.speed) : 4000,
@@ -2392,16 +2540,48 @@
 		        };
 	        },
 	        
+	        /**
+	         * resize.
+	         * update list width and page number.
+	         * update modal content height.
+	         */
 	        handleWindowResize() {
-	            const vm = this;
+	            const vm = this,
+		            id = vm.drag.tabs.value,
+		            list = document.getElementById(id),
+		            page = vm.drag.pages.target[id],
+		            content = list.parentNode,
+		            container = content.parentNode,
+		            width = vm.drag.rows.width,
+		            number = vm.getComponentPages(container);
+	            let temp = content.clientWidth;
+	            if(temp !== width){
+	                vm.$set(vm.drag.rows, 'width', temp);
+	                if(page > 1) list.style.marginLeft = - Math.round(temp * page) + 'px';
+	                if(number > 1){
+	                    vm.switchComponentTarget(content.parentNode, number);
+	                }else{
+	                    vm.$set(vm.drag.pages.target, id, 1);
+	                    list.style.marginLeft = '0';
+	                }
+	            }
 	            vm.updateCommonLayoutModalHeight();
-	        },
+	        }
         },
         watch: {
+            /**
+             * 执行初始化 (exec[run]).
+             * initialization.
+             */
         	exec: function() {
         		const vm = this;
         		if(vm.init) vm.initDraggable();
 	        },
+	        
+	        /**
+	         * 常用模板弹窗 (template modal`).
+	         * if it's opened, hide `overflow`.
+	         */
 	        'template.modal': function() {
         	    const vm = this;
         	    if(vm.template.modal){
@@ -2410,10 +2590,74 @@
         	        document.body.removeAttribute('style');
 	            }
 	        },
+	        
+            /**
+             * 重新获取数据(reacquire data).
+             * trigger `get-data` callback if the value is changed ( can call `this.$unique()` function to assignment ).
+             */
 	        reacquire: function() {
         	    const vm = this,
 		            data = vm.wrapComponentData();
         	    vm.$emit(broadcast.callback.layout, data);
+	        },
+    
+            /**
+             * 内容填充(filling datas).
+             * set `rows` data, the component will parse of it.
+             *  ```
+             *  structure (see instructions):
+             *  {
+             *      layout: {...},
+             *      content: [...]
+             *  }
+             *  ```
+             */
+	        filling: function() {
+	            const vm = this;
+	            if((typeof vm.filling).toUpperCase() === 'BOOLEAN' && vm.filling === false) return ;
+		        const layout = vm.rows.layout,
+		            content = vm.rows.content;
+	            let list = {};
+	            for(let i = 0; i < content.length; i++){
+	                content[i][mapping.fields.poster] = vm.formatUrl(content[i][mapping.fields.poster]);
+	                content[i][mapping.fields.cover.default] = vm.formatUrl(content[i][mapping.fields.cover.default]);
+	                if(typeof list[content[i][mapping.fields.pos]] === 'undefined'){
+	                    list[content[i][mapping.fields.pos]] = [];
+	                }
+	                list[content[i][mapping.fields.pos]].push(content[i]);
+	            }
+	            const rows = [],
+		            data = layout[mapping.row.list] ? layout[mapping.row.list] : [];
+	            for(let k = 0; k < data.length; k++){
+	                const cur = data[k];
+	                let temp = {};
+	                temp[mapping.row.id] = cur[mapping.row.group];
+	                temp[mapping.content.title] = cur[mapping.content.title];
+	                temp[mapping.content.sub] = cur[mapping.content.sub];
+	                temp[mapping.content.pos] = cur[mapping.content.pos];
+	                temp[mapping.row.blocks] = cur[mapping.module.list];
+	                rows.push(temp);
+	            }
+	            for(let n = 0; n < rows.length; n++){
+	                const current = rows[n],
+		                length = current[mapping.row.blocks].length;
+	                for(let m = 0; m < length; m++){
+	                    const item = current[mapping.row.blocks][m],
+		                    len = item[mapping.module.position].length;
+	                    for(let x = 0; x < len; x++){
+	                        const block = item[mapping.module.position][x];
+	                        let init = {};
+	                        init[mapping.module.init] = [];
+	                        if(block[mapping.fields.pos] && list[block[mapping.fields.pos]]){
+	                            init[mapping.module.init] = list[block[mapping.fields.pos]];
+	                        }
+	                        Object.assign(block, init);
+	                    }
+	                }
+	            }
+	            vm.$nextTick(() => {
+	                if(vm.init) vm.initDraggable(rows);
+	            });
 	        }
         },
 	    created() {
