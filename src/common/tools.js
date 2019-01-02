@@ -289,6 +289,46 @@ exports.install = (Vue) => {
             blank = name !== '' ? ' ' : '';
         obj.className = name.replace(cls, '') + blank + cls;
     };
+    
+    /**
+     * parent(node).
+     * @param elem
+     * @returns {*}
+     */
+    Vue.prototype.parent = function(elem) {
+        let parent = elem.parentNode;
+        return parent && parent.nodeType !== 11 ? parent : null;
+    };
+    
+    /**
+     * parents(class).
+     * @param elem
+     * @param until
+     * @param array
+     * @returns {Array}
+     */
+    Vue.prototype.parents = function(elem, until, array = true) {
+        const matched = [],
+            truncate = until !== undefined,
+            names = until.split('.'),
+            name = names[names.length - 1].replace('.', '');
+        while((elem = elem.parentNode) && elem.nodeType !== 9){
+            if(elem.nodeType === 1){
+                const node = elem.parentNode,
+                    elements = node.getElementsByClassName(name);
+                let find = false;
+                for(let i = 0; i < elements.length; i++){
+                    if(elements[i] === elem){
+                        find = true;
+                        break;
+                    }
+                }
+                matched.push(elem);
+                if(truncate && find) break;
+            }
+        }
+        return array ? matched : matched[matched.length - 1];
+    };
 
     /**
      * random.

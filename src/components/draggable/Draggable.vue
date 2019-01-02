@@ -216,11 +216,12 @@
 	 *          [ ratio [Number]]: 缩放比例(scaling ratio).
 	 *          [ screen [Number]]: 屏幕尺寸(screen size).
 	 *          ``` ------------------------------------------------------------
-	 *      [ assembled [Boolean]]: 是否是组装的状态, 默认为`true`
+	 *      [ assembled [Boolean]]: 是否是组装的状态, 即是否存在`source`列表, 默认为`true`(whether there is a `source` list)
+	 *      [ title [Boolean]]: 是否显示`title`配置选项(whether to display the title configuration option)
 	 *      [ template [Object]]: 常用布局模板配置(the configuaration of common templates):
 	 *          ``` ------------------------------------------------------------
 	 *          3.1.3. `template` 参数说明(parameters of called `template`):
-	 *          [ referenced [Boolean]]: 是否引用常用模板(Whether to reference common templates)
+	 *          [ referenced [Boolean]]: 是否引用常用模板(whether to reference common templates)
 	 *          ``` ------------------------------------------------------------
 	 *      [ carousel [Object]]: 轮播配置
 	 *          ``` ------------------------------------------------------------
@@ -263,6 +264,7 @@
 	 *      ``` --------------------------------------------------------------------------------
 	 *
 	 * 4. 数据结构(data structure):
+	 *  ( 注: api接口的变量名称变化; [ note: variable name if the `api` has changed ] ).
 	 *  [rows [Array | Object]]: 初始化数据(initialization data)
 	 *  ```
 	 *  eg (Array).
@@ -308,8 +310,9 @@
 	 *  ]
 	 *
 	 *
-	 *  note: the draggable component will automatically parse this data structure into eligible to `rows`
-	 *  and initialization.
+	 *  ( 注：对象结构的数据, 该组件将会自行解析成符合格式的数据 )
+	 *  ( note: the draggable component will automatically parse this data structure into eligible
+	 *  to `rows` and initialization ).
 	 *  使用 `object` 结构的 `rows` 数据, 只需赋值如下结构的数据, 组件将会自动解析该数据进行初始化操作.
 	 *  eg (Object).
 	 *  {
@@ -436,6 +439,7 @@
 	        module: {
                 id: 'moduleId',
 		        list: 'modules',
+		        cross: 'isCrossScreen',
 		        gid: 'groupRowModuleId',
 		        pid: 'recPositionId',
 		        init: 'recInitData',
@@ -467,7 +471,9 @@
 	                two: 'image2Url'
                 },
 		        poster: 'posterUrl',
-		        pos: 'recPositionId'
+		        pos: 'recPositionId',
+		        width: 'width',
+		        height: 'height'
 	        }
         },
 	    base = {
@@ -550,6 +556,7 @@
 	            bus.$emit(broadcast.init, vm.num);
 	        });
 	    },
+	    destoryed() {},
 	    template: `<Row :class="classes.drag.container" :id="prefix.row + num">
 	<Row :class="classes.drag.box + ' ' + classes.drag.target" :data-name="prefix.target + num">
 		<Row :class="classes.drag.prev" @click.native="handleComponentPrev">
@@ -655,7 +662,8 @@
 			        },
 			        tabs: {
         				id: 1,
-        				value: name
+        				value: name,
+				        last: name
 			        },
 			        cross: {},
 			        shadow: {},
@@ -690,7 +698,6 @@
 			        active: 0,
 			        list: [],
 			        modal: false,
-			        referenced: false,  // communal template being referenced.
 			        height: 0,          // modal max height.
 			        title: '选择推荐组常用布局模板',
 			        name: '常用布局模板预览'
@@ -925,7 +932,7 @@
 			        container = document.getElementsByClassName(classes.tabs.container),
 			        standard = Math.round((vm.setting.base.screen - vm.setting.base.left * 2 - 2) * vm.setting.base.ratio);
 	        	let tabs = null, length = 0, validate = true,
-			        params = {}, template = [];
+			        params = {}, template = [], groups = {};
 	        	if(container && container.length > 0){
 	        		const body = container[0];
 	        		tabs = body.getElementsByClassName(classes.tabs.pane);
@@ -934,6 +941,7 @@
 	        			const cur = tabs[i], data = [], commonly = [],
 					        items = cur.getElementsByClassName(classes.drag.item),
 					        target = cur.getElementsByClassName(classes.drag.box);
+	        			params[mapping.module.cross] = 0;
 	        			let width = 0, name, setting;
 	        			/** `title` setting */
                         if(target){
@@ -945,22 +953,18 @@
 	                                ? vm.template.form.data[name] : {}));
                             }
                             if(setting){
-                                params = {
-                                    showTitle: setting.title,
-							        titlePosition: setting.position,
-							        showSubTitle: setting.subTitle
-						        };
+                                params[mapping.content.title] = setting.title;
+                                params[mapping.content.sub] = setting.subTitle;
+                                params[mapping.content.pos] = setting.position;
 					        }else{
-                                params = {
-                                    showTitle: JSON.parse(JSON.stringify(vm.template.form.validate.title)),
-                                    titlePosition: JSON.parse(JSON.stringify(vm.template.form.validate.position)),
-                                    showSubTitle: JSON.parse(JSON.stringify(vm.template.form.validate.subTitle))
-						        };
+                                params[mapping.content.title] = JSON.parse(JSON.stringify(vm.template.form.validate.title));
+                                params[mapping.content.sub] = JSON.parse(JSON.stringify(vm.template.form.validate.subTitle));
+                                params[mapping.content.pos] = JSON.parse(JSON.stringify(vm.template.form.validate.position));
 					        }
                             if(!parseInt(params.showTitle)){
                                 /** restoring the defaults. */
-                                params.titlePosition = '1';
-                                params.subTitle = '1';
+                                params[mapping.content.pos] = '1';
+                                params[mapping.content.sub] = '1';
 					        }
 				        }
 	        			if(vm.setting.template.referenced){
@@ -976,6 +980,7 @@
 	        				template.push(commonly);
 				        }else{
 	        				/** recommend rows' layout. */
+	        				groups[mapping.row.list] = {};
 	        				for(let n = 0; n < items.length; n++){
 	        					const item = items[n],
 							        id = parseInt(item.getAttribute(mapping.attrs.index)),
@@ -995,24 +1000,20 @@
 									        relate: parseInt(block.getAttribute(mapping.attrs.relate))
 								        };
 	        						if(variable.relate) relate = variable.relate;
-	        						let single = {
-	        							width: variable.width,
-								        height: variable.height
-							        };
+	        						let single = {};
+	        					    single[mapping.fields.width] = variable.width;
+	        					    single[mapping.fields.height] = variable.height;
 	        						if(variable.position && !isNaN(variable.position))
-	        							Object.assign(single, {recPositionId: variable.position});
+	        						    single[mapping.module.pid] = variable.position;
 	        						temporary.push(single);
 						        }
-	        					let modules = {
-	        						moduleId: id,
-							        positionNum: num,
-							        width: w,
-							        height: height,
-							        recPositions: temporary
-						        };
-	        					if(relate) Object.assign(modules, {
-	        						groupRowModuleId: relate
-						        });
+	        					let modules = {};
+	        					modules[mapping.module.id] = id;
+	        					modules[mapping.module.number] = num;
+	        					modules[mapping.fields.width] = w;
+	        					modules[mapping.fields.height] = height;
+	        					modules[mapping.module.position] = temporary;
+	        					if(relate) modules[mapping.module.gid] = relate;
 	        					data.push(modules);
 	        					width += Math.round(w * vm.setting.base.ratio);
 	        					if(n < items.length - 1) width += Math.round(vm.setting.base.block * vm.setting.base.ratio);
@@ -1020,12 +1021,15 @@
 	        					if(
 	        						row
 							        && !isNaN(row)
-							        && !params.groupRowId
-							        && !vm.template.referenced
-						        ) params.groupRowId = row;
-	        					params.modules = data;
+							        && !params[mapping.row.group]
+							        && !vm.setting.template.referenced
+						        ) params[mapping.row.group] = row;
+	        					params[mapping.module.list] = data;
 					        }
+	        				if(width > standard + Math.round(vm.setting.base.left * vm.setting.base.ratio))
+	        				    params[mapping.module.cross] = 1;
 	        				rows.push(params);
+	        				groups[mapping.row.list] = rows;
 				        }
 	        			if(width < standard){
 	        				validate = false;
@@ -1033,7 +1037,7 @@
 				        }
 			        }
 		        }
-	        	return validate ? (vm.setting.template.referenced ? template : rows) : [];
+	        	return validate ? (vm.setting.template.referenced ? template : groups) : [];
 	        },
 	
 	        /**
@@ -1423,14 +1427,10 @@
 	                    const block = blocks[i];
 	                    if(block) vm.removeClass(block, classes.drag.active);
 	                }
-	                if(shadows){
-	                    const active = vm.active ? vm.active - 1 : shadows.length - 1,
-		                    shadow = shadows[active];
-	                    if(shadow){
-	                        vm.removeClass(shadow, classes.shadow.active);
-	                        shadow.setAttribute('style', 'display: none;');
-	                    }
-	                }
+	                for(let k = 0; k < shadows.length; k++){
+                        const shadow = shadows[k];
+                        if(shadow) vm.removeClass(shadow, classes.shadow.active);
+                    }
 	            }
 	        },
 	        
@@ -1445,7 +1445,12 @@
 	            const vm = this,
 		            target = document.getElementById(name),
 		            names = name.split('-'),
-		            active = names[1] ? parseInt(names[1]) : 1;
+		            active = names[1] ? parseInt(names[1]) : 1,
+		            last = {
+	                    id: JSON.parse(JSON.stringify(vm.drag.tabs.last)),
+			            data: JSON.parse(JSON.stringify(vm.template.form.validate))
+		            };
+	            if(last.id) vm.$set(vm.template.form.data, last.id, last.data);
 	            if(target){
 	                let exist = {};
 	                vm.$set(vm.template.form, 'disabled', false);
@@ -1473,6 +1478,7 @@
 	            let data = {name: name, active: active};
 	            if(row) data.id = row[mapping.row.id];
 	            vm.$set(vm.drag.tabs, 'id', active);
+	            vm.$set(vm.drag.tabs, 'last', name);
 	            vm.$emit(broadcast.callback.tab, data);
 	            vm.removeComponentBlockActive();
 	        },
@@ -1555,7 +1561,7 @@
 	        getCommonLayout() {
 	        	const vm = this;
 	        	vm.resetCommonLayout();
-	        	vm.$api.get(vm.setting.api.layout, vm.template.condition, (res) => {
+	        	vm.$api.get(vm.setting.api.templates, vm.template.condition, (res) => {
 	        		if(res['ret']['retCode'].toString() === '0'){
 	        			vm.$set(vm.template, 'modal', true);
 	        			vm.$set(vm.template, 'data', res.data.layouts);
@@ -1586,7 +1592,6 @@
 	            const vm = this;
 	            if(vm.template.active > 0){
 	                vm.$set(vm.template, 'modal', false);
-	                vm.$set(vm.template, 'referenced', true);
 	                vm.$set(vm.drag.tabs, 'value', vm.name);
 	                vm.$set(vm.drag.rows, 'num', 2);
 	                vm.$set(vm.drag, 'elements', {});
@@ -1878,8 +1883,10 @@
 	        	/** default datas */
 	        	if(!vm.drag.pages.target[row]) vm.$set(vm.drag.pages.target, row, 1);
 	        	if(typeof vm.drag.tips[row] === 'undefined') vm.$set(vm.drag.tips, row, true);
+	        	if(!vm.template.form.data[row]) vm.resetComponentTitleContent(row);
 	        	/** default selection */
-	        	vm.$set(vm.drag.tabs, 'value', prefix.target + label);
+	        	vm.$set(vm.drag.tabs, 'value', row);
+	        	vm.$set(vm.drag.tabs, 'temp', row);
 	        	if(vm.active) vm.$set(vm.drag.tabs, 'value', prefix.target + vm.active);
 	        	vm.$nextTick(() => {vm.emitComponentBaseData();});
 	        },
@@ -1960,13 +1967,9 @@
 	        	    vm.$set(vm.drag.tips, vm.name, false);
 	        		vm.resetDraggable();
 	        		rows.forEach((item, i) => {
-	        			const id = i > 0 ? (prefix.target + vm.drag.rows.num) :vm.name;
+	        			const id = i > 0 ? (prefix.target + vm.drag.rows.num) : vm.name;
 	        			let data = item[mapping.row.blocks],
 					        rowId = item[mapping.row.id];
-	        			if(i > 0){
-	        				if(add) add.$el.click();
-	        				else vm.createDraggable();
-				        }
 	        			if(typeof item[mapping.content.title] !== 'undefined'){
 	        				rowId = item[mapping.row.group];
 	        				const title = {
@@ -1983,12 +1986,16 @@
 	        						else vm.$set(vm.template.form, 'disabled', true);
 						        }else{
 	        					    vm.resetComponentTitleContent();
-	        						vm.$set(vm.template.form, 'disabled', true);
+	        						vm.$set(vm.template.form, 'disabled', false);
 						        }
 					        }else{
 	        					if(!item[mapping.content.title]) vm.$set(vm.template.form.data[id], 'subTitle', '1');
 					        }
 				        }else vm.resetComponentTitleContent(id);
+	        			if(i > 0){
+	        				if(add) add.$el.click();
+	        				else vm.createDraggable();
+				        }
 	        			const list = vm.parseComponentData(data, rowId),
 					        width = vm.getComponentWidth(list, vm.setting.base.block);
 	        			if(list.length > 0){
@@ -2309,7 +2316,7 @@
 		        		/** whether can click or not. */
 		        		if(vm.init || vm.click){
 		        			/** attributes data */
-		        			const key = vm.prefix.target + id,
+		        			const key = vm.prefix.common + id,
 						        attributes = [
 						        	`id="${key}"`,
 							        `${mapping.attrs.id}="${item.id}"`,
@@ -2420,7 +2427,7 @@
              */
 	        handleDraggableBlockClick(event) {
 	            const vm = this,
-		            elem = vm.hasClass(event.target, classes.drag.single) ? event.target : event.target.parentNode;
+		            elem = vm.hasClass(event.target, classes.drag.single) ? event.target : vm.parents(event.target, classes.drag.single, false);
 	            if(elem && !vm.hasClass(elem, classes.drag.active)){
 	                vm.removeComponentBlockActive();
 	                vm.addClass(elem, classes.drag.active);
@@ -2436,7 +2443,6 @@
              * @param elem
              */
 	        getDraggableBlockShadowData(elem) {
-	            const vm = this;
 	            let data = {};
 	            if(elem){
 	                const row = elem.getAttribute(mapping.attrs.row),

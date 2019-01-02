@@ -9,10 +9,10 @@
 						:reacquire="reacquire"
 						:init="true"
 						:filling="filling"
+						:click="true"
 						v-on:template-data="getTemplateData"
 						v-on:layout-data="getLayoutData"
 						:config="{
-							template: {referenced: true},
 							title: true
 						}">
 				</wi-draggable>
@@ -96,6 +96,7 @@
 		    getLayoutData(data) {
         	    const vm = this;
         	    vm.$set(vm, 'components', data);
+        	    console.log(data);
 		    },
 		    save() {
 	            const vm = this;
