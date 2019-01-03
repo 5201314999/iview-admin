@@ -10,6 +10,9 @@
 						:init="true"
 						:filling="filling"
 						:click="true"
+						v-on:click-call="handleClickEvent"
+						:increase="increase"
+						:decrease="decrease"
 						v-on:template-data="getTemplateData"
 						v-on:layout-data="getLayoutData"
 						:config="{
@@ -30,9 +33,13 @@
 	    data() {
             const vm = this;
         	return {
+        	    id: 288,
         		rows: [],
 		        exec: false,
 		        filling: false,
+		        increase: false,
+		        decrease: false,
+		        current: {},
 		        reacquire: vm.$unique(),
 		        components: {}
 	        };
@@ -57,9 +64,8 @@
 	        },
 		    getLayout() {
         	    const vm = this,
-		            id = 622,
-		            url = vm.parseUrl(vm.G.api.draggable.layout, {id: id}),
-		            link = vm.parseUrl(vm.G.api.draggable.content, {id: id});
+		            url = vm.parseUrl(vm.G.api.draggable.layout, {id: vm.id}),
+		            link = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
         	    vm.$api.get(url, {}, (res) => {
         	        if(res['ret']['retCode'].toString() === '0'){
         	            vm.$api.get(link, {}, (response) => {
@@ -96,11 +102,35 @@
 		    getLayoutData(data) {
         	    const vm = this;
         	    vm.$set(vm, 'components', data);
-        	    console.log(data);
+		    },
+		    handleClickEvent(data) {
+        	    const vm = this;
+        	    vm.$set(vm, 'current', data);
 		    },
 		    save() {
-	            const vm = this;
-	            vm.$set(vm, 'reacquire', vm.$unique());
+	            const vm = this,
+		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
+	            vm.$api.get(url, {}, (res) => {
+	                if(res['ret']['retCode'].toString() === '0'){
+	                    if(res.data.length > 0){
+	                        let data = res.data[0],
+		                        result = {
+	                                id: vm.current.id,
+			                        cid: data['recContentId'],
+	                                poster: data['posterUrl'],
+			                        cover: data['imageUrl'],
+			                        type: data['recType']
+		                        };
+	                        vm.$set(vm, 'increase', result);
+	                    }
+	                }else{
+	                    vm.$error(res['ret']['retMsg']);
+	                    return false;
+	                }
+	            }, (err) => {
+	                vm.$error(err);
+	                return false;
+	            });
 	        }
 	    },
 	    mounted() {

@@ -180,7 +180,7 @@
 	 *  ```
 	 *
 	 * 3. 参数说明(parameters):
-	 * [ init [Boolean]]: 是否执行初始化操作(whether is initialization).
+	 * [ init [Boolean]]: 是否执行初始化操作(whether to initialization).
 	 * [ rows [Array]]: 初始化数据, 具体格式请查看接口响应数据(initialization datas).
 	 * [ exec [Any]]: 数据变更，重新渲染的执行标识(reinitialized if the value of `exec` is changed, recommended use `this.$unique()`).
 	 * [ active [Number]]: 当前选中的推荐行, 从`1`开始(tab of currently selected, start from 1).
@@ -192,6 +192,8 @@
 	 * [ layout-data [Callback]]: 获取组件数据的回调(get componet's data if `reacquire` is changed).
 	 * [ template-data [Callback]]: 获取`常用模板`数据的回调(get common template data when select the single one).
 	 * [ filling [String | Boolean]]: 执行数据填充(filling block content if the value is changed).
+	 * [ increase [Boolean|Array|Object]]: 单个内容填充(filling data, see watcher `increase`).
+	 * [ decrease [Boolean|Array|Object]]: 移除指定内容(remove data, see watcher `decrease`).
 	 * [ config [Object]]: 其它配置选项, 具体见如下说明(other configuration, see the specific instructions below).
 	 *      ``` --------------------------------------------------------------------------------
 	 *      3.1. `config` 参数说明(parameters of called config):
@@ -217,7 +219,7 @@
 	 *          [ screen [Number]]: 屏幕尺寸(screen size).
 	 *          ``` ------------------------------------------------------------
 	 *      [ assembled [Boolean]]: 是否是组装的状态, 即是否存在`source`列表, 默认为`true`(whether there is a `source` list)
-	 *      [ title [Boolean]]: 是否显示`title`配置选项(whether to display the title configuration option)
+	 *      [ title [Boolean]]: 是否显示内容`title`配置选项(whether to display the title configuration option)
 	 *      [ template [Object]]: 常用布局模板配置(the configuaration of common templates):
 	 *          ``` ------------------------------------------------------------
 	 *          3.1.3. `template` 参数说明(parameters of called `template`):
@@ -311,8 +313,8 @@
 	 *
 	 *
 	 *  ( 注：对象结构的数据, 该组件将会自行解析成符合格式的数据 )
-	 *  ( note: the draggable component will automatically parse this data structure into eligible
-	 *  to `rows` and initialization ).
+	 *  ( note: the draggable component will automatically parse this data structure
+	 *  into eligible to `rows` and initialization ).
 	 *  使用 `object` 结构的 `rows` 数据, 只需赋值如下结构的数据, 组件将会自动解析该数据进行初始化操作.
 	 *  eg (Object).
 	 *  {
@@ -351,6 +353,12 @@
 	 */
     import Vue from 'vue';
     import Sortable from 'sortablejs';
+    import lazyLoad from 'vue-lazyload';
+    Vue.use(lazyLoad, {
+        error: require('static/images/error.png'),
+        loading: require('static/images/common.png'),
+        attempt: 1
+    });
     /** common instance */
     const bus = new Vue();
     /** common variables */
@@ -398,7 +406,8 @@
 		    block: {
 		        prefix: prefix.common + 'draggable-block',
 		        image: prefix.common + 'draggable-item-block-image',
-		        cover: prefix.common + 'draggable-item-block-image-cover'
+		        cover: prefix.common + 'draggable-item-block-image-cover',
+			    track: '.higher'
 		    },
 		    modal: {
 		        container: 'wi-common-layout-preview-modal',
@@ -413,6 +422,10 @@
 			    radio: prefix.common + 'radio',
 		        active: prefix.common + 'search-item-active'
 		    },
+		    icons: {
+		        forward: 'ivu-icon-ios-arrow-forward',
+			    back: 'ivu-icon-ios-arrow-back'
+		    },
 		    disabled: 'disabled',
 		    hidden: 'hidden'
 		},
@@ -426,7 +439,15 @@
 	        content: {
                 title: 'showTitle',
 		        sub: 'showSubTitle',
-		        pos: 'titlePosition'
+		        pos: 'titlePosition',
+		        back: {
+                    id: 'id',
+			        mid: 'recRowModuleId',
+			        rid: 'recRowId',
+			        module: 'recModuleId',
+			        pos: 'pos',
+			        type: 'type'
+		        }
 	        },
 	        space: {
                 left: 'leftMargin',
@@ -455,7 +476,7 @@
                 row: 'data-row',
 		        num: 'data-num',
 		        pos: 'data-pos',
-                index: 'data-index',
+		        src: 'data-src',
 		        type: 'data-type',
 		        width: 'data-width',
 		        height: 'data-height',
@@ -472,6 +493,7 @@
                 },
 		        poster: 'posterUrl',
 		        pos: 'recPositionId',
+		        type: 'recType',
 		        width: 'width',
 		        height: 'height'
 	        }
@@ -556,7 +578,6 @@
 	            bus.$emit(broadcast.init, vm.num);
 	        });
 	    },
-	    destoryed() {},
 	    template: `<Row :class="classes.drag.container" :id="prefix.row + num">
 	<Row :class="classes.drag.box + ' ' + classes.drag.target" :data-name="prefix.target + num">
 		<Row :class="classes.drag.prev" @click.native="handleComponentPrev">
@@ -616,6 +637,14 @@
             },
 	        filling: {
         	    type: [String, Boolean],
+		        default: false
+	        },
+	        increase: {
+        	    type: [Boolean, Array, Object],
+		        default: false
+	        },
+	        decrease: {
+        	    type: [Boolean, Array, Object],
 		        default: false
 	        }
         },
@@ -971,7 +1000,7 @@
 	        				/** commonly layout. */
 	        				for(let k = 0; k < items.length; k++){
 	        					const item = items[k],
-							        id = parseInt(item.getAttribute(mapping.attrs.index)),
+							        id = parseInt(item.getAttribute(mapping.attrs.id)),
 							        w = parseInt(item.getAttribute(mapping.attrs.width));
 	        					if(!isNaN(id) && id > 0) commonly.push(id);
 	        					if(!isNaN(w) && w > 0) width += Math.round(w * vm.setting.base.ratio);
@@ -983,7 +1012,7 @@
 	        				groups[mapping.row.list] = {};
 	        				for(let n = 0; n < items.length; n++){
 	        					const item = items[n],
-							        id = parseInt(item.getAttribute(mapping.attrs.index)),
+							        id = parseInt(item.getAttribute(mapping.attrs.id)),
 							        row = parseInt(item.getAttribute(mapping.attrs.row)),
 							        num = parseInt(item.getAttribute(mapping.attrs.num)),
 							        w = parseInt(item.getAttribute(mapping.attrs.width)),
@@ -1775,7 +1804,7 @@
 	            const vm = this,
 		            bodyHeight = document.body.offsetHeight,
 			        element = document.getElementsByClassName(classes.modal.content),
-			        modalHeight = element ? element[0].clientHeight : 0,
+			        modalHeight = element && element.length > 0 ? element[0].clientHeight : 0,
 			        contentHeight = bodyHeight - 380,
 			        maxHeight = bodyHeight - (modalHeight ? modalHeight : contentHeight) - 100;
                 vm.$set(vm.template, 'height', contentHeight > 100
@@ -1953,7 +1982,7 @@
 	        /**
 	         * init draggable (edit).
 	         * via `recommend-layout-id`.
-	         * @param rows {Array}
+	         * @param rows {*}
 	         * @see initDraggableBlock
 	         */
 	        initDraggable(rows) {
@@ -1971,7 +2000,7 @@
 	        			let data = item[mapping.row.blocks],
 					        rowId = item[mapping.row.id];
 	        			if(typeof item[mapping.content.title] !== 'undefined'){
-	        				rowId = item[mapping.row.group];
+	        				rowId = item[mapping.row.id];
 	        				const title = {
 	        					title: item[mapping.content.title].toString(),
 						        subTitle: item[mapping.content.sub].toString(),
@@ -2254,7 +2283,7 @@
 		                        const data = vm.drag.data[vm.drag.tabs.value],
 							        item = event.item;
 		                        if(data){
-	                                const id = item ? parseInt(item.getAttribute(mapping.attrs.index)) : 0;
+	                                const id = item ? parseInt(item.getAttribute(mapping.attrs.id)) : 0;
 	                                if(!isNaN(id) && id > 0){
 	                                    data.map((block, key) => {
 	                                        if(block.id === id){
@@ -2288,7 +2317,7 @@
 				        element = [];
 		        	let right = (vm.setting.base.block * vm.setting.base.ratio) + 'px',
 				        attrs = [
-				        	`${mapping.attrs.index}="${item.id}"`,
+				        	`${mapping.attrs.id}="${item.id}"`,
 					        `${mapping.attrs.num}="${item.number}"`,
 					        `${mapping.attrs.row}="${item.lid}"`,
 					        `${mapping.attrs.width}="${item.width}"`,
@@ -2335,7 +2364,7 @@
 		        			const initData = part.initData,
 						        carousel = [],
 						        len = initData.length,
-						        type = len > 0 ? initData[0]['recType'] : false;
+						        type = len > 0 ? initData[0][mapping.fields.type] : false;
 		        			if(type) attributes.push(`${mapping.attrs.type}="${type}"`);
 		        			params.push(attributes.join(' '));
 		        			/** style */
@@ -2354,15 +2383,15 @@
 		        				/** single image */
 		        				const single = initData[0];
 		        				let cover = single[mapping.fields.cover.one]
-							        ? `<img src="${single[mapping.fields.cover.one]}" class="${classes.block.cover}" />`
+							        ? `<img data-src="${single[mapping.fields.cover.one]}" class="${classes.block.cover}" />`
 							        : ``;
 		        				cover += single[mapping.fields.cover.two]
-							        ? `<img src="${single[mapping.fields.cover.two]}" class="${classes.block.cover}" />`
+							        ? `<img data-src="${single[mapping.fields.cover.two]}" class="${classes.block.cover}" />`
 							        : ``;
 		        				element.push(
 		        					`<Row ${string.params} style="${string.style}">`,
-							            `<Row class="${classes.drag.image}">`,
-							                `<img src="${single[mapping.fields.poster]}" class="${classes.block.image}" ${mapping.attrs.index}="${single[mapping.fields.id]}" />`,
+							            `<Row class="${classes.drag.image}" v-lazy-container="{selector: 'img'}">`,
+							                `<img data-src="${single[mapping.fields.poster]}" class="${classes.block.image}" ${mapping.attrs.id}="${single[mapping.fields.id]}" />`,
 							                cover,
 							            `</Row>`,
 							        `</Row>`
@@ -2378,7 +2407,7 @@
 								        : ``;
 		        					carousel.push(
 		        						`<CarouselItem>`,
-								            `<img src="${single[mapping.fields.poster]}" class="${classes.block.image}" ${mapping.attrs.index}="${single[mapping.fields.id]}" />`,
+								            `<img src="${single[mapping.fields.poster]}" class="${classes.block.image}" ${mapping.attrs.id}="${single[mapping.fields.id]}" />`,
 								            cover,
 								        `</CarouselItem>`
 							        );
@@ -2422,12 +2451,15 @@
 	        /**
              * handle block's click event.
              * @param event
+	         * @return {*}
 	         * @see setDraggableBlockShadow
 	         * @see getDraggableBlockShadowData
              */
 	        handleDraggableBlockClick(event) {
 	            const vm = this,
-		            elem = vm.hasClass(event.target, classes.drag.single) ? event.target : vm.parents(event.target, classes.drag.single, false);
+		            target = event.target;
+	            if(vm.hasClass(target, classes.icons.forward) || vm.hasClass(target, classes.icons.back)) return ;
+		        const elem = vm.hasClass(target, classes.drag.single) ? target : vm.parents(target, classes.drag.single, false);
 	            if(elem && !vm.hasClass(elem, classes.drag.active)){
 	                vm.removeComponentBlockActive();
 	                vm.addClass(elem, classes.drag.active);
@@ -2437,6 +2469,95 @@
 		            vm.$emit(broadcast.callback.click.ok, data);
 	            }
 	        },
+	        
+	        handleDraggableBlockIncrease() {
+	            const vm = this,
+		            name = classes.block.image,
+		            selector = classes.block.track + ' .' + name,
+		            template = [], list = [],
+		            poster = document.createElement('img'),
+		            elem = document.getElementById(vm.increase.id);
+	            if(elem){
+	                let elements = null,
+		                nodes = elem.querySelectorAll(selector),
+		                length = nodes.length;
+	                /** carousel or not. */
+	                if(length <= 0){
+	                    elements = elem.getElementsByClassName(name);
+	                    length = elements.length;
+	                }
+	                if(vm.increase.poster){
+	                    const attrs = [],
+		                    id = elem.getAttribute('id'),
+			                names = elem.getAttribute('class'),
+			                styles = elem.getAttribute('style'),
+		                    src = vm.formatUrl(vm.increase.poster);
+		                attrs.push(
+		                    `id="${id}"`,
+			                `${mapping.attrs.id}="${elem.getAttribute(mapping.attrs.id)}"`,
+			                `${mapping.attrs.mid}="${elem.getAttribute(mapping.attrs.mid)}"`,
+			                `${mapping.attrs.row}="${elem.getAttribute(mapping.attrs.row)}"`,
+			                `${mapping.attrs.pos}="${elem.getAttribute(mapping.attrs.pos)}"`,
+			                `${mapping.attrs.relate}="${elem.getAttribute(mapping.attrs.relate)}"`,
+			                `${mapping.attrs.key}="${elem.getAttribute(mapping.attrs.key)}"`,
+			                `${mapping.attrs.width}="${elem.getAttribute(mapping.attrs.width)}"`,
+			                `${mapping.attrs.height}="${elem.getAttribute(mapping.attrs.height)}"`,
+			                names ? `class="${names}"` : ``,
+			                styles ? `style="${styles}"` : ``
+		                );
+		                if(vm.click) attrs.push(`@click.native="click"`);
+	                    poster.src = src;
+	                    poster.className = name;
+	                    if(length > 0){
+	                        /** get exsiting images */
+	                        list.push({id: vm.increase.key, poster: src});
+	                        for(let i = 0; i < length; i++){
+	                            const image = nodes.length > 0 ? nodes[i] : elements[i];
+	                            list.push({
+		                            id: image.getAttribute(mapping.attrs.id),
+		                            poster: vm.formatUrl(image.getAttribute('src'))
+	                            });
+	                        }
+	                        /** assembly `carousel` template */
+	                        const setting = [
+	                            `:autoplay="${vm.setting.carousel.auto}"`,
+						        `:autoplay-speed="${vm.setting.carousel.speed}"`,
+						        `:radius-dot="${vm.setting.carousel.radiuDot}"`,
+						        `v-model="values['${id.replace(vm.prefix.common, '')}']" loop`
+					        ];
+	                        template.push(
+	                            `<Row ${attrs.join(' ')}>`,
+		                            `<Carousel ${setting.join(' ')}>`
+	                        );
+	                        list.forEach((item) => {
+	                            template.push(
+                                    `<CarouselItem>`,
+	                                    `<img src="${item.poster}" class="${name}" data-id="${item.id}" />`,
+	                                `</CarouselItem>`
+                                );
+	                        });
+	                        template.push(`</Carousel></Row>`);
+	                        elem.innerHTML = template.join('');
+	                    }else{
+	                        elem.innerHTML = '';
+	                        elem.appendChild(poster);
+	                    }
+	                }else{
+	                    vm.$error('图片回显失败，链接有误，请刷新后重试');
+	                    return false;
+	                }
+	                if(template.length > 0){
+	                    new Vue({
+		                    el: '#' + vm.increase.id,
+		                    data() {return {values: vm.drag.blocks.values};},
+		                    methods: {click(event) {vm.handleDraggableBlockClick(event);}},
+		                    render: Vue.compile(template.join('')).render
+	                    });
+	                }
+	            }
+	        },
+	        
+	        handleDraggableBlockDecrease() {},
 	        
 	        /**
              * get block' shadow data to callback.
@@ -2451,14 +2572,12 @@
 		                key = elem.getAttribute(mapping.attrs.key),
 		                pos = elem.getAttribute(mapping.attrs.pos),
 		                type = elem.getAttribute(mapping.attrs.type);
-		            data = {
-	                    id: key,
-	                    recRowId: row,
-	                    recModuleId: id,
-	                    recRowModuleId: mid,
-	                    pos: pos,
-	                    type: type
-	                };
+	                data[mapping.content.back.id] = key;
+	                data[mapping.content.back.rid] = row;
+	                data[mapping.content.back.module] = id;
+	                data[mapping.content.back.mid] = mid;
+	                data[mapping.content.back.pos] = pos;
+	                data[mapping.content.back.type] = type;
 	            }
 	            return data;
 	        },
@@ -2608,10 +2727,10 @@
 	        },
     
             /**
-             * 内容填充(filling datas).
-             * set `rows` data, the component will parse of it.
+             * 内容填充 - 初始化(filling datas - initialization).
+             * set `rows` data, the component will parse of it (see instructions).
              *  ```
-             *  structure (see instructions):
+             *  structure:
              *  {
              *      layout: {...},
              *      content: [...]
@@ -2664,6 +2783,41 @@
 	            vm.$nextTick(() => {
 	                if(vm.init) vm.initDraggable(rows);
 	            });
+	        },
+    
+            /**
+             * 内容填充 - 单个(filling data - single one).
+             * ```
+             * structure:
+             * {
+             *     id: 'current dom id',            // 当前所选的dom ID
+             *     cid: 'recommend content id',     // 推荐内容ID
+             *     poster: 'image / video url',     // 海报(底图)
+             *     cover: 'image / video url',      // 海报(叠图)
+             *     type: '1/2 (image / video)'      // 类型(图片/视频)
+             * }
+             * ```
+             * @see handleDraggableBlockIncrease
+             */
+	        increase: function() {
+	            const vm = this;
+	            if((typeof vm.increase).toUpperCase() === 'BOOLEAN' && vm.increase === false) return ;
+	            vm.handleDraggableBlockIncrease();
+	        },
+    
+            /**
+             * 移除内容(remove data).
+             *  ```
+             *  structure(Object|Array):
+             *      Object:
+             *
+             *      Array:
+             *  ```
+             */
+	        decrease: function() {
+	            const vm = this;
+	            if((typeof vm.decrease).toUpperCase() === 'BOOLEAN' && vm.decrease === false) return ;
+	            vm.handleDraggableBlockDecrease();
 	        }
         },
 	    created() {

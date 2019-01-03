@@ -885,17 +885,10 @@ exports.install = (Vue) => {
         const vm = this,
             reg = /^((ht|f)tps?):\/\//;
         let res = url;
-        if(vm.isEmpty(res)){
-            return '';
-        }else{
-            res = res.trim();
-            if(reg.test(res)){
-                return res;
-            }else{
-                res = process.env.FILE_SERVER + '/' + res;
-            }
-        }
-        return res;
+        if(vm.isEmpty(res)) return '';
+        res = res.trim();
+        if(reg.test(res)) return res;
+        else return process.env.FILE_SERVER + '/' + res.replace('/', '');
     };
     
     /**
