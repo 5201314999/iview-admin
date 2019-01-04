@@ -230,7 +230,7 @@
 	 *          3.1.4. `carousel` 参数说明(parameters of called `carousel`):
 	 *          [ auto [Boolean]]: 是否自动轮播(whether to automatically)
 	 *          [ speed [Number]]: 轮播切换的速度, 单位：毫秒(Carousel switching speed, unit: ms)
-	 *          [ radiuDot [Boolean]]: 切换按钮是否为圆形(whether the toggle button is round)
+	 *          [ radius [Boolean]]: 切换按钮是否为圆形(whether the toggle button is round)
 	 *          ``` ------------------------------------------------------------
 	 *      []
 	 *
@@ -260,7 +260,7 @@
 	 *          carousel: {
 	 *              auto: true,
 	 *              speed: 400,
-	 *              radiuDot: true
+	 *              radius: true
 	 *          }
 	 *      }
 	 *      ``` --------------------------------------------------------------------------------
@@ -382,6 +382,7 @@
 		        source: prefix.common + 'draggable-source',
 		        target: prefix.common + 'draggable-target',
 		        item: prefix.common + 'draggable-item',
+			    twinkling: prefix.common + 'draggable-item-twinkling',
 		        single: prefix.common + 'draggable-item-one',
 		        active: prefix.common + 'draggable-item-active',
 		        image: prefix.common + 'draggable-item-image',
@@ -407,7 +408,10 @@
 		        prefix: prefix.common + 'draggable-block',
 		        image: prefix.common + 'draggable-item-block-image',
 		        cover: prefix.common + 'draggable-item-block-image-cover',
-			    track: '.higher'
+			    carousel: {
+		            item: 'ivu-carousel-item',
+				    track: '.higher'
+			    }
 		    },
 		    modal: {
 		        container: 'wi-common-layout-preview-modal',
@@ -424,7 +428,8 @@
 		    },
 		    icons: {
 		        forward: 'ivu-icon-ios-arrow-forward',
-			    back: 'ivu-icon-ios-arrow-back'
+			    back: 'ivu-icon-ios-arrow-back',
+			    add: 'ios-add-circle-outline'
 		    },
 		    disabled: 'disabled',
 		    hidden: 'hidden'
@@ -675,7 +680,8 @@
 			        instance: {             // sortable instance object.
         				layout: {},
 				        source: {},
-				        target: {}
+				        target: {},
+				        block: {}
 			        },
 			        rows: {
         				id: prefix.common + vm.$unique(),   // row's id.
@@ -2075,14 +2081,19 @@
 	        						vm.drag.blocks.template.forEach((templet, t) => {
 	        							const ids = templet.id.split('-'),
 									        row = parseInt(ids[1]);
-	        							vm.drag.blocks.instance.push(new Vue({
+	        							if(vm.drag.blocks.instance[templet.id] && vm.drag.blocks.instance[templet.id]){
+	        							    vm.drag.blocks.instance[templet.id].destroy();
+	        							    vm.$set(vm.drag.blocks.values, templet.id, 0);
+								        }
+	        							vm.drag.blocks.instance[templet.id] = new Vue({
 									        el: '#' + templet.id,
 									        data() {return {values: vm.drag.blocks.values};},
 									        render: Vue.compile(templet.template).render,
 									        methods: {
-									            click(event) {vm.handleDraggableBlockClick(event);}
+									            click(event) {vm.handleDraggableBlockClick(event);},
+										        destroy() {this.$destroy();}
 									        }
-								        }));
+								        });
 	        							vm.initDraggableTarget(row);
 	        							if(t === length - 1) last = templet.id;
 							        });
@@ -2310,7 +2321,7 @@
 	        initDraggableBlock(data, id) {
 	        	const vm = this,
 			        templates = [],
-			        icon = '<icon type="ios-add-circle-outline"></icon>';
+			        icon = `<icon type="${classes.icons.add}"></icon>`;
 		        data.forEach((item) => {
 		        	const items = item.data,
 				        template = [],
@@ -2345,7 +2356,7 @@
 		        		/** whether can click or not. */
 		        		if(vm.init || vm.click){
 		        			/** attributes data */
-		        			const key = vm.prefix.common + id,
+		        			const key = prefix.common + id,
 						        attributes = [
 						        	`id="${key}"`,
 							        `${mapping.attrs.id}="${item.id}"`,
@@ -2412,12 +2423,7 @@
 								        `</CarouselItem>`
 							        );
 						        });
-		        				const setting = [
-		        					`:autoplay="${vm.setting.carousel.auto}"`,
-							        `:autoplay-speed="${vm.setting.carousel.speed}"`,
-							        `:radius-dot="${vm.setting.carousel.radiuDot}"`,
-							        `v-model="values['${id}']" loop`
-						        ];
+		        				const setting = vm.getDraggableBlockCarouselSetting(id);
 		        				element.push(
 		        					`<Row ${string.params} style="${string.style}">`,
 							            `<Carousel ${setting.join(' ')}>`,
@@ -2449,6 +2455,26 @@
 	        },
 	        
 	        /**
+	         * rerender block.
+	         * @param id {string} `block` id.
+	         * @param template {string} new template.
+	         */
+	        rerenderDraggableBlock(id, template) {
+	            const vm = this;
+	            if(vm.drag.instance.block && vm.drag.instance.block.$el) vm.drag.instance.block.destory();
+	            vm.$set(vm.drag.blocks.values, id.replace(prefix.common, ''), 0);
+                vm.drag.instance.block = new Vue({
+                    el: '#' + id,
+                    data() {return {values: vm.drag.blocks.values};},
+                    methods: {
+                        click(event) {vm.handleDraggableBlockClick(event);},
+	                    destory() {this.$destroy();}
+                    },
+                    render: Vue.compile(template).render
+                });
+	        },
+	        
+	        /**
              * handle block's click event.
              * @param event
 	         * @return {*}
@@ -2470,15 +2496,19 @@
 	            }
 	        },
 	        
+	        /**
+	         * filling data.
+	         * @see watcher `increase`.
+	         */
 	        handleDraggableBlockIncrease() {
 	            const vm = this,
 		            name = classes.block.image,
-		            selector = classes.block.track + ' .' + name,
+		            selector = classes.block.carousel.track + ' .' + name,
 		            template = [], list = [],
 		            poster = document.createElement('img'),
 		            elem = document.getElementById(vm.increase.id);
 	            if(elem){
-	                let elements = null,
+	                let elements = null, id = '',
 		                nodes = elem.querySelectorAll(selector),
 		                length = nodes.length;
 	                /** carousel or not. */
@@ -2486,78 +2516,183 @@
 	                    elements = elem.getElementsByClassName(name);
 	                    length = elements.length;
 	                }
+	                const attrs = [],
+		                names = elem.getAttribute('class'),
+		                styles = elem.getAttribute('style');
+	                id = elem.getAttribute('id');
+	                attrs.push(
+	                    `id="${id}"`,
+		                `${mapping.attrs.id}="${elem.getAttribute(mapping.attrs.id)}"`,
+		                `${mapping.attrs.mid}="${elem.getAttribute(mapping.attrs.mid)}"`,
+		                `${mapping.attrs.row}="${elem.getAttribute(mapping.attrs.row)}"`,
+		                `${mapping.attrs.pos}="${elem.getAttribute(mapping.attrs.pos)}"`,
+		                `${mapping.attrs.relate}="${elem.getAttribute(mapping.attrs.relate)}"`,
+		                `${mapping.attrs.key}="${elem.getAttribute(mapping.attrs.key)}"`,
+		                `${mapping.attrs.width}="${elem.getAttribute(mapping.attrs.width)}"`,
+		                `${mapping.attrs.height}="${elem.getAttribute(mapping.attrs.height)}"`,
+		                names ? `class="${names}"` : ``,
+		                styles ? `style="${styles}"` : ``
+	                );
+	                if(vm.click) attrs.push(`@click.native="click"`);
+	                if(length > 0){
+	                    /** get exsiting images */
+                        const items = nodes.length > 0 ? nodes : elements;
+                        for(let i = 0; i < length; i++){
+                            const image = items[i];
+                            list.push({
+	                            id: image.getAttribute(mapping.attrs.id),
+	                            poster: vm.formatUrl(image.getAttribute('src'))
+                            });
+                        }
+	                }
+	                /** single one */
 	                if(vm.increase.poster){
-	                    const attrs = [],
-		                    id = elem.getAttribute('id'),
-			                names = elem.getAttribute('class'),
-			                styles = elem.getAttribute('style'),
-		                    src = vm.formatUrl(vm.increase.poster);
-		                attrs.push(
-		                    `id="${id}"`,
-			                `${mapping.attrs.id}="${elem.getAttribute(mapping.attrs.id)}"`,
-			                `${mapping.attrs.mid}="${elem.getAttribute(mapping.attrs.mid)}"`,
-			                `${mapping.attrs.row}="${elem.getAttribute(mapping.attrs.row)}"`,
-			                `${mapping.attrs.pos}="${elem.getAttribute(mapping.attrs.pos)}"`,
-			                `${mapping.attrs.relate}="${elem.getAttribute(mapping.attrs.relate)}"`,
-			                `${mapping.attrs.key}="${elem.getAttribute(mapping.attrs.key)}"`,
-			                `${mapping.attrs.width}="${elem.getAttribute(mapping.attrs.width)}"`,
-			                `${mapping.attrs.height}="${elem.getAttribute(mapping.attrs.height)}"`,
-			                names ? `class="${names}"` : ``,
-			                styles ? `style="${styles}"` : ``
-		                );
-		                if(vm.click) attrs.push(`@click.native="click"`);
+	                    const src = vm.formatUrl(vm.increase.poster);
 	                    poster.src = src;
 	                    poster.className = name;
-	                    if(length > 0){
-	                        /** get exsiting images */
-	                        list.push({id: vm.increase.key, poster: src});
-	                        for(let i = 0; i < length; i++){
-	                            const image = nodes.length > 0 ? nodes[i] : elements[i];
-	                            list.push({
-		                            id: image.getAttribute(mapping.attrs.id),
-		                            poster: vm.formatUrl(image.getAttribute('src'))
-	                            });
-	                        }
-	                        /** assembly `carousel` template */
-	                        const setting = [
-	                            `:autoplay="${vm.setting.carousel.auto}"`,
-						        `:autoplay-speed="${vm.setting.carousel.speed}"`,
-						        `:radius-dot="${vm.setting.carousel.radiuDot}"`,
-						        `v-model="values['${id.replace(vm.prefix.common, '')}']" loop`
-					        ];
-	                        template.push(
-	                            `<Row ${attrs.join(' ')}>`,
-		                            `<Carousel ${setting.join(' ')}>`
-	                        );
-	                        list.forEach((item) => {
-	                            template.push(
-                                    `<CarouselItem>`,
-	                                    `<img src="${item.poster}" class="${name}" data-id="${item.id}" />`,
-	                                `</CarouselItem>`
-                                );
-	                        });
-	                        template.push(`</Carousel></Row>`);
-	                        elem.innerHTML = template.join('');
-	                    }else{
-	                        elem.innerHTML = '';
-	                        elem.appendChild(poster);
-	                    }
+	                    poster.setAttribute(mapping.attrs.id, vm.increase.cid);
+	                    list.push({id: vm.increase.cid, poster: src});
 	                }else{
-	                    vm.$error('图片回显失败，链接有误，请刷新后重试');
-	                    return false;
+	                    /** list(multiple) */
+	                    if(vm.increase.list && vm.increase.list.length > 0){
+	                        vm.increase.list.forEach((item) => {
+	                            const url = vm.formatUrl(item.poster);
+	                            poster.src = url;
+	                            poster.className = name;
+	                            poster.setAttribute(mapping.attrs.id, item.cid);
+	                            list.push({id: item.cid, poster: url});
+	                        });
+	                    }else{
+	                        vm.$error('图片回显失败，链接有误，请刷新后重试');
+	                        return false;
+	                    }
 	                }
-	                if(template.length > 0){
-	                    new Vue({
-		                    el: '#' + vm.increase.id,
-		                    data() {return {values: vm.drag.blocks.values};},
-		                    methods: {click(event) {vm.handleDraggableBlockClick(event);}},
-		                    render: Vue.compile(template.join('')).render
+                    if(list.length > 1){
+                        /** assembly `carousel` template */
+	                    const setting = vm.getDraggableBlockCarouselSetting(id);
+	                    template.push(
+	                        `<Row ${attrs.join(' ')}>`,
+	                            `<Carousel ${setting.join(' ')}>`
+	                    );
+	                    list.forEach((item) => {
+	                        template.push(
+	                            `<CarouselItem>`,
+	                                `<img src="${item.poster}" class="${name}" data-id="${item.id}" />`,
+	                            `</CarouselItem>`
+	                        );
 	                    });
-	                }
+	                    template.push(`</Carousel></Row>`);
+                        vm.rerenderDraggableBlock(vm.increase.id, template.join(''));
+                    }else{
+                        elem.innerHTML = '';
+	                    elem.appendChild(poster);
+                    }
 	            }
 	        },
-	        
-	        handleDraggableBlockDecrease() {},
+    
+            /**
+             * remove data.
+             * @see watcher `decrease`.
+             */
+	        handleDraggableBlockDecrease() {
+	            const vm = this, elements = [],
+		            name = classes.block.image,
+		            selector = `img[class="${name}"]`,
+		            icon = `<icon type="${classes.icons.add}"></icon>`;
+	            if(vm.decrease && vm.decrease.length > 0){
+	                vm.decrease.forEach((item) => {
+	                    elements.push(document.querySelector(selector + `[${mapping.attrs.id}="${item}"]`));
+	                });
+	                elements.forEach((elem, key) => {
+	                    const node = vm.parent(elem),
+		                    template = [];
+	                    let unique = null;
+	                    if(node && vm.hasClass(node, classes.drag.image)){
+	                        /** single */
+	                        const block = vm.parent(node);
+	                        node.remove();
+	                        if(block && vm.hasClass(block, classes.drag.single)){
+	                            template.push(icon);
+	                            unique = block.getAttribute('id');
+	                        }
+	                    }else if(node && vm.hasClass(node, classes.block.carousel.item)){
+	                        /** carousel */
+	                        const list = vm.parent(node),
+		                        block = vm.parents(list, classes.drag.single, false);
+	                        node.remove();
+		                    if(block && vm.hasClass(block, classes.drag.single)){
+		                        unique = block.getAttribute('id');
+			                    const images = list.querySelectorAll(selector),
+			                        length = images.length;
+		                        if(length > 1){
+		                            /** still carousel */
+		                            const items = [];
+		                            /** assembly `carousel` template */
+		                            for(let i = 0; i < length; i++){
+		                                const item = list[i],
+			                                src = item.getAttribute('src'),
+			                                cid = item.getAttribute(mapping.attrs.id);
+		                                items.push(
+		                                    `<CarouselItem>`,
+			                                    `<img src="${src}" class="${name}" ${mapping.attrs.id}="${cid}" />`,
+			                                `</CarouselItem>`
+		                                );
+		                            }
+		                            const setting = vm.getDraggableBlockCarouselSetting(unique);
+		                            template.push(
+		                                `<Carousel ${setting.join(' ')}>`,
+			                                items.join(''),
+		                                `<Carousel>`
+		                            );
+		                        }else{
+		                            /** single one */
+		                            const image = list[0],
+			                            id = image.getAttribute(mapping.attrs.id);
+		                            template.push(
+		                                `<Row class="">`,
+			                                `<img src="${image.getAttribute('src')}" class="${name}" ${mapping.attrs.id}="${id}" />`,
+			                            `</Row>`
+		                            );
+		                        }
+		                    }
+	                    }
+	                    if(unique){
+	                        /** copy element and rerender. */
+	                        const element = document.getElementById(unique),
+	                            height = parseInt(element.getAttribute(mapping.attrs.height)),
+	                            size = Math.round(height * vm.setting.base.ratio * vm.setting.base.ratio) + 'px';
+                            let temp = document.createElement('div');
+                            vm.addClass(element, classes.drag.twinkling);
+                            vm.removeClass(element, classes.drag.active);
+                            element.innerHTML = template.join('');
+                            element.style.fontSize = size;
+                            temp.appendChild(element.cloneNode(true));
+		                    let string = temp.innerHTML,
+			                    strings = string.split('>');
+                            if(vm.click && strings) strings[0] = strings[0] + ' @click.native="click"';
+                            string = strings.join('>').replace(/div/ig, 'Row');
+                            temp = null;
+                            vm.rerenderDraggableBlock(unique, string);
+                            /** select one to twinkling and switch tab */
+                            if(key === 0){
+                                vm.$nextTick(() => {
+                                    const selection = document.getElementById(unique);
+	                                if(selection){
+	                                    const list = selection ? vm.parents(selection, classes.drag.list, false) : null;
+	                                    if(list){
+		                                    const id = list.getAttribute('id');
+		                                    if(id) vm.$set(vm.drag.tabs, 'value', id);
+		                                }
+	                                    setTimeout(() => {
+	                                        vm.removeClass(selection, classes.drag.twinkling);
+	                                    }, 1600);
+	                                }
+                                });
+                            }
+	                    }
+	                });
+	            }
+	        },
 	        
 	        /**
              * get block' shadow data to callback.
@@ -2637,32 +2772,20 @@
 	            }
 	        },
 	        
-	        parseComponentConfiguration() {
-	        	const vm = this,
-			        config = vm.config,
-			        api = config && config.api ? config.api : {},
-			        template = config && config.template ? config.template : {},
-			        carousel = config && config.carousel ? config.carousel : {};
-	        	return {
-	        		api: {
-                        base: api.base ? vm.trim(api.base) : vm.G.api.draggable.base,
-				        list: api.list ? vm.trim(api.list) : vm.G.api.draggable.list,
-				        height: api.height ? vm.trim(api.height) : vm.G.api.draggable.height,
-				        template: api.template ? vm.trim(api.template) : vm.G.api.draggable.template,
-				        templates: api.templates ? vm.trim(api.templates) : vm.G.api.draggable.templates
-			        },
-			        base: {},
-			        assembled: typeof config.assembled !== 'undefined' ? config.assembled : true,
-			        template: {
-	        		    referenced: typeof template.referenced !== 'undefined' ? template.referenced : false
-			        },
-			        title: typeof config.title !== 'undefined' ? config.title : false,
-			        carousel: {
-	        			auto: typeof carousel.auto !== 'undefined' ? carousel.auto : true,
-				        speed: carousel.speed ? parseInt(carousel.speed) : 4000,
-				        radiuDot: typeof carousel.radiuDot !== 'undefined' ? carousel.radiuDot : true
-			        }
-		        };
+	        /**
+	         * carousel setting.
+	         * @param id {string} model
+	         * @return {Array}
+	         */
+	        getDraggableBlockCarouselSetting(id) {
+	            const vm = this;
+	            return [
+                    `:autoplay="${vm.setting.carousel.auto}"`,
+			        `:autoplay-speed="${vm.setting.carousel.speed}"`,
+			        `:radius-dot="${vm.setting.carousel.radius}"`,
+			        `v-model="values['${id.replace(prefix.common, '')}']"`,
+		            `loop`
+		        ];
 	        },
 	        
 	        /**
@@ -2691,6 +2814,38 @@
 	                }
 	            }
 	            vm.updateCommonLayoutModalHeight();
+	        },
+	        
+	        /**
+             * parse configuration.
+             * @returns {{template: {referenced: boolean}, api: {template: *, templates: *, list: *, base: *, height: *}, assembled: *, title: boolean, carousel: {auto: boolean, radius: boolean, speed: number}, base: {}}}
+             */
+		    parseComponentConfiguration() {
+	        	const vm = this,
+			        config = vm.config,
+			        api = config && config.api ? config.api : {},
+			        template = config && config.template ? config.template : {},
+			        carousel = config && config.carousel ? config.carousel : {};
+	        	return {
+	        		api: {
+                        base: api.base ? vm.trim(api.base) : vm.G.api.draggable.base,
+				        list: api.list ? vm.trim(api.list) : vm.G.api.draggable.list,
+				        height: api.height ? vm.trim(api.height) : vm.G.api.draggable.height,
+				        template: api.template ? vm.trim(api.template) : vm.G.api.draggable.template,
+				        templates: api.templates ? vm.trim(api.templates) : vm.G.api.draggable.templates
+			        },
+			        base: {},
+			        assembled: typeof config.assembled !== 'undefined' ? config.assembled : true,
+			        template: {
+	        		    referenced: typeof template.referenced !== 'undefined' ? template.referenced : false
+			        },
+			        title: typeof config.title !== 'undefined' ? config.title : false,
+			        carousel: {
+	        			auto: typeof carousel.auto !== 'undefined' ? carousel.auto : true,
+				        speed: carousel.speed ? parseInt(carousel.speed) : 4000,
+				        radius: typeof carousel.radius !== 'undefined' ? carousel.radius : true
+			        }
+		        };
 	        }
         },
         watch: {
@@ -2788,13 +2943,24 @@
             /**
              * 内容填充 - 单个(filling data - single one).
              * ```
-             * structure:
+             * structure (Object):
              * {
              *     id: 'current dom id',            // 当前所选的dom ID
              *     cid: 'recommend content id',     // 推荐内容ID
              *     poster: 'image / video url',     // 海报(底图)
              *     cover: 'image / video url',      // 海报(叠图)
              *     type: '1/2 (image / video)'      // 类型(图片/视频)
+             * }
+             *
+             * structure (Array):
+             * {
+             *     id: 'current dom id',
+             *     list: [{
+             *         cid: '',
+             *         poster: ''
+             *         // @see `Object` structure.
+             *         ...
+             *     }, {...}]
              * }
              * ```
              * @see handleDraggableBlockIncrease

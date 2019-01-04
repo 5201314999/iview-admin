@@ -11,18 +11,23 @@
 						:filling="filling"
 						:click="true"
 						v-on:click-call="handleClickEvent"
+						v-on:click-cancel="handleClickCancel"
 						:increase="increase"
 						:decrease="decrease"
 						v-on:template-data="getTemplateData"
 						v-on:layout-data="getLayoutData"
 						:config="{
-							title: true
+							title: true,
+							assembled: false
 						}">
 				</wi-draggable>
 			</Card>
 		</Row>
 		<Row class="wi-btn">
-			<Button type="primary" size="large" @click="save">保存</Button>
+			<Button type="primary" size="large" @click="addSingle" class="mr15">内容回显（单个）</Button>
+			<Button type="warning" size="large" @click="addMultiple" class="mr15">内容回显（多个）</Button>
+			<Button type="error" size="large" @click="removeSingle" class="mr15">内容删除（单个）</Button>
+			<Button type="primary" size="large" @click="removeMultiple">内容删除（多个）</Button>
 		</Row>
 	</Row>
 </template>
@@ -107,19 +112,136 @@
         	    const vm = this;
         	    vm.$set(vm, 'current', data);
 		    },
-		    save() {
-	            const vm = this,
+		    handleClickCancel() {
+        	    const vm = this;
+        	    vm.$set(vm, 'current', {});
+		    },
+		    addSingle() {
+        	    const vm = this,
 		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
 	            vm.$api.get(url, {}, (res) => {
 	                if(res['ret']['retCode'].toString() === '0'){
 	                    if(res.data.length > 0){
-	                        let data = res.data[0],
+	                        const random = Math.floor(Math.random() * 12);
+	                        let data = res.data[random],
 		                        result = {
 	                                id: vm.current.id,
 			                        cid: data['recContentId'],
 	                                poster: data['posterUrl'],
 			                        cover: data['imageUrl'],
 			                        type: data['recType']
+		                        };
+	                        vm.$set(vm, 'increase', result);
+	                    }
+	                }else{
+	                    vm.$error(res['ret']['retMsg']);
+	                    return false;
+	                }
+	            }, (err) => {
+	                vm.$error(err);
+	                return false;
+	            });
+		    },
+		    addMultiple() {
+        	    const vm = this,
+		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
+	            vm.$api.get(url, {}, (res) => {
+	                if(res['ret']['retCode'].toString() === '0'){
+	                    if(res.data.length > 0){
+	                        let datas = [], items = [];
+	                        for(let i = 0; i < 2; i++){
+	                            const random = Math.floor(Math.random() * 12);
+	                            datas.push(res.data[random]);
+	                        }
+	                        datas.forEach((data) => {
+	                            items.push({
+		                            cid: data['recContentId'],
+	                                poster: data['posterUrl'],
+			                        cover: data['imageUrl'],
+			                        type: data['recType']
+	                            });
+	                        });
+	                        const result = {
+	                            id: vm.current.id,
+		                        list: items
+	                        };
+	                        vm.$set(vm, 'increase', result);
+	                    }
+	                }else{
+	                    vm.$error(res['ret']['retMsg']);
+	                    return false;
+	                }
+	            }, (err) => {
+	                vm.$error(err);
+	                return false;
+	            });
+		    },
+		    removeSingle() {
+        	    const vm = this,
+		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
+	            vm.$api.get(url, {}, (res) => {
+	                if(res['ret']['retCode'].toString() === '0'){
+	                    if(res.data.length > 0){
+	                        const random = Math.floor(Math.random() * 12);
+	                        let data = res.data[random],
+		                        result = [data['recContentId']];
+	                        vm.$set(vm, 'decrease', result);
+	                    }
+	                }else{
+	                    vm.$error(res['ret']['retMsg']);
+	                    return false;
+	                }
+	            }, (err) => {
+	                vm.$error(err);
+	                return false;
+	            });
+		    },
+		    removeMultiple() {
+        	    const vm = this,
+		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
+	            vm.$api.get(url, {}, (res) => {
+	                if(res['ret']['retCode'].toString() === '0'){
+	                    if(res.data.length > 0){
+	                        let datas = [], result = [];
+	                        for(let i = 0; i < 2; i++){
+	                            const random = Math.floor(Math.random() * 12);
+	                            datas.push(res.data[random]);
+	                        }
+	                        datas.forEach((data) => {
+	                            result.push(data['recContentId']);
+	                        });
+	                        vm.$set(vm, 'decrease', result);
+	                    }
+	                }else{
+	                    vm.$error(res['ret']['retMsg']);
+	                    return false;
+	                }
+	            }, (err) => {
+	                vm.$error(err);
+	                return false;
+	            });
+		    },
+		    save() {
+	            const vm = this,
+		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
+	            vm.$api.get(url, {}, (res) => {
+	                if(res['ret']['retCode'].toString() === '0'){
+	                    if(res.data.length > 0){
+	                        const random = Math.floor(Math.random() * 12);
+	                        let data = res.data[random],
+		                        result = {
+	                                id: vm.current.id,
+			                        list: [{
+	                                    cid: data['recContentId'],
+		                                poster: data['posterUrl'],
+				                        cover: data['imageUrl'],
+				                        type: data['recType']
+			                        }, {
+	                                    cid: data['recContentId'],
+		                                poster: data['posterUrl'],
+				                        cover: data['imageUrl'],
+				                        type: data['recType']
+			                        }]
 		                        };
 	                        vm.$set(vm, 'increase', result);
 	                    }

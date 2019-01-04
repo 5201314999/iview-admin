@@ -155,6 +155,9 @@
                         }
                     }
                 }
+                .wi-draggable-item-twinkling{
+                    animation: twinkling 400ms ease-out infinite alternate;
+                }
             }
             .wi-draggable-screen-line,
             .wi-draggable-align-line{
@@ -243,7 +246,6 @@
     .wi-draggable-item-shadow{
         position: absolute;
         box-shadow: inset 0 0 6px 6px $theme;
-        z-index: 100;
         cursor: pointer;
         display: none;
         will-change: left;
@@ -458,5 +460,45 @@
 .wi-layout{
     > .wi-draggable-item{
         display: none;
+    }
+}
+@keyframes twinkling {
+    0% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 5px rgba(237, 64, 20, .2), inset 0 0 5px rgba(237, 64, 20, .1), 0 1px 0 #ED4014;
+    }
+    100% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 20px rgba(237, 64, 20, .6), inset 0 0 10px rgba(237, 64, 20, .4), 0 1px 0 #ED4014;
+    }
+}
+@-moz-keyframes twinkling {
+    0% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 5px rgba(237, 64, 20, .2), inset 0 0 5px rgba(237, 64, 20, .1), 0 1px 0 #ED4014;
+    }
+    100% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 20px rgba(237, 64, 20, .6), inset 0 0 10px rgba(237, 64, 20, .4), 0 1px 0 #ED4014;
+    }
+}
+@-o-keyframes twinkling {
+    0% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 5px rgba(237, 64, 20, .2), inset 0 0 5px rgba(237, 64, 20, .1), 0 1px 0 #ED4014;
+    }
+    100% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 20px rgba(237, 64, 20, .6), inset 0 0 10px rgba(237, 64, 20, .4), 0 1px 0 #ED4014;
+    }
+}
+@-khtml-keyframes twinkling {
+    0% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 5px rgba(237, 64, 20, .2), inset 0 0 5px rgba(237, 64, 20, .1), 0 1px 0 #ED4014;
+    }
+    100% {
+        border-color: #ED4014;
+        box-shadow: inset 0 0 20px rgba(237, 64, 20, .6), inset 0 0 10px rgba(237, 64, 20, .4), 0 1px 0 #ED4014;
     }
 }
