@@ -2,7 +2,7 @@
     <Row class="layout has-sider" :class="G.embed ? 'layout-embed' : ''">
         <layout>
             <wi-sider @username="setUsername" :collapse="collapse" :update="update" :project="project" :logo="logo" v-if="!G.embed"></wi-sider>
-            <layout>
+            <layout class="wi-layout">
                 <wi-header :username="username" @collapsed="setCollapsed" @update-logo="setLogo" v-if="!G.embed"></wi-header>
                 <wi-content></wi-content>
                 <wi-footer v-if="!G.embed"></wi-footer>

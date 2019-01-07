@@ -13,6 +13,9 @@ $textBorder: #DDDEE1;
         display: flex;
         align-items: center;
         justify-content: center;
+        .ivu-modal{
+            max-height: 90%;
+        }
     }
     .wi-modal-custom-content{
         form{
