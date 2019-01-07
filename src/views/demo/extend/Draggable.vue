@@ -1,34 +1,83 @@
 <template>
-	<Row>
-		<Row class="layout-draggable">
-			<Card>
-				<Row slot="title" class="wi-card-title"><icon type="ios-create-outline" /> Draggable</Row>
+	<Row class="layout-draggable">
+		<Card>
+			<Row slot="title" class="wi-card-title"><icon type="ios-create-outline" />
+				Draggable
+				<Select v-model="selection" :style="{width: '220px'}" @on-change="changeSelection" clearable>
+					<Option value="1">添加常用模板 ( 新建 )</Option>
+					<Option value="2">引用常用模板并初始化数据</Option>
+					<Option value="3">可点击组件块的相关操作</Option>
+				</Select>
+			</Row>
+			<!-- common -->
+			<Row v-if="selection === '1'">
+				<wi-draggable
+					:rows="rows"
+					:exec="exec"
+					:init="true"
+					:reset="reset"
+					:reacquire="reacquire"
+					v-on:layout-data="getLayoutData"
+					:config="{
+						title: false,
+						template: {is: true}
+					}">
+				</wi-draggable>
+				<Row class="wi-btn">
+					<Button type="primary" size="large" @click="saveOrUpdate" class="mr15">保存 / 更新</Button>
+				</Row>
+			</Row>
+			<!-- init -->
+			<Row v-if="selection === '2'">
 				<wi-draggable
 						:rows="rows"
-						:exec="exec"
-						:reacquire="reacquire"
 						:init="true"
 						:filling="filling"
-						:click="true"
-						v-on:click-call="handleClickEvent"
-						v-on:click-cancel="handleClickCancel"
-						:increase="increase"
-						:decrease="decrease"
-						v-on:template-data="getTemplateData"
+						:reset="reset"
+						:reacquire="reacquire"
 						v-on:layout-data="getLayoutData"
 						:config="{
 							title: true,
-							assembled: false
+							template: {referenced: true}
 						}">
 				</wi-draggable>
-			</Card>
-		</Row>
-		<Row class="wi-btn">
-			<Button type="primary" size="large" @click="addSingle" class="mr15">内容回显（单个）</Button>
-			<Button type="warning" size="large" @click="addMultiple" class="mr15">内容回显（多个）</Button>
-			<Button type="error" size="large" @click="removeSingle" class="mr15">内容删除（单个）</Button>
-			<Button type="primary" size="large" @click="removeMultiple">内容删除（多个）</Button>
-		</Row>
+				<Row class="wi-btn">
+					<Button type="primary" size="large" @click="saveOrUpdate" class="mr15">保存 / 更新</Button>
+				</Row>
+			</Row>
+			<!-- click -->
+			<Row v-if="selection === '3'">
+				<wi-draggable
+					:rows="rows"
+					:reacquire="reacquire"
+					:init="true"
+					:reset="reset"
+					:filling="filling"
+					:click="true"
+					v-on:click-call="handleClickEvent"
+					v-on:click-cancel="handleClickCancel"
+					v-on:switch-tab="handleClickCancel"
+					:increase="increase"
+					:decrease="decrease"
+					v-on:template-data="getTemplateData"
+					v-on:layout-data="getLayoutData"
+					:config="{
+						assembled: false,
+						template: {referenced: true}
+					}">
+				</wi-draggable>
+				<Row class="wi-btn">
+					<Button type="primary" size="large" @click="addSingle" class="mr15">内容回显（单个）</Button>
+					<Button type="warning" size="large" @click="addMultiple" class="mr15">内容回显（多个）</Button>
+					<Button type="error" size="large" @click="removeSingle" class="mr15">内容删除（单个）</Button>
+					<Button type="primary" size="large" @click="removeMultiple">内容删除（多个）</Button>
+				</Row>
+			</Row>
+			<!-- modal -->
+			<Modal v-model="modal" class-name="wi-modal-custom" title="待提交数据格式" width="650">
+				<pre class="padding20"><code v-html="components"></code></pre>
+			</Modal>
+		</Card>
 	</Row>
 </template>
 <script>
@@ -39,14 +88,17 @@
             const vm = this;
         	return {
         	    id: 288,
-        		rows: [],
+		        selection: '1',
+        	    rows: [],
 		        exec: false,
+		        reset: false,
 		        filling: false,
 		        increase: false,
 		        decrease: false,
 		        current: {},
 		        reacquire: vm.$unique(),
-		        components: {}
+		        components: {},
+		        modal: false
 	        };
 	    },
 	    methods: {
@@ -118,7 +170,7 @@
 		    },
 		    addSingle() {
         	    const vm = this,
-		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
+		            url = vm.parseUrl(vm.G.api.draggable.content, {id: 602});
 	            vm.$api.get(url, {}, (res) => {
 	                if(res['ret']['retCode'].toString() === '0'){
 	                    if(res.data.length > 0){
@@ -132,6 +184,8 @@
 			                        type: data['recType']
 		                        };
 	                        vm.$set(vm, 'increase', result);
+	                        vm.$set(vm, 'modal', true);
+	                        vm.$set(vm, 'components', result);
 	                    }
 	                }else{
 	                    vm.$error(res['ret']['retMsg']);
@@ -144,7 +198,7 @@
 		    },
 		    addMultiple() {
         	    const vm = this,
-		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
+		            url = vm.parseUrl(vm.G.api.draggable.content, {id: 601});
 	            vm.$api.get(url, {}, (res) => {
 	                if(res['ret']['retCode'].toString() === '0'){
 	                    if(res.data.length > 0){
@@ -166,6 +220,8 @@
 		                        list: items
 	                        };
 	                        vm.$set(vm, 'increase', result);
+	                        vm.$set(vm, 'modal', true);
+	                        vm.$set(vm, 'components', result);
 	                    }
 	                }else{
 	                    vm.$error(res['ret']['retMsg']);
@@ -221,44 +277,30 @@
 	                return false;
 	            });
 		    },
-		    save() {
-	            const vm = this,
-		            url = vm.parseUrl(vm.G.api.draggable.content, {id: vm.id});
-	            vm.$api.get(url, {}, (res) => {
-	                if(res['ret']['retCode'].toString() === '0'){
-	                    if(res.data.length > 0){
-	                        const random = Math.floor(Math.random() * 12);
-	                        let data = res.data[random],
-		                        result = {
-	                                id: vm.current.id,
-			                        list: [{
-	                                    cid: data['recContentId'],
-		                                poster: data['posterUrl'],
-				                        cover: data['imageUrl'],
-				                        type: data['recType']
-			                        }, {
-	                                    cid: data['recContentId'],
-		                                poster: data['posterUrl'],
-				                        cover: data['imageUrl'],
-				                        type: data['recType']
-			                        }]
-		                        };
-	                        vm.$set(vm, 'increase', result);
-	                    }
-	                }else{
-	                    vm.$error(res['ret']['retMsg']);
-	                    return false;
-	                }
-	            }, (err) => {
-	                vm.$error(err);
-	                return false;
-	            });
-	        }
+		    saveOrUpdate() {
+        	    const vm = this;
+        	    vm.$set(vm, 'reacquire', vm.$unique());
+        	    vm.$set(vm, 'modal', true);
+		    },
+		    changeSelection(value) {
+        	    const vm = this;
+        	    value = parseInt(value);
+        	    switch(value){
+		            case 1:
+		                vm.$set(vm, 'reset', vm.$unique());
+		                vm.getTemplate();
+		                break;
+		            case 2:
+		            case 3:
+		                vm.$set(vm, 'reset', vm.$unique());
+		                vm.getLayout();
+		                break;
+	            }
+		    }
 	    },
 	    mounted() {
         	const vm = this;
-        	//vm.getTemplate();
-        	vm.getLayout();
+        	vm.getTemplate();
 	    }
     };
     export default DraggableDemoComponent;

@@ -17,64 +17,64 @@
                         <icon type="plus-round" class="mr5"></icon>添加推荐行
                     </Button>
 				</Row>
-				<!-- modal -->
-				<Modal v-model="template.modal" :title="template.title" :transfer="true" :width="1132" :scrollable="true" :class-name="classes.modal.container + ' wi-modal-custom'" v-if="setting.template.referenced">
-					<!-- search & list -->
-					<Row class="wi-common-layout-search" ref="search">
-						<Row class="wi-search">
-							<Row class="wi-search-left">
-								<Input icon="ios-search" size="large" placeholder="搜索常用布局ID或常用布局标题" @keyup.native="searchCommonLayout" v-model="template.condition.queryParam" :style="{width: '350px'}" />
-							</Row>
-						</Row>
-						<Row class="wi-search-list">
-							<Row class="wi-common-layout-prev">
-								<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="switchCommonLayoutSearch" ref="left"></icon>
-							</Row>
-							<Row class="wi-search-content">
-								<ul class="wi-search-items clearfix" ref="template">
-									<li v-for="(li, k) in template.data" :key="k" v-html="li['layoutTitle']" @click="selectCommonLayout" :data-id="li['layoutId']" :title="li['layoutTitle']" :class="template.active === li['layoutId'] ? classes.template.active : ''"></li>
-								</ul>
-							</Row>
-							<Row class="wi-common-layout-next">
-								<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="right" v-on:click="switchCommonLayoutSearch" ref="right"></icon>
-							</Row>
+			</div>
+			<!-- common template modal -->
+			<Modal v-model="template.modal" :title="template.title" :transfer="true" :width="1132" :scrollable="true" :class-name="classes.modal.container + ' wi-modal-custom'" v-if="setting.template.referenced">
+				<!-- search & list -->
+				<Row class="wi-common-layout-search" ref="search">
+					<Row class="wi-search">
+						<Row class="wi-search-left">
+							<Input icon="ios-search" size="large" placeholder="搜索常用布局ID或常用布局标题" @keyup.native="searchCommonLayout" v-model="template.condition.queryParam" :style="{width: '350px'}" />
 						</Row>
 					</Row>
-					<!-- name -->
-					<Row class="wi-common-layout-name" v-html="template.name"></Row>
-					<!-- content -->
-					<Row class="wi-common-layout-container">
+					<Row class="wi-search-list">
 						<Row class="wi-common-layout-prev">
-							<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="switchCommonLayoutPreview" ref="prev"></icon>
+							<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="switchCommonLayoutSearch" ref="left"></icon>
 						</Row>
-						<Row class="wi-common-layout-content" ref="preview" :style="{padding: '0 ' + Math.round(setting.base.left * setting.base.ratio) + 'px', 'max-height': template.height + 'px'}">
-							<Row class="wi-common-layout-row" ref="row">
-								<Row v-for="(list, index) in template.list" :style="{'margin-top' : index > 0 ? Math.round(setting.base.row * setting.base.ratio) + 'px' : 0}" :key="index" class="wi-common-layout-list">
-									<Row v-for="(item, key) in list[mapping.row.blocks]" :style="{'margin-left': key > 0 ? Math.round(setting.base.block * setting.base.ratio) + 'px' : 0}" :key="key" class="wi-common-layout-item">
-										<Row class="wi-common-layout-block" v-for="(block, i) in item.blocks" :key="i" :style="{width: Math.round(block.width * setting.base.ratio) + 'px', height: Math.round(block.height * setting.base.ratio) + 'px', 'margin-top': (i > 0 ? setting.base.space * setting.base.ratio + 'px' : 0)}" v-html="block.width + ' * ' + block.height"></Row>
-									</Row>
+						<Row class="wi-search-content">
+							<ul class="wi-search-items clearfix" ref="template">
+								<li v-for="(li, k) in template.data" :key="k" v-html="li['layoutTitle']" @click="selectCommonLayout" :data-id="li['layoutId']" :title="li['layoutTitle']" :class="template.active === li['layoutId'] ? classes.template.active : ''"></li>
+							</ul>
+						</Row>
+						<Row class="wi-common-layout-next">
+							<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="right" v-on:click="switchCommonLayoutSearch" ref="right"></icon>
+						</Row>
+					</Row>
+				</Row>
+				<!-- name -->
+				<Row class="wi-common-layout-name" v-html="template.name"></Row>
+				<!-- content -->
+				<Row class="wi-common-layout-container">
+					<Row class="wi-common-layout-prev">
+						<icon type="ios-arrow-back" :class="classes.disabled" data-direct="left" v-on:click="switchCommonLayoutPreview" ref="prev"></icon>
+					</Row>
+					<Row class="wi-common-layout-content" ref="preview" :style="{padding: '0 ' + Math.round(setting.base.left * setting.base.ratio) + 'px', 'max-height': template.height + 'px'}">
+						<Row class="wi-common-layout-row" ref="row">
+							<Row v-for="(list, index) in template.list" :style="{'margin-top' : index > 0 ? Math.round(setting.base.row * setting.base.ratio) + 'px' : 0}" :key="index" class="wi-common-layout-list">
+								<Row v-for="(item, key) in list[mapping.row.blocks]" :style="{'margin-left': key > 0 ? Math.round(setting.base.block * setting.base.ratio) + 'px' : 0}" :key="key" class="wi-common-layout-item">
+									<Row class="wi-common-layout-block" v-for="(block, i) in item.blocks" :key="i" :style="{width: Math.round(block.width * setting.base.ratio) + 'px', height: Math.round(block.height * setting.base.ratio) + 'px', 'margin-top': (i > 0 ? setting.base.space * setting.base.ratio + 'px' : 0)}" v-html="block.width + ' * ' + block.height"></Row>
 								</Row>
 							</Row>
 						</Row>
-						<Row class="wi-common-layout-next">
-							<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="right" v-on:click="switchCommonLayoutPreview" ref="next"></icon>
-						</Row>
 					</Row>
-					<!-- button -->
-					<Row class="wi-common-layout-btn">
-						<Button type="primary" size="large" @click="setCommonLayout">确定</Button>
+					<Row class="wi-common-layout-next">
+						<icon type="ios-arrow-forward" :class="classes.disabled" data-direct="right" v-on:click="switchCommonLayoutPreview" ref="next"></icon>
 					</Row>
-					<Row slot="footer"></Row>
-				</Modal>
-			</div>
-			<!-- source -->
+				</Row>
+				<!-- button -->
+				<Row class="wi-common-layout-btn">
+					<Button type="primary" size="large" @click="setCommonLayout">确定</Button>
+				</Row>
+				<Row slot="footer"></Row>
+			</Modal>
+			<!-- source list -->
 			<Row :class="classes.drag.box" data-name="source">
 				<Row :class="classes.drag.prev + ' ' + classes.disabled" @click.native="handleComponentPrev">
 					<icon type="ios-arrow-back"></icon>
 				</Row>
 				<Row :class="classes.drag.content">
 					<Row :class="classes.drag.list" id="source" ref="source">
-						<Row :class="classes.drag.item" v-for="(item, index) in items" :key="prefix.common + item.id + '-' + $unique()" :data-index="item.id" :data-num="item.number" :data-width="item.width" :data-height="item.height" :style="{'margin-right': index === items.length - 1 ? '0' : (setting.base.block * setting.ratio) + 'px'}">
+						<Row :class="classes.drag.item" v-for="(item, index) in items" :key="prefix.common + item.id + '-' + $unique()" :data-id="item.id" :data-num="item.number" :data-width="item.width" :data-height="item.height" :style="{'margin-right': index === items.length - 1 ? '0' : (setting.base.block * setting.ratio) + 'px'}">
 							<Row v-for="(block, key) in item.data" :style="{width: block.width + 'px', height: block.height + 'px', 'margin-bottom': block.space + 'px'}" :key="item.id + '-' + key" :class="classes.drag.single" :data-width="block.source.width" :data-height="block.source.height">
 								{{ block.source.width }} * {{ block.source.height }}
 							</Row>
@@ -86,7 +86,7 @@
 				</Row>
 			</Row>
 		</Card>
-		<!-- target -->
+		<!-- target list -->
 		<Row class="wi-tabs wi-draggable-tabs" :class="setting.assembled ? 'mt20' : ''">
 			<Tabs name="recommend" :value="drag.tabs.value" v-model="drag.tabs.value" @on-click="switchComponentTab">
 				<TabPane label="第 1 行推荐" :name="name">
@@ -118,7 +118,7 @@
 			</Tabs>
 		</Row>
 		<!-- title content -->
-		<Row :class="classes.template.container">
+		<Row :class="classes.template.container" v-if="setting.title">
 			<Row :class="classes.template.title">内容标题样式</Row>
 			<Form :model="template.form.validate" :rules="template.form.rules" :class="'wi-form ' + classes.template.form">
 				<Row :class="classes.template.item">
@@ -223,6 +223,7 @@
 	 *      [ template [Object]]: 常用布局模板配置(the configuaration of common templates):
 	 *          ``` ------------------------------------------------------------
 	 *          3.1.3. `template` 参数说明(parameters of called `template`):
+	 *          [ is [Boolean]]: 是否为 [ 创建常用模板 ] (whether to created a new common template)
 	 *          [ referenced [Boolean]]: 是否引用常用模板(whether to reference common templates)
 	 *          ``` ------------------------------------------------------------
 	 *      [ carousel [Object]]: 轮播配置
@@ -255,6 +256,7 @@
 	 *          },
 	 *          assembled: true,
 	 *          template: {
+	 *              is: false,
 	 *              referenced: true
 	 *          },
 	 *          carousel: {
@@ -641,7 +643,7 @@
                 default: 0
             },
 	        filling: {
-        	    type: [String, Boolean],
+        	    type: [String, Boolean, Number],
 		        default: false
 	        },
 	        increase: {
@@ -650,6 +652,10 @@
 	        },
 	        decrease: {
         	    type: [Boolean, Array, Object],
+		        default: false
+	        },
+	        reset: {
+        	    type: [Boolean, String, Number],
 		        default: false
 	        }
         },
@@ -1002,7 +1008,7 @@
                                 params[mapping.content.sub] = '1';
 					        }
 				        }
-	        			if(vm.setting.template.referenced){
+	        			if(vm.setting.template.is){
 	        				/** commonly layout. */
 	        				for(let k = 0; k < items.length; k++){
 	        					const item = items[k],
@@ -1057,7 +1063,7 @@
 	        						row
 							        && !isNaN(row)
 							        && !params[mapping.row.group]
-							        && !vm.setting.template.referenced
+							        && !vm.setting.template.is
 						        ) params[mapping.row.group] = row;
 	        					params[mapping.module.list] = data;
 					        }
@@ -1072,7 +1078,7 @@
 				        }
 			        }
 		        }
-	        	return validate ? (vm.setting.template.referenced ? template : groups) : [];
+	        	return validate ? (vm.setting.template.is ? template : groups) : [];
 	        },
 	
 	        /**
@@ -1092,7 +1098,7 @@
 	        				vm.$set(vm, 'height', res.data);
 	        				if(
 	        					(!vm.click && !vm.init)
-						        || (vm.setting.template.referenced && !vm.init)
+						        || (vm.setting.template.is && !vm.init)
 						        || (vm.setting.create)
 						        || (vm.init && vm.rows && vm.rows.length <= 0)
 					        ){
@@ -1893,6 +1899,11 @@
 	        	vm.$set(vm.drag, 'elements', {});
 	        	vm.$set(vm.drag.rows, 'instance', {});
 	        	vm.$set(vm.drag.pages, 'target', {'target-1': 1});
+	        	vm.$set(vm.drag.rows, 'num', 2);
+	        	vm.$set(vm.drag.rows, 'key', 1);
+	        	vm.$set(vm.drag, 'tips', {'target-1': true});
+	        	vm.$set(vm.drag.blocks, 'template', []);
+	        	vm.$set(vm.drag.tabs, 'value', name);
 	        },
 	
 	        /**
@@ -2234,6 +2245,7 @@
 	        		    vm.updateComponentDraggableOffset();
 	        		    parent.scrollLeft = 0;
 			        };
+	        	if(!vm.drag.tabs.value) vm.$set(vm.drag.tabs, 'value', name);
 	        	vm.emitComponentDraggableData();
 	        	if(target){
 	        		if(vm.click || !vm.setting.assembled){
@@ -2595,7 +2607,10 @@
              * @see watcher `decrease`.
              */
 	        handleDraggableBlockDecrease() {
-	            const vm = this, elements = [],
+	            const vm = this, elements = [], ids = [],
+		            wrap = classes.drag.image,
+		            single = classes.drag.single,
+		            twinkling = classes.drag.twinkling,
 		            name = classes.block.image,
 		            selector = `img[class="${name}"]`,
 		            icon = `<icon type="${classes.icons.add}"></icon>`;
@@ -2604,24 +2619,26 @@
 	                    elements.push(document.querySelector(selector + `[${mapping.attrs.id}="${item}"]`));
 	                });
 	                elements.forEach((elem, key) => {
-	                    const node = vm.parent(elem),
+	                    const node = elem ? vm.parent(elem) : null,
 		                    template = [];
 	                    let unique = null;
-	                    if(node && vm.hasClass(node, classes.drag.image)){
+	                    if(node && vm.hasClass(node, wrap)){
 	                        /** single */
 	                        const block = vm.parent(node);
 	                        node.remove();
-	                        if(block && vm.hasClass(block, classes.drag.single)){
+	                        if(block && vm.hasClass(block, single)){
 	                            template.push(icon);
 	                            unique = block.getAttribute('id');
+	                            ids.push(unique);
 	                        }
 	                    }else if(node && vm.hasClass(node, classes.block.carousel.item)){
 	                        /** carousel */
 	                        const list = vm.parent(node),
-		                        block = vm.parents(list, classes.drag.single, false);
+		                        block = vm.parents(list, single, false);
 	                        node.remove();
-		                    if(block && vm.hasClass(block, classes.drag.single)){
+		                    if(block && vm.hasClass(block, single)){
 		                        unique = block.getAttribute('id');
+		                        ids.push(unique);
 			                    const images = list.querySelectorAll(selector),
 			                        length = images.length;
 		                        if(length > 1){
@@ -2629,7 +2646,7 @@
 		                            const items = [];
 		                            /** assembly `carousel` template */
 		                            for(let i = 0; i < length; i++){
-		                                const item = list[i],
+		                                const item = images[i],
 			                                src = item.getAttribute('src'),
 			                                cid = item.getAttribute(mapping.attrs.id);
 		                                items.push(
@@ -2646,10 +2663,10 @@
 		                            );
 		                        }else{
 		                            /** single one */
-		                            const image = list[0],
+		                            const image = images[0],
 			                            id = image.getAttribute(mapping.attrs.id);
 		                            template.push(
-		                                `<Row class="">`,
+		                                `<Row class="${wrap}">`,
 			                                `<img src="${image.getAttribute('src')}" class="${name}" ${mapping.attrs.id}="${id}" />`,
 			                            `</Row>`
 		                            );
@@ -2658,39 +2675,49 @@
 	                    }
 	                    if(unique){
 	                        /** copy element and rerender. */
-	                        const element = document.getElementById(unique),
-	                            height = parseInt(element.getAttribute(mapping.attrs.height)),
-	                            size = Math.round(height * vm.setting.base.ratio * vm.setting.base.ratio) + 'px';
-                            let temp = document.createElement('div');
-                            vm.addClass(element, classes.drag.twinkling);
-                            vm.removeClass(element, classes.drag.active);
-                            element.innerHTML = template.join('');
-                            element.style.fontSize = size;
-                            temp.appendChild(element.cloneNode(true));
-		                    let string = temp.innerHTML,
-			                    strings = string.split('>');
-                            if(vm.click && strings) strings[0] = strings[0] + ' @click.native="click"';
-                            string = strings.join('>').replace(/div/ig, 'Row');
-                            temp = null;
-                            vm.rerenderDraggableBlock(unique, string);
-                            /** select one to twinkling and switch tab */
-                            if(key === 0){
-                                vm.$nextTick(() => {
-                                    const selection = document.getElementById(unique);
-	                                if(selection){
-	                                    const list = selection ? vm.parents(selection, classes.drag.list, false) : null;
-	                                    if(list){
-		                                    const id = list.getAttribute('id');
-		                                    if(id) vm.$set(vm.drag.tabs, 'value', id);
+	                        const element = document.getElementById(unique);
+	                        if(element){
+	                            const height = parseInt(element.getAttribute(mapping.attrs.height)),
+		                            size = Math.round(height * vm.setting.base.ratio * vm.setting.base.ratio) + 'px';
+	                            let temp = document.createElement('div');
+	                            vm.addClass(element, twinkling);
+	                            vm.removeClass(element, classes.drag.active);
+	                            element.innerHTML = template.join('');
+	                            element.style.fontSize = size;
+	                            temp.appendChild(element.cloneNode(true));
+			                    let string = temp.innerHTML,
+				                    strings = string.split('>');
+	                            if(vm.click && strings) strings[0] = strings[0] + ' @click.native="click"';
+	                            string = strings.join('>').replace(/div/ig, 'Row');
+	                            string = string.replace(/carouselitem/ig, 'CarouselItem');
+	                            temp = null;
+	                            vm.rerenderDraggableBlock(unique, string);
+	                            /** select one to twinkling and switch tab */
+	                            if(key === 0){
+	                                vm.$nextTick(() => {
+	                                    const selection = document.getElementById(unique);
+		                                if(selection){
+		                                    const list = selection ? vm.parents(selection, classes.drag.list, false) : null;
+		                                    if(list){
+			                                    const id = list.getAttribute('id');
+			                                    if(id) vm.$set(vm.drag.tabs, 'value', id);
+			                                }
 		                                }
-	                                    setTimeout(() => {
-	                                        vm.removeClass(selection, classes.drag.twinkling);
-	                                    }, 1600);
-	                                }
-                                });
-                            }
+	                                });
+	                            }
+	                        }
 	                    }
 	                });
+	                if(ids.length > 0){
+	                    vm.$nextTick(() => {
+	                        ids.forEach((id) => {
+	                            setTimeout(() => {
+	                                const el = document.getElementById(id);
+	                                if(el) vm.removeClass(el, twinkling);
+	                            }, 1600);
+		                    });
+	                    });
+	                }
 	            }
 	        },
 	        
@@ -2798,12 +2825,12 @@
 		            id = vm.drag.tabs.value,
 		            list = document.getElementById(id),
 		            page = vm.drag.pages.target[id],
-		            content = list.parentNode,
-		            container = content.parentNode,
+		            content = list ? list.parentNode : null,
+		            container = content ? content.parentNode : null,
 		            width = vm.drag.rows.width,
 		            number = vm.getComponentPages(container);
-	            let temp = content.clientWidth;
-	            if(temp !== width){
+	            let temp = content ? content.clientWidth : 0;
+	            if(temp > 0 && temp !== width){
 	                vm.$set(vm.drag.rows, 'width', temp);
 	                if(page > 1) list.style.marginLeft = - Math.round(temp * page) + 'px';
 	                if(number > 1){
@@ -2813,7 +2840,7 @@
 	                    list.style.marginLeft = '0';
 	                }
 	            }
-	            vm.updateCommonLayoutModalHeight();
+	            if(temp > 0) vm.updateCommonLayoutModalHeight();
 	        },
 	        
 	        /**
@@ -2822,7 +2849,7 @@
              */
 		    parseComponentConfiguration() {
 	        	const vm = this,
-			        config = vm.config,
+			        config = vm.config || {},
 			        api = config && config.api ? config.api : {},
 			        template = config && config.template ? config.template : {},
 			        carousel = config && config.carousel ? config.carousel : {};
@@ -2834,9 +2861,10 @@
 				        template: api.template ? vm.trim(api.template) : vm.G.api.draggable.template,
 				        templates: api.templates ? vm.trim(api.templates) : vm.G.api.draggable.templates
 			        },
-			        base: {},
+			        base: base,
 			        assembled: typeof config.assembled !== 'undefined' ? config.assembled : true,
 			        template: {
+	        		    is: typeof template.is !== 'undefined' ? template.is : false,
 	        		    referenced: typeof template.referenced !== 'undefined' ? template.referenced : false
 			        },
 			        title: typeof config.title !== 'undefined' ? config.title : false,
@@ -2880,6 +2908,20 @@
 		            data = vm.wrapComponentData();
         	    vm.$emit(broadcast.callback.layout, data);
 	        },
+	        
+	        /**
+	         * 重置拖拽相关数据(reset draggable).
+	         * if multiple at the same page, can assign this variable to `reset` datas.
+	         */
+	        reset: function() {
+	            const vm = this;
+	            if((typeof vm.reset).toUpperCase() === 'BOOLEAN' && vm.reset === false) return ;
+	            const basic = JSON.parse(JSON.stringify(vm.setting.base)),
+		            setting = vm.parseComponentConfiguration();
+	            vm.$set(vm, 'setting', setting);
+	            vm.$set(vm.setting, 'base', basic);
+	            vm.resetDraggable();
+	        },
     
             /**
              * 内容填充 - 初始化(filling datas - initialization).
@@ -2895,8 +2937,8 @@
 	        filling: function() {
 	            const vm = this;
 	            if((typeof vm.filling).toUpperCase() === 'BOOLEAN' && vm.filling === false) return ;
-		        const layout = vm.rows.layout,
-		            content = vm.rows.content;
+		        const layout = vm.rows.layout || {},
+		            content = vm.rows.content || [];
 	            let list = {};
 	            for(let i = 0; i < content.length; i++){
 	                content[i][mapping.fields.poster] = vm.formatUrl(content[i][mapping.fields.poster]);
@@ -2974,10 +3016,8 @@
             /**
              * 移除内容(remove data).
              *  ```
-             *  structure(Object|Array):
-             *      Object:
-             *
-             *      Array:
+             *  structure(Array):
+             *  [288, 622, ...]
              *  ```
              */
 	        decrease: function() {

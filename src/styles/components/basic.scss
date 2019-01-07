@@ -202,8 +202,20 @@
             font-size: 14px;
             color: $title;
             i.ivu-icon{
-                font-size: 20px;
-                margin-right: 10px;
+                &.ivu-icon-ios-create-outline{
+                    font-size: 20px;
+                    margin-right: 10px;
+                }
+            }
+            .ivu-select{
+                margin-left: 16px;
+                .ivu-select-placeholder,
+                .ivu-select-selected-value,
+                .ivu-select-loading,
+                .ivu-select-not-found,
+                .ivu-select-dropdown-list li{
+                    font-size: 14px !important;
+                }
             }
         }
     }
