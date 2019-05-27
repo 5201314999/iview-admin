@@ -113,7 +113,6 @@ export default {
 @media only screen and (min-width: 1000px) {
   .logo {
     padding-top:80px;
-    &>img{}
   }
 }
 </style>
