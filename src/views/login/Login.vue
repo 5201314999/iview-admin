@@ -30,6 +30,7 @@
             type="submit"
             class="btn-submit"
             value="登录"
+            @click.prevent="login"
           >
 
           <div class="function">
@@ -128,6 +129,11 @@ export default {
       },
       retina_detect: true
     });
+  },
+  methods: {
+    login() {
+        this.$router.push({name:'首页'})
+    }
   }
 };
 </script>
