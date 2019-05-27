@@ -47,89 +47,258 @@ let id = {
 let menu = {
     items: [
         {
-            title: '基础组件',
-            name: 'basic',
-            icon: 'md-list',
-            children: [
-                {
-                    title: 'Form 表单',
-                    icon: 'ios-create-outline',
-                    name: 'input',
-                    path: '/basic/form'
-                },
-                {
-                    title: 'Table 表格',
-                    icon: 'ios-grid',
-                    name: 'table',
-                    path: '/basic/table'
-                },
-                {
-                    title: 'Cascader 级联选择',
-                    icon: 'ios-more-outline',
-                    name: 'cascader',
-                    path: '/basic/cascader'
-                },
-                {
-                    title: 'DatePicker 日期选择',
-                    icon: 'ios-calendar-outline',
-                    name: 'date',
-                    path: '/basic/date'
-                },
-                {
-                    title: 'TimePicker 时间选择',
-                    icon: 'ios-clock-outline',
-                    name: 'time',
-                    path: '/basic/time'
-                }
-            ]
-        },
-        {
-            title: '扩展组件',
-            name: 'extend',
-            icon: 'ios-alert-outline',
-            children: [
-                {
-                    title: 'Upload 上传',
-                    icon: 'ios-cloud-upload-outline',
-                    name: 'upload',
-                    path: '/extend/upload'
-                },
-                {
-                    title: 'Draggable 拖拽',
-                    icon: 'ios-browsers-outline',
-                    name: 'draggable',
-                    path: '/extend/draggable'
-                },
-                {
-                    title: 'transfer 穿梭框',
-                    icon: 'ios-swap',
-                    name: 'transfer',
-                    path: '/extend/transfer'
-                }
-            ]
-        },
-        {
-            title: '日志',
-            name: 'logs',
+            title: '策略广场',
+            name: 'strategySquare',
             icon: 'ios-list-box-outline',
             children: [
                 {
-                    title: '登录日志',
+                    title: 'alpha策略',
                     icon: 'ios-log-in',
-                    name: 'login',
-                    path: '/logs/login'
+                    name: 'alpha',
+                    path: '/strategySquare/alpha'
                 },
                 {
-                    title: '操作日志',
+                    title: '股票多头',
                     icon: 'ios-checkmark-circle-outline',
-                    name: 'operation',
-                    path: '/logs/operation'
+                    name: 'longStocks',
+                    path: '/strategySquare/longStocks'
+                }, {
+                    title: '股票多空',
+                    icon: 'ios-log-in',
+                    name: 'shortStocks',
+                    path: '/strategySquare/shortStocks'
+                },
+                {
+                    title: '期货CTA',
+                    icon: 'ios-checkmark-circle-outline',
+                    name: 'cta',
+                    path: '/strategySquare/cta'
+                }, {
+                    title: '期权',
+                    icon: 'ios-log-in',
+                    name: 'option',
+                    path: '/strategySquare/option'
+                },
+                {
+                    title: '事件驱动',
+                    icon: 'ios-checkmark-circle-outline',
+                    name: 'eventDriven',
+                    path: '/strategySquare/eventDriven'
+                }, {
+                    title: '其它',
+                    icon: 'ios-log-in',
+                    name: 'other',
+                    path: '/strategySquare/other'
+                }
+            ]
+        },
+        {
+            title: '策略研究',
+            name: 'strategyResearch',
+            icon: 'ios-list-box-outline',
+            children: [
+                {
+                    title: '策略环境',
+                    icon: 'ios-log-in',
+                    name: 'strategyEnv',
+                    path: '/strategyResearch/strategyEnv'
+                },
+                {
+                    title: '策略列表',
+                    icon: 'ios-checkmark-circle-outline',
+                    name: 'strategyList',
+                    path: '/strategyResearch/strategyList'
+                }, {
+                    title: '单因子分析',
+                    icon: 'ios-log-in',
+                    name: 'singleFactor',
+                    path: '/strategyResearch/singleFactor'
+                },
+                {
+                    title: '我的因子',
+                    icon: 'ios-log-in',
+                    name: 'myFactor',
+                    path: '/strategyResearch/myFactor'
+                },
+                {
+                    title: ' 财务分析',
+                    icon: 'ios-log-in',
+                    name: 'financialAnalysis',
+                    path: '/strategyResearch/financialAnalysis'
+                },
+                {
+                    title: '事件驱动',
+                    icon: 'ios-checkmark-circle-outline',
+                    name: 'eventDrivenResearch',
+                    path: '/strategyResearch/eventDrivenResearch'
+                }
+            ]
+        },
+        {
+            title: '因子库',
+            name: 'factorLibrary',
+            icon: 'ios-list-box-outline',
+            children: [
+                {
+                    title: '财务因子',
+                    icon: 'ios-log-in',
+                    name: 'financialFactor',
+                    path: '/factorLibrary/financialFactor'
+                },
+                {
+                    title: '技术因子',
+                    icon: 'ios-log-in',
+                    name: 'technologyFactor',
+                    path: '/factorLibrary/technologyFactor'
+                },
+                {
+                    title: '情绪因子',
+                    icon: 'ios-log-in',
+                    name: 'emotionFactor',
+                    path: '/factorLibrary/emotionFactor'
+                },
+                {
+                    title: '自定义因子',
+                    icon: 'ios-log-in',
+                    name: 'customFactor',
+                    path: '/factorLibrary/customFactor'
+                }
+            ]
+        },
+        {
+            title: '模拟交易',
+            name: 'paperTrading',
+            icon: 'ios-list-box-outline',
+            children: [
+                {
+                    title: '策略跟踪',
+                    icon: 'ios-log-in',
+                    name: 'policyTracking',
+                    path: '/paperTrading/policyTracking'
+                },
+                {
+                    title: '账户设置',
+                    icon: 'ios-log-in',
+                    name: 'accountSetting',
+                    path: '/paperTrading/accountSetting'
+                },
+                {
+                    title: '交易设置',
+                    icon: 'ios-log-in',
+                    name: 'trandSetting',
+                    path: '/paperTrading/trandSetting'
+                }
+            ]
+        },
+        {
+            title: '多维数据',
+            name: 'multidimensionalData',
+            icon: 'ios-list-box-outline',
+            children: [
+                {
+                    title: '股票',
+                    icon: 'ios-log-in',
+                    name: 'stock',
+                    path: '/multidimensionalData/stock'
+                },
+                {
+                    title: '期货',
+                    icon: 'ios-log-in',
+                    name: 'futures',
+                    path: '/multidimensionalData/futures'
+                },
+                {
+                    title: '期权',
+                    icon: 'ios-log-in',
+                    name: 'option',
+                    path: '/multidimensionalData/option'
+                },
+                {
+                    title: '基金',
+                    icon: 'ios-log-in',
+                    name: 'fund',
+                    path: '/multidimensionalData/fund'
+                },
+                {
+                    title: '债券',
+                    icon: 'ios-log-in',
+                    name: 'bond',
+                    path: '/multidimensionalData/bond'
+                },
+                {
+                    title: '其它',
+                    icon: 'ios-log-in',
+                    name: 'otherData',
+                    path: '/multidimensionalData/otherData'
+                }
+            ]
+        },
+        {
+            title: '帮助文档',
+            name: 'docs',
+            icon: 'ios-list-box-outline',
+            children: [
+                {
+                    title: '新手指引',
+                    icon: 'ios-log-in',
+                    name: 'guide',
+                    path: '/docs/guide'
+                },
+                {
+                    title: '常见问题',
+                    icon: 'ios-log-in',
+                    name: 'problem',
+                    path: '/docs/problem'
+                },
+                {
+                    title: 'API文档',
+                    icon: 'ios-log-in',
+                    name: 'apidoc',
+                    path: '/docs/apidoc'
+                },
+                {
+                    title: '函数',
+                    icon: 'ios-log-in',
+                    name: 'function',
+                    path: '/docs/function'
+                },
+                {
+                    title: '因子说明',
+                    icon: 'ios-log-in',
+                    name: 'factorExplain',
+                    path: '/docs/factorExplain'
+                },
+            ]
+        },
+        {
+            title: '设置',
+            name: 'setting',
+            icon: 'ios-list-box-outline',
+            children: [
+                {
+                    title: '账户设置',
+                    icon: 'ios-log-in',
+                    name: 'account',
+                    path: '/setting/account'
+                },
+                {
+                    title: '密码设置',
+                    icon: 'ios-log-in',
+                    name: 'password',
+                    path: '/setting/password'
+                },
+                {
+                    title: '账户管理',
+                    icon: 'ios-log-in',
+                    name: 'accountManage',
+                    path: '/setting/accountManage'
                 }
             ]
         }
+
     ],
-    active: 'form',
-    open: ['basic'],
+    active: 'alpha',
+    open: ['strategySquare'],
     collapsed: false
 };
 /**

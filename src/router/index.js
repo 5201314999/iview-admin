@@ -1,18 +1,27 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '@/views/Home';
-import LogRouter from '@/router/logs';
-import Login from '@/views/login/Login.vue'
+import Login from '@/views/login/Login.vue';
 
-import DemoBasicRouter from '@/router/demo/basic';
-import DemoExtendRouter from '@/router/demo/extend';
+import strategySquare from './strategySquare.js';
+import strategyResearch from './strategyResearch.js';
+import factorLibrary from './factorLibrary.js';
+import paperTrading from './paperTrading.js';
+import multidimensionalData from './multidimensionalData.js';
+import docs from './docs.js';
+import setting from './setting.js';
+
 
 Vue.use(VueRouter);
 
 const childrenRouter = [
-    LogRouter,
-    DemoBasicRouter,
-    DemoExtendRouter
+    strategySquare,
+    strategyResearch,
+    factorLibrary,
+    paperTrading,
+    multidimensionalData,
+    docs,
+    setting
 ];
 
 const router = new VueRouter({
@@ -22,7 +31,7 @@ const router = new VueRouter({
             path: '/main',
             name: '首页',
             component: Home,
-            redirect: '/main/basic/form',
+            redirect: '/strategySquare',
             children: [...childrenRouter]
         },
         {

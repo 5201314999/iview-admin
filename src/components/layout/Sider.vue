@@ -208,11 +208,12 @@
             },
             '$route': function() {
                 const vm = this;
-                if(!vm.G.debug){
-                    vm.$set(vm, 'path', vm.$route.path);
-                    vm.$set(vm.menu, 'open', []);
-                    vm.parseMenu(vm.menus);
-                }else vm.setMenuActive();
+                // if(!vm.G.debug){
+                //     vm.$set(vm, 'path', vm.$route.path);
+                //     vm.$set(vm.menu, 'open', []);
+                //     vm.parseMenu(vm.menus);
+                // }else vm.setMenuActive();
+                vm.setMenuActive();
                 vm.updateMenuActive();
                 vm.backToTop();
             }
@@ -228,9 +229,9 @@
             const vm = this;
             // vm.getUser();
             // if(vm.G.debug){
-            //     vm.getMenuName();
-            //     vm.setMenuActive();
-            //     vm.updateMenuActive();
+                vm.getMenuName();
+                vm.setMenuActive();
+                vm.updateMenuActive();
             // }else{
             //     vm.$on('get-user-success', (data) => {
             //         vm.$set(vm.G, 'user', data);
