@@ -7,6 +7,7 @@
 
 const Main= () => import('@/views//Main');
 const Container= () => import('@/views/Container');
+const StrategyEnv= () => import('@/views/strategyResearch/strategyEnv/StrategyEnv');
 
 const Todo= ()=> import('@/views/Todo');
 
@@ -30,7 +31,7 @@ export default {
         children: [
           {
             path: '/',
-            component: Todo
+            component: StrategyEnv
           }
         ]
       },
