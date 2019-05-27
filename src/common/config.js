@@ -20,7 +20,9 @@ const title = '黄鹄科技策略量化平台';
  * user information( 初始化后覆盖 )
  * @type {{}}
  */
-let user = {};
+let user = {
+    name: '罗杰'
+};
 /**
  * site logo
  * @type {null}
@@ -316,7 +318,7 @@ const api = {
         list: '/module-manager/module/height/{height}/module-list',
         height: '/module-manager/module/height-list',
         template: '/layout-manager/layout/{id}',
-	    templates: '/layout-manager/layouts',
+        templates: '/layout-manager/layouts',
         layout: '/rec-group-manager/rec-group/{id}/layout',
         content: '/rec-group-manager/rec-group/{id}/rec-content-list'
     }
@@ -330,7 +332,7 @@ const files = {
         upload: process.env.UPLOAD_SERVER,
         download: process.env.FILE_SERVER
     },
-    accept: {images: 'image/gif, image/jpeg, image/png, image/jpeg'},
+    accept: { images: 'image/gif, image/jpeg, image/png, image/jpeg' },
     format: {
         images: ['jpg', 'jpeg', 'png', 'gif'],
         videos: ['mp4', 'mkv', 'ts']
