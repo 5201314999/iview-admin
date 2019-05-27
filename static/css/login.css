@@ -499,51 +499,6 @@ header {
   height: 80px;
 }
 
-/* line 465, ../sass/style.sass */
-.cms {
-  background: url(../images/icon04_active.png) no-repeat;
-  background-size: 100%;
-}
-
-/* line 469, ../sass/style.sass */
-.permission {
-  background: url(../images/icon02_active.png) no-repeat;
-  background-size: 100%;
-}
-
-/* line 473, ../sass/style.sass */
-.basic {
-  background: url(../images/icon03_active.png) no-repeat;
-  background-size: 100%;
-}
-
-/* line 477, ../sass/style.sass */
-.ota {
-  background: url(../images/icon01_active.png) no-repeat;
-  background-size: 100%;
-}
-
-/* line 482, ../sass/style.sass */
-.hover .cms {
-  background: url(../images/icon04.png) no-repeat;
-  background-size: 100%;
-}
-/* line 485, ../sass/style.sass */
-.hover .permission {
-  background: url(../images/icon02.png) no-repeat;
-  background-size: 100%;
-}
-/* line 488, ../sass/style.sass */
-.hover .basic {
-  background: url(../images/icon03.png) no-repeat;
-  background-size: 100%;
-}
-/* line 491, ../sass/style.sass */
-.hover .ota {
-  background: url(../images/icon01.png) no-repeat;
-  background-size: 100%;
-}
-
 /*Popup */
 /* line 497, ../sass/style.sass */
 .popup {
