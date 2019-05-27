@@ -5,8 +5,9 @@
             <Row class="header-nav right">
                 <Dropdown @on-click="signOut">
                     <a href="javascript:void(0);" v-if="!G.debug">
-                        <img :src="G.user.icon" class="header-avatar mr10" v-if="G.user && G.user.icon" />
-                        {{ getUserName }}
+                        <!-- <img :src="G.user.icon" class="header-avatar mr10" v-if="G.user && G.user.icon" /> -->
+                        <img :src="require('../../assert/images/user.svg')" class="header-avatar mr10" />
+                        {{ G.user.name }}
                     </a>
                     <a href="javascript:void(0);" v-if="G.debug">
                         <img src="static/images/avatar.jpg" class="header-avatar mr10" />
@@ -17,7 +18,7 @@
                             <icon type="ios-settings-outline"></icon>设置
                         </DropdownItem>
                         <DropdownItem name="exit">
-                            <icon type="ios-power-outline"></icon>退出
+                            <icon type="ios-power-outline" @click="logout"></icon>退出
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
@@ -50,6 +51,9 @@
             }
         },
         methods: {
+            logout(){
+                this.$router.push({name:'登录'})
+            },
             collapsedMenu() {
                 const vm = this;
                 vm.$set(vm.G.menu, 'collapsed', !vm.G.menu.collapsed);
