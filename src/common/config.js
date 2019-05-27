@@ -15,7 +15,7 @@ const embed = false;
  * title
  * @type {string}
  */
-const title = '基础框架';
+const title = '黄鹄科技策略量化平台';
 /**
  * user information( 初始化后覆盖 )
  * @type {{}}
