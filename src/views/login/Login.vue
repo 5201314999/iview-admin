@@ -77,12 +77,19 @@ export default {
 <style src="../../../static/css/login.css" scoped></style>
 <style scoped>
 .wrapper {
-  font-family: "Microsoft YaHei New", "Microsoft Yahei", "微软雅黑", "helvetica", "Arial", sans-serif;
+  font-family: "Microsoft YaHei New", "Microsoft Yahei", "微软雅黑", "helvetica",
+    "Arial", sans-serif;
   font-size: 16px;
   background: url(../../../static/images/bg.jpg) right bottom no-repeat;
   background-attachment: fixed;
   background-size: cover;
   height: 100%;
+  min-height: 650px;
+}
+@media only screen and (max-width: 991px) {
+  .wrapper {
+    min-height: 800px;
+  }
 }
 </style>
 
