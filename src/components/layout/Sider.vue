@@ -2,7 +2,7 @@
     <Row class="layout-sider wi-custom-scroll" :class="clsCollapsed">
         <Row class="sider-list">
             <Row class="sider-logo">
-                <router-link :to="{path: '/'}" :title="project">
+                <router-link :to="{path: '/main'}" :title="project">
                     <img :src="logo" :alt="project" v-if="logo" />
                     <icon type="ios-appstore-outline" v-if="!logo"></icon>
                     <h1 v-html="project"></h1>

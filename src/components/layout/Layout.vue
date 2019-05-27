@@ -30,7 +30,8 @@
                 username: vm.G.user.name,
                 update: false,
                 project: vm.G.title,
-                logo: vm.G.logo
+                // logo: vm.G.logo，
+                logo: require('../../../static/images/logo.png')
             };
         },
         methods: {
