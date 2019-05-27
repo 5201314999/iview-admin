@@ -11,7 +11,6 @@ import echarts from 'echarts';
 import 'iview/dist/styles/iview.css';
 import 'viewerjs/dist/viewer.min.css'
 import './styles/main.scss';
-import highlight from './directives/highlight';
 import LazyLoad from 'vue-lazyload';
 import * as filters from './common/filters';
 
@@ -28,7 +27,6 @@ Vue.use(LazyLoad, {
     attempt: 1
 });
 Vue.use(tools);
-Vue.use(highlight);
 Vue.prototype.G = config;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;

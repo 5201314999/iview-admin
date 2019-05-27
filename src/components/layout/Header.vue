@@ -87,28 +87,28 @@
             }
         },
         created() {
-            const vm = this;
-            vm.$api.get(vm.G.api.project, {
-                method: 'getProLink',
-                proId: vm.G.id.pro
-            }, (res) => {
-                if(res['ret']['retCode'].toString() === '0'){
-                    const data = res.data;
-                    if(data){
-                        vm.$set(vm, 'menus', data.menu);
-                        if(data['program']){
-                            const name = data['program']['programname'],
-                                logo = data['program'].icon;
-                            vm.$set(vm.G, 'title', name ? name : '');
-                            vm.$set(vm.G, 'logo', logo);
-                            vm.$emit('update-logo');
-                            vm.setTitle();
-                        }
-                    }
-                }else vm.setTitle();
-            }, () => {
-                vm.setTitle();
-            });
+            // const vm = this;
+            // vm.$api.get(vm.G.api.project, {
+            //     method: 'getProLink',
+            //     proId: vm.G.id.pro
+            // }, (res) => {
+            //     if(res['ret']['retCode'].toString() === '0'){
+            //         const data = res.data;
+            //         if(data){
+            //             vm.$set(vm, 'menus', data.menu);
+            //             if(data['program']){
+            //                 const name = data['program']['programname'],
+            //                     logo = data['program'].icon;
+            //                 vm.$set(vm.G, 'title', name ? name : '');
+            //                 vm.$set(vm.G, 'logo', logo);
+            //                 vm.$emit('update-logo');
+            //                 vm.setTitle();
+            //             }
+            //         }
+            //     }else vm.setTitle();
+            // }, () => {
+            //     vm.setTitle();
+            // });
         }
     };
     export default HeaderComponent;

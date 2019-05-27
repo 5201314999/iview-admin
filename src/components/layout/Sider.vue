@@ -226,27 +226,27 @@
         },
         mounted() {
             const vm = this;
-            vm.getUser();
-            if(vm.G.debug){
-                vm.getMenuName();
-                vm.setMenuActive();
-                vm.updateMenuActive();
-            }else{
-                vm.$on('get-user-success', (data) => {
-                    vm.$set(vm.G, 'user', data);
-                    vm.$emit('username');
-                    if(!vm.G.debug){
-                        const menu = data['listResource'];
-                        if(menu){
-                            vm.$set(vm, 'menus', menu);
-                            const menus = vm.parseMenu(menu);
-                            vm.$set(vm.G.menu, 'items', menus);
-                            vm.$set(vm.menu, 'items', menus);
-                        }
-                    }
-                    vm.updateMenuActive();
-                });
-            }
+            // vm.getUser();
+            // if(vm.G.debug){
+            //     vm.getMenuName();
+            //     vm.setMenuActive();
+            //     vm.updateMenuActive();
+            // }else{
+            //     vm.$on('get-user-success', (data) => {
+            //         vm.$set(vm.G, 'user', data);
+            //         vm.$emit('username');
+            //         if(!vm.G.debug){
+            //             const menu = data['listResource'];
+            //             if(menu){
+            //                 vm.$set(vm, 'menus', menu);
+            //                 const menus = vm.parseMenu(menu);
+            //                 vm.$set(vm.G.menu, 'items', menus);
+            //                 vm.$set(vm.menu, 'items', menus);
+            //             }
+            //         }
+            //         vm.updateMenuActive();
+            //     });
+            // }
         }
     };
     export default SiderComponent;
