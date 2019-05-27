@@ -329,7 +329,7 @@
   }
 
   .layout-header {
-    background: $dark;
+    // background: $dark;
     height: 64px;
     line-height: 64px;
     flex: 0 0 auto;
@@ -340,22 +340,21 @@
       background: $white;
       box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
       position: relative;
-
-      .header-trigger {
+      .header-trigger-wrapper{
+        &:hover{
+          background: #E6F7FF;
+        }
+        width:64px;
+        height:64px;
         font-size: 28px;
         line-height: 64px;
         cursor: pointer;
-        transform: rotate(0);
-        transition: transform .2s ease-in-out;
         padding: 0 18px;
       }
 
-      .ivu-icon {
-        display: inline-block;
-
-        &.header-trigger:hover {
-          background: #E6F7FF;
-        }
+      .header-trigger {
+        transform: rotate(0);
+        transition: transform .2s ease-in-out;
       }
 
       .header-nav {
