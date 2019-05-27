@@ -346,6 +346,7 @@
         }
         width:64px;
         height:64px;
+        display: inline-block;
         font-size: 28px;
         line-height: 64px;
         cursor: pointer;
@@ -358,6 +359,7 @@
       }
 
       .header-nav {
+        margin-right:20px;
         .nav-item {
           line-height: 64px;
           padding-left: 30px;
@@ -374,9 +376,9 @@
         }
 
         .header-avatar {
-          width: 30px;
-          height: 30px;
-          border-radius: 30px;
+          width: 35px;
+          height: 35px;
+          border-radius: 35px;
         }
 
         a {

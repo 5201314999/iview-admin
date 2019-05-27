@@ -15,7 +15,7 @@
           >
             <!-- <img :src="G.user.icon" class="header-avatar mr10" v-if="G.user && G.user.icon" /> -->
             <img
-              :src="require('../../assert/images/user.svg')"
+              :src="require('../../assert/images/user3.svg')"
               class="header-avatar mr10"
             />
             {{ G.user.name }}
