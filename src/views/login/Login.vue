@@ -7,9 +7,10 @@
         <form action="menu.html">
           <div class="logo">
             <img
-              :src="require('../../../static/images/img_logo.svg')"
+              :src="require('../../../static/images/logo.png')"
               alt="vas"
             >
+            <div class="title">黄鹄科技策略量化平台</div>
           </div>
 
           <div class="form-control">
@@ -52,8 +53,7 @@
         </form>
 
         <div class="copyright">
-          <p>系统版本1.0 © 2018 富连网系统整合服务处</p>
-          <p>若您有任何意见或建议，请与资讯人员联系：<span>567-60285</span></p>
+          <p>系统版本1.0 © 2019</p>
           <p>本网站建议以Chrome丶360或Internet Explore以上等浏览器浏览</p>
         </div>
 
@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style src="../../../static/css/login.css" scoped></style>
-<style scoped>
+<style lang="scss" scoped>
 .wrapper {
   font-family: "Microsoft YaHei New", "Microsoft Yahei", "微软雅黑", "helvetica",
     "Arial", sans-serif;
@@ -86,9 +86,34 @@ export default {
   height: 100%;
   min-height: 650px;
 }
+.panel{
+    max-width: 500px;
+}
+.logo {
+    padding-top:20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    &>img{
+        max-width: 300px;
+        width:auto;
+    }
+    .title{
+        font-size: 26px;
+        color: white;
+        font-weight: 600;
+    }
+}
 @media only screen and (max-width: 991px) {
   .wrapper {
     min-height: 800px;
+  }
+}
+@media only screen and (min-width: 1000px) {
+  .logo {
+    padding-top:80px;
+    &>img{}
   }
 }
 </style>
