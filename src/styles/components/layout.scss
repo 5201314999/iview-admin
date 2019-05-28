@@ -1,7 +1,10 @@
 .layout {
+  .ivu-layout{
+    min-height:100vh;
+  }
   .layout-sider {
     &::-webkit-scrollbar {
-      display: none;
+      display:   none;
     }
     -ms-overflow-style:none;
     scrollbar-width: none;

@@ -55,40 +55,40 @@ let menu = {
             children: [
                 {
                     title: 'alpha策略',
-                    icon: 'logo-octocat',
+                    // icon: 'logo-octocat',
                     name: 'alpha',
                     path: '/strategySquare/alpha'
                 },
                 {
                     title: '股票多头',
-                    icon: 'ios-checkmark-circle-outline',
+                    // icon: 'ios-checkmark-circle-outline',
                     name: 'longStocks',
                     path: '/strategySquare/longStocks'
                 }, {
                     title: '股票多空',
-                    icon: 'ios-podium-outline',
+                    // icon: 'ios-podium-outline',
                     name: 'shortStocks',
                     path: '/strategySquare/shortStocks'
                 },
                 {
                     title: '期货CTA',
-                    icon: 'ios-help-buoy-outline',
+                    // icon: 'ios-help-buoy-outline',
                     name: 'cta',
                     path: '/strategySquare/cta'
                 }, {
                     title: '期权',
-                    icon: 'ios-color-palette-outline',
+                    // icon:'ios-color-palette-outline',
                     name: 'option',
                     path: '/strategySquare/option'
                 },
                 {
                     title: '事件驱动',
-                    icon: 'logo-twitch',
+                    // icon: 'logo-twitch',
                     name: 'eventDriven',
                     path: '/strategySquare/eventDriven'
                 }, {
                     title: '其它',
-                    icon: 'ios-thunderstorm-outline',
+                    // icon: 'ios-thunderstorm-outline',
                     name: 'other',
                     path: '/strategySquare/other'
                 }
@@ -101,36 +101,36 @@ let menu = {
             children: [
                 {
                     title: '策略环境',
-                    icon: 'ios-chatboxes-outline',
+                    // icon: 'ios-chatboxes-outline',
                     name: 'strategyEnv',
                     path: '/strategyResearch/strategyEnv'
                 },
                 {
                     title: '策略列表',
-                    icon: 'ios-podium-outline',
+                    // icon: 'ios-podium-outline',
                     name: 'strategyList',
                     path: '/strategyResearch/strategyList'
                 }, {
                     title: '单因子分析',
-                    icon: 'ios-radio-button-off',
+                    // icon: 'ios-radio-button-off',
                     name: 'singleFactor',
                     path: '/strategyResearch/singleFactor'
                 },
                 {
                     title: '我的因子',
-                    icon: 'ios-baseball-outline',
+                    // icon: 'ios-baseball-outline',
                     name: 'myFactor',
                     path: '/strategyResearch/myFactor'
                 },
                 {
                     title: ' 财务分析',
-                    icon: 'md-cash',
+                    // icon: 'md-cash',
                     name: 'financialAnalysis',
                     path: '/strategyResearch/financialAnalysis'
                 },
                 {
                     title: '事件驱动',
-                    icon: 'logo-twitch',
+                    // icon: 'logo-twitch',
                     name: 'eventDrivenResearch',
                     path: '/strategyResearch/eventDrivenResearch'
                 }
@@ -139,29 +139,29 @@ let menu = {
         {
             title: '因子库',
             name: 'factorLibrary',
-            icon: 'ios-list-box-outline',
+            icon: 'ios-funnel-outline',
             children: [
                 {
                     title: '财务因子',
-                    icon: 'ios-funnel-outline',
+                    // icon: 'ios-funnel-outline',
                     name: 'financialFactor',
                     path: '/factorLibrary/financialFactor'
                 },
                 {
                     title: '技术因子',
-                    icon: 'ios-bulb-outline',
+                    // icon: 'ios-bulb-outline',
                     name: 'technologyFactor',
                     path: '/factorLibrary/technologyFactor'
                 },
                 {
                     title: '情绪因子',
-                    icon: 'ios-bonfire-outline',
+                    // icon: 'ios-bonfire-outline',
                     name: 'emotionFactor',
                     path: '/factorLibrary/emotionFactor'
                 },
                 {
                     title: '自定义因子',
-                    icon: 'ios-build-outline',
+                    // icon: 'ios-build-outline',
                     name: 'customFactor',
                     path: '/factorLibrary/customFactor'
                 }
@@ -174,19 +174,19 @@ let menu = {
             children: [
                 {
                     title: '策略跟踪',
-                    icon: 'ios-glasses-outline',
+                    // icon: 'ios-glasses-outline',
                     name: 'policyTracking',
                     path: '/paperTrading/policyTracking'
                 },
                 {
                     title: '账户设置',
-                    icon: 'ios-ice-cream-outline',
+                    // icon: 'ios-ice-cream-outline',
                     name: 'accountSetting',
                     path: '/paperTrading/accountSetting'
                 },
                 {
                     title: '交易设置',
-                    icon: 'ios-link-outline',
+                    // icon: 'ios-link-outline',
                     name: 'trandSetting',
                     path: '/paperTrading/trandSetting'
                 }
@@ -195,41 +195,41 @@ let menu = {
         {
             title: '多维数据',
             name: 'multidimensionalData',
-            icon: 'ios-list-box-outline',
+            icon: 'ios-card-outline',
             children: [
                 {
                     title: '股票',
-                    icon: 'ios-card-outline',
+                    // icon: 'ios-card-outline',
                     name: 'stock',
                     path: '/multidimensionalData/stock'
                 },
                 {
                     title: '期货',
-                    icon: 'ios-help-buoy-outline',
+                    // icon: 'ios-help-buoy-outline',
                     name: 'futures',
                     path: '/multidimensionalData/futures'
                 },
                 {
                     title: '期权',
-                    icon: 'ios-color-palette-outline',
+                    // icon: 'ios-color-palette-outline',
                     name: 'option',
                     path: '/multidimensionalData/option'
                 },
                 {
                     title: '基金',
-                    icon: 'ios-medal-outline',
+                    // icon: 'ios-medal-outline',
                     name: 'fund',
                     path: '/multidimensionalData/fund'
                 },
                 {
                     title: '债券',
-                    icon: 'ios-outlet-outline',
+                    // icon: 'ios-outlet-outline',
                     name: 'bond',
                     path: '/multidimensionalData/bond'
                 },
                 {
                     title: '其它',
-                    icon: 'ios-thunderstorm-outline',
+                    // icon: 'ios-thunderstorm-outline',
                     name: 'otherData',
                     path: '/multidimensionalData/otherData'
                 }
@@ -242,31 +242,31 @@ let menu = {
             children: [
                 {
                     title: '新手指引',
-                    icon: 'ios-restaurant-outline',
+                    // icon:'ios-restaurant-outline',
                     name: 'guide',
                     path: '/docs/guide'
                 },
                 {
                     title: '常见问题',
-                    icon: 'ios-help-circle-outline',
+                    // icon: 'ios-help-circle-outline',
                     name: 'problem',
                     path: '/docs/problem'
                 },
                 {
                     title: 'API文档',
-                    icon: 'ios-construct-outline',
+                    // icon: 'ios-construct-outline',
                     name: 'apidoc',
                     path: '/docs/apidoc'
                 },
                 {
                     title: '函数',
-                    icon: 'ios-log-in',
+                    // icon: 'ios-log-in',
                     name: 'function',
                     path: '/docs/function'
                 },
                 {
                     title: '因子说明',
-                    icon: 'ios-information-circle-outline',
+                    // icon: 'ios-information-circle-outline',
                     name: 'factorExplain',
                     path: '/docs/factorExplain'
                 },
@@ -279,19 +279,19 @@ let menu = {
             children: [
                 {
                     title: '账户设置',
-                    icon: 'ios-person-outline',
+                    // icon: 'ios-person-outline',
                     name: 'account',
                     path: '/setting/account'
                 },
                 {
                     title: '密码设置',
-                    icon: 'ios-lock-outline',
+                    // icon: 'ios-lock-outline',
                     name: 'password',
                     path: '/setting/password'
                 },
                 {
                     title: '账户管理',
-                    icon: 'ios-man-outline',
+                    // icon: 'ios-man-outline',
                     name: 'accountManage',
                     path: '/setting/accountManage'
                 }
@@ -357,7 +357,7 @@ const regExps = {
  * footer
  * @type {string}
  */
-const footer = 'Copyright &copy; 2018';
+const footer = 'Copyright &copy; 2019 黄鹄科技';
 
 export default {
     debug,
