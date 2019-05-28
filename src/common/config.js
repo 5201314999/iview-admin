@@ -169,8 +169,8 @@ let menu = {
         },
         {
             title: '模拟交易',
-            name: 'paperTrading',  
-            icon: 'ios-boat', 
+            name: 'paperTrading',
+            icon: 'ios-boat',
             children: [
                 {
                     title: '策略跟踪',
@@ -308,12 +308,7 @@ let menu = {
  * @type {{user: string, logout: string, project: string}}
  */
 const api = {
-    user: process.env.AUTH_SERVICES + '/user',
-    logout: process.env.AUTH_SERVICES + '/LoginServlet',
-    strategySquare:{
-        reportData:'/stat/res/{res}/report-form/{report}'
-    }
-
+    strategy: '/stat/res/{res}/report-form/{report}'
 };
 /**
  * file's configuration
