@@ -266,7 +266,7 @@ let menu = {
                     icon: 'ios-thunderstorm-outline',
                     name: 'other',
                     path: '/strategySquare/other',
-                    childeren:[
+                    children:[
                         {
                             title: '分级A轮动',
                             // icon: 'logo-octocat',
