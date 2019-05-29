@@ -99,8 +99,20 @@ export default {
           let option = {
             tooltip: {
               trigger: "axis",
-              position: function(pt) {
-                return [pt[0], "10%"];
+              backgroundColor: "rgba(255,255,255,0.7)",
+              borderColor: "#333",
+              borderWidth: 1,
+              textStyle: {
+                color: "#000000"
+              },
+              formatter: params => {
+                return `${params[0].name}<br/>
+                          ${params[0].marker}${params[0].seriesName}: ${
+                  params[0].value
+                }%<br/>
+                          ${params[1].marker}${params[1].seriesName}: ${
+                  params[1].value
+                }%`;
               }
             },
             title: {
@@ -135,13 +147,16 @@ export default {
               })
             },
             yAxis: {
-              name: "累计收益(%)",
+              name: "累计收益",
               type: "value",
               boundaryGap: [0, "100%"],
               position: "right",
               nameRotate: "-90",
               nameLocation: "middle",
-              nameGap: 30
+              nameGap: 50,
+              axisLabel: {
+                formatter: "{value}%"
+              }
             },
             dataZoom: [
               {
@@ -254,7 +269,7 @@ export default {
         }
       }
       .profit-info {
-        padding: 20px 0;
+        padding: 30px 0;
         display: flex;
         border: 1px solid #eee;
         border-left: 0;
