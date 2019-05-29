@@ -9,7 +9,7 @@ Description
     <div class="model">
       <div class="sider-info">
         <header>
-          白马量化对冲1号
+          白马量化对冲300号
         </header>
         <div class="sp-data">
           <div class="title">累计收益</div>
@@ -195,7 +195,9 @@ Description
                   shadowColor: 'rgba(0, 0, 0, 0.6)',
                   shadowOffsetX: 2,
                   shadowOffsetY: 2
-                }
+                },
+                left: 85,   
+                right: 85
               }],
               series: [
                 {
@@ -228,7 +230,7 @@ Description
             this.$error(res.ret.retMsg);
           }
         }, err => {
-          this.$error('出现异常');
+        //   this.$error('出现异常');
         });
 
       }
