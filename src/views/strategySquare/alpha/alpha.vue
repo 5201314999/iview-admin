@@ -59,10 +59,10 @@ Description
         // 白马量化对冲1号
         resName:'',
         totalInfo: {
-          accIncome: 0,    // 累计收益
-          benchmarkReturn: 0, // 基准收益
-          annualIncome: 0, // 年化收益
-          maxRetracement: 0, // 最大回撤
+          // accIncome: 0,    // 累计收益
+          // benchmarkReturn: 0, // 基准收益
+          // annualIncome: 0, // 年化收益
+          // maxRetracement: 0, // 最大回撤
           startDate: '-'
         }
 
