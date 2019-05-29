@@ -41,6 +41,10 @@ pre, code, kbd, samp{
     tab-size: 16;
 }
 
+.red{
+    color: red;
+}
+
 @import "./components/basic";
 @import "./components/layout";
 @import "./components/table";
