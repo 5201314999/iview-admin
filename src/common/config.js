@@ -21,9 +21,7 @@ const title = '黄鹄科技策略量化平台';
  * user information( 初始化后覆盖 )
  * @type {{}}
  */
-let user = {
-    name: '罗杰'
-};
+let user = null;
 /**
  * site logo
  * @type {null}

@@ -14,6 +14,10 @@
         mounted() {
             const vm = this;
             vm.$set(vm, 'loading', false);
+
+            if(this.isEmpty(this.G.user)){
+                this.$router.push({name:"登录"})
+            }
         }
     };
     export default HomeComponent;
