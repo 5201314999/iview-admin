@@ -590,8 +590,21 @@ exports.install = (Vue) => {
      * @param string
      * @returns {boolean}
      */
-    Vue.prototype.isEmpty = (string) => {
-        return string === null || string === '' || typeof string === 'undefined';
+    Vue.prototype.isEmpty = (value) => {
+        if(null === value || undefined === value){
+            return true;
+        }
+        if((typeof value).toString().toLowerCase() == "string"){
+            if(0 === value.trim().length){
+                return true;
+            }
+        }
+        if(Array.isArray(value)){
+            if(0 === value.length){
+                return true;
+            }
+        }
+        return false;
     };
     
     /**

@@ -3,7 +3,7 @@ const formatEmpty = (value, format = '-') => {
     if((typeof value).toString().toLowerCase() === 'string'){
         if(value.trim().length === 0) return format;
     }
-    if(Array.inArray(value)){
+    if(Array.isArray(value)){
         if(value.length === 0) return format;
     }
     return value;
