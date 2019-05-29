@@ -84,6 +84,7 @@ export default {
         }),
         {},
         res => {
+          // 转百分比
           res.data.stats = res.data.stats.map(item => {
             return {
               ...item,
