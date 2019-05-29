@@ -24,9 +24,7 @@ Description
             <p class="label">年化收益</p>
             <p class="value">22.09%</p>
           </div>
-        </div>
-        <div class="row-info">
-          <div class="group">
+           <div class="group">
             <p class="label">最大回撤</p>
             <p class="value">30.09%</p>
           </div>
@@ -39,7 +37,7 @@ Description
         </div>
       </div>
       <div class="chart-wrapper">
-         <date-ul class="date-ul"></date-ul>
+        <date-ul class="date-ul"></date-ul>
         <div class="chart alpha1"></div>
       </div>
     </div>
