@@ -55,42 +55,230 @@ let menu = {
             children: [
                 {
                     title: 'alpha策略',
-                    // icon: 'logo-octocat',
+                    icon: 'logo-octocat',
                     name: 'alpha',
-                    path: '/strategySquare/alpha'
+                    children:[
+                        {
+                            title: '白马量化对冲1号',
+                            // icon: 'logo-octocat',
+                            name: 'baiMaLiangHuaDuiChong1Hao',
+                            path: '/strategySquare/alpha/baiMaLiangHuaDuiChong1Hao'
+                        },
+                        {
+                            title: '超级盈利因子组合',
+                            // icon: 'logo-octocat',
+                            name: 'chaoJiYinLiYinZiZuHe',
+                            path: '/strategySquare/alpha/chaoJiYinLiYinZiZuHe'
+                        },
+                        {
+                            title: '价值红利稳赢组合',
+                            // icon: 'logo-octocat',
+                            name: 'jiaZhIHongLiWenYinZuHe',
+                            path: '/strategySquare/alpha/jiaZhIHongLiWenYinZuHe'
+                        },
+                        {
+                            title: '稳进300',
+                            // icon: 'logo-octocat',
+                            name: 'alpha4',
+                            path: '/strategySquare/alpha/wenJin300'
+                        },
+                        {
+                            title: '高成长R',
+                            // icon: 'logo-octocat',
+                            name: 'gaoChengZhangR',
+                            path: '/strategySquare/alpha/gaoChengZhangR'
+                        }
+                    ]
+
                 },
                 {
                     title: '股票多头',
-                    // icon: 'ios-checkmark-circle-outline',
+                    icon: 'ios-checkmark-circle-outline',
                     name: 'longStocks',
-                    path: '/strategySquare/longStocks'
+                    children:[
+                        {
+                            title: '创业板真价值组合',
+                            // icon: 'logo-octocat',
+                            name: 'chuangYeBanZhenJiaZhiZhuHe',
+                            path: '/strategySquare/longStocks/chuangYeBanZhenJiaZhiZhuHe'
+                        },
+                        {
+                            title: '小市值激进R',
+                            // icon: 'logo-octocat',
+                            name: 'xiaoShiZhiJiJinR',
+                            path: '/strategySquare/longStocks/xiaoShiZhiJiJinR'
+                        },
+                        {
+                            title: '戴维斯双击',
+                            // icon: 'logo-octocat',
+                            name: 'daiWeiSiShuanJi',
+                            path: '/strategySquare/longStocks/daiWeiSiShuanJi'
+                        },  {
+                            title: '分享企业成长组合',
+                            // icon: 'logo-octocat',
+                            name: 'fenXianQiYeChengZhangZuHe',
+                            path: '/strategySquare/longStocks/fenXianQiYeChengZhangZuHe'
+                        },
+                        {
+                            title: '银行高价值轮动',
+                            // icon: 'logo-octocat',
+                            name: 'yinHangGaoJiaZhiLunDong',
+                            path: '/strategySquare/longStocks/yinHangGaoJiaZhiLunDong'
+                        },
+                        {
+                            title: '人工智能组合',
+                            // icon: 'logo-octocat',
+                            name: 'renGongZhiNengZuHe',
+                            path: '/strategySquare/longStocks/renGongZhiNengZuHe'
+                        }
+                    ]
                 }, {
                     title: '股票多空',
-                    // icon: 'ios-podium-outline',
+                    icon: 'ios-podium-outline',
                     name: 'shortStocks',
-                    path: '/strategySquare/shortStocks'
+                    children:[
+                        {
+                            title: '量价拐点',
+                            // icon: 'logo-octocat',
+                            name: 'liangJiaGuaiDian',
+                            path: '/strategySquare/shortStocks/liangJiaGuaiDian'
+                        },
+                        {
+                            title: '机器学习组合',
+                            // icon: 'logo-octocat',
+                            name: 'jiQiXueXiZuHe',
+                            path: '/strategySquare/shortStocks/jiQiXueXiZuHe'
+                        },
+                        {
+                            title: '协整搬砖策略',
+                            // icon: 'logo-octocat',
+                            name: 'xieTiaoBanZhuangCeLue',
+                            path: '/strategySquare/shortStocks/xieTiaoBanZhuangCeLue'
+                        },
+                        {
+                            title: '基本面多因子',
+                            // icon: 'logo-octocat',
+                            name: 'jiBenMianDuoYinZi',
+                            path: '/strategySquare/shortStocks/jiBenMianDuoYinZi'
+                        }
+                    ]
                 },
                 {
                     title: '期货CTA',
-                    // icon: 'ios-help-buoy-outline',
+                    icon: 'ios-help-buoy-outline',
                     name: 'cta',
-                    path: '/strategySquare/cta'
+                    children:[
+                        {
+                            title: '期货全品种策略R',
+                            // icon: 'logo-octocat',
+                            name: 'qiHuoQuanPinZhongCeLueR',
+                            path: '/strategySquare/qiHuoQuanPinZhongCeLueR'
+                        },
+                        {
+                            title: 'SAR组合',
+                            // icon: 'logo-octocat',
+                            name: 'SAR',
+                            path: '/strategySquare/cta/SAR'
+                        },
+                        {
+                            title: 'RBreaker组合',
+                            // icon: 'logo-octocat',
+                            name: 'RBreaker',
+                            path: '/strategySquare/cta/RBreaker'
+                        },
+                        {
+                            title: '改进海龟交易策略',
+                            // icon: 'logo-octocat',
+                            name: 'gaiJinHaiGuiJiaoYiCeLue',
+                            path: '/strategySquare/cta/gaiJinHaiGuiJiaoYiCeLue'
+                        }
+                    ]
                 }, {
                     title: '期权',
-                    // icon:'ios-color-palette-outline',
+                    icon:'ios-color-palette-outline',
                     name: 'option',
-                    path: '/strategySquare/option'
+                    children:[
+                        {
+                            title: '无风险套利',
+                            // icon: 'logo-octocat',
+                            name: 'wuFengXiangTaoLi',
+                            path: '/strategySquare/option/wuFengXiangTaoLi'
+                        },
+                        {
+                            title: '波动率套利',
+                            // icon: 'logo-octocat',
+                            name: 'boDongLvTaoLi',
+                            path: '/strategySquare/option/boDongLvTaoLi'
+                        },
+                        {
+                            title: '日内高频策略',
+                            // icon: 'logo-octocat',
+                            name: 'dateGaoPinStrategy',
+                            path: '/strategySquare/option/dateGaoPinStrategy'
+                        },
+                        {
+                            title: 'Delta对冲策略',
+                            // icon: 'logo-octocat',
+                            name: 'Delta',
+                            path: '/strategySquare/option/Delta'
+                        },
+                        {
+                            title: 'Vega策略',
+                            // icon: 'logo-octocat',
+                            name: 'Vega',
+                            path: '/strategySquare/option/Vega'
+                        }
+                    ]
                 },
                 {
                     title: '事件驱动',
-                    // icon: 'logo-twitch',
+                    icon: 'logo-twitch',
                     name: 'eventDriven',
-                    path: '/strategySquare/eventDriven'
+                    children:[
+                        {
+                            title: '成分股调整埋伏',
+                            // icon: 'logo-octocat',
+                            name: 'chengFenGuTiaoZheng',
+                            path: '/strategySquare/eventDriven/chengFenGuTiaoZheng'
+                        },
+                        {
+                            title: '高送转组合',
+                            // icon: 'logo-octocat',
+                            name: 'gaoZhuangSong',
+                            path: '/strategySquare/eventDriven/gaoZhuangSong'
+                        },
+                        {
+                            title: '年报埋伏',
+                            // icon: 'logo-octocat',
+                            name: 'nianBaoMaiFu',
+                            path: '/strategySquare/eventDriven/nianBaoMaiFu'
+                        },
+                        {
+                            title: '业绩预增组合',
+                            // icon: 'logo-octocat',
+                            name: 'yeJiYuZengZuHe',
+                            path: '/strategySquare/eventDriven/yeJiYuZengZuHe'
+                        }
+                    ]
                 }, {
                     title: '其它',
-                    // icon: 'ios-thunderstorm-outline',
+                    icon: 'ios-thunderstorm-outline',
                     name: 'other',
-                    path: '/strategySquare/other'
+                    path: '/strategySquare/other',
+                    childeren:[
+                        {
+                            title: '分级A轮动',
+                            // icon: 'logo-octocat',
+                            name: 'fenJiA',
+                            path: '/strategySquare/other/fenJiA'
+                        },
+                        {
+                            title: '可转债套利',
+                            // icon: 'logo-octocat',
+                            name: 'keZhuangZhaiTaoLi',
+                            path: '/strategySquare/other/keZhuangZhaiTaoLi'
+                        }
+                    ]
                 }
             ]
         },
@@ -299,8 +487,8 @@ let menu = {
         }
 
     ],
-    active: 'alpha',
-    open: ['strategySquare'],
+    active: 'baiMaLiangHuaDuiChong1Hao',
+    open: ['strategySquare','alpha'],
     collapsed: false
 };
 /**

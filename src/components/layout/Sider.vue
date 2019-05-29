@@ -91,7 +91,7 @@
                 menu: {
                     items: vm.G.menu.items,
                     active: vm.G.menu.active || null,
-                    open: []
+                    open: vm.G.menu.open||[]
                 },
                 width: {
                     fold: '80',
@@ -104,9 +104,11 @@
                 const vm = this,
                     temp = [],
                     length = menu.length,
-                    getChildren = (data) => {
+                    opens=[],
+                    getChildren = (data,firstLevelName) => {
                         const res = [],
                             len = data.length;
+
                         for(let i = 0; i < len; i++){
                             const cur = data[i],
                                 children = cur['listChildren'],
@@ -115,23 +117,24 @@
                                     icon: cur['icon'],
                                     name: cur['resid']
                                 };
+                            res.push(item);
+                            item.path = cur['resparam'];
+                            const paths = item.path.replace('？', '?').split('?'), path = paths[0];
+                            if(path && vm.path.indexOf(path) !== -1){
+                                firstLevelName&&opens.push(firstLevelName);
+                               children&&children.length > 0&&opens.push(item.name);
+                            }
                             if(children && children.length > 0){
                                 item.children = getChildren(children);
                             }else{
-                                item.path = cur['resparam'];
-                                const paths = item.path.replace('？', '?').split('?'),
-                                    path = paths[0];
                                 if(path && vm.path.indexOf(path) !== -1){
-                                    vm.$set(vm.G.menu, 'active', item.name);
-                                    vm.$set(vm.menu, 'active', item.name);
-                                    state = true;
+                                    vm.G.menu.active=item.name;
+                                    vm.menu.active=item.name;
                                 }
                             }
-                            res.push(item);
                         }
                         return res;
                     };
-                let state = false;
                 for(let i = 0; i < length; i++){
                     const cur = menu[i],
                         children = cur['listChildren'],
@@ -142,7 +145,7 @@
                             children: []
                         };
                     if(children && children.length > 0){
-                        item.children = getChildren(children);
+                        item.children = getChildren(children,item.name);
                     }else{
                         delete item.children;
                         if(i === 0){
@@ -151,12 +154,10 @@
                         }
                         item.path = cur['resparam'];
                     }
-                    if(state && vm.menu.open.length <= 0){
-                        vm.$set(vm.G.menu, 'open', [item.name]);
-                        vm.$set(vm.menu, 'open', [item.name]);
-                    }
                     temp.push(item);
                 }
+                vm.$set(vm.G.menu, 'open',opens);
+                vm.$set(vm.menu, 'open', opens);
                 return temp;
             },
             getMenuName() {
@@ -187,14 +188,14 @@
                 });
             },
             setMenuActive() {
-                const vm = this,
-                    paths = vm.$route.path.substr(1).split('/'),
-                    open = paths[0],
-                    active = paths[1];
-                if(open) vm.$set(vm.menu, 'open', [open]);
-                const contains = vm.inArray(active, vm.names) !== -1;
-                if(active && contains) vm.$set(vm.menu, 'active', active);
-                if(!contains) vm.$set(vm.menu, 'active', open);
+                const vm = this,paths = vm.$route.path.substr(1).split('/');
+                const open=paths.slice(0,paths.length-1);
+                const active=paths[paths.length-1];
+                vm.$set(vm.menu, 'open', open);
+                vm.$set(vm.menu,'active',active);
+                // const contains = vm.inArray(active, vm.names) !== -1;
+                // if(active && contains) vm.$set(vm.menu, 'active', active);
+                // if(!contains) vm.$set(vm.menu, 'active', open);
             },
             backToTop() {
                 const top = document.documentElement.scrollTop || document.body.scrollTop;

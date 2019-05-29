@@ -38,7 +38,7 @@
                     for(i in matches){
                         if(matches.hasOwnProperty(i)){
                             const cur = matches[i],
-                                name = cur.name;
+                                name = cur.meta.name;
                             if(parseInt(i.toString()) === matches.length - 1){
                                 /* last */
                                 if(typeof name === 'undefined' || name === ''){

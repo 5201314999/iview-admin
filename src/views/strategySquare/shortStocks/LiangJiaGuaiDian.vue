@@ -1,12 +1,12 @@
 <!--
 Description
 @authors fanjiongrong (fanjiongrong@tvflnet.com)
-@date    2019-05-27 10:58:26
+@date    2019-05-27 10:59:26
 @version 1.0.0
 -->
 <template>
   <div>
-    Hello, World!
+    ShortStocks
   </div>
 </template>
 
