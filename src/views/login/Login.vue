@@ -76,6 +76,15 @@ export default {
   },
   components: {},
   mounted() {
+    //获取用户数据
+    let userinfo = localStorage.getItem("userinfo");
+    if(userinfo){
+      userinfo = JSON.parse(userinfo);
+      if((userinfo.updateTime-(new Date).getTime())<4*60*60*60){
+        this.G.user = userinfo;
+        this.$router.push({ name: "首页" });
+      }
+    }
     particlesJS("particles-js", {
       particles: {
         number: {
@@ -146,7 +155,13 @@ export default {
           password: this.password
         },
         res => {
-          this.G.user = res.data;
+          let userInfo = {
+            ...res.data,
+            updatedTime:(new Date).getTime()
+          }
+          this.G.user = userInfo;
+          localStorage.setItem('userinfo',JSON.stringify(userInfo));
+
           if (res.data) {
             this.$router.push({ name: "首页" });
           } else {
