@@ -9,30 +9,31 @@ Description
     <div class="model">
       <div class="sider-info">
         <header>
-          白马量化对冲300号
+          {{resName|formatEmpty}}
         </header>
         <div class="sp-data">
           <div class="title">累计收益</div>
-          <div class="value">147.69%</div>
+          <div class="value">{{totalInfo.accIncome|formatEmpty}}%</div>
         </div>
         <div class="row-info">
-          <div class="group">
-            <p class="label">基准收益</p>
-            <p class="value">21.09%</p>
-          </div>
+         
           <div class="group">
             <p class="label">年化收益</p>
-            <p class="value">22.09%</p>
+            <p class="value red">{{totalInfo.benchmarkReturn|formatEmpty}}%</p>
+          </div>
+           <div class="group">
+            <p class="label">基准收益</p>
+            <p class="value">{{totalInfo.benchmarkReturn|formatEmpty}}%</p>
           </div>
            <div class="group">
             <p class="label">最大回撤</p>
-            <p class="value">30.09%</p>
+            <p class="value">{{totalInfo.maxRetracement|formatEmpty}}%</p>
           </div>
         </div>
         <div class="extra-info">
           <div class="group">
             <span class="label">起始时间：</span>
-            <span class="value">{{baiMaLiangHuaInfo.startDate}}</span>
+            <span class="value">{{totalInfo.startDate|formatEmpty}}</span>
           </div>
         </div>
       </div>
@@ -56,28 +57,22 @@ Description
         chartsObj: {},
 
         // 白马量化对冲1号
-        baiMaLiangHuaInfo: {
+        resName:'',
+        totalInfo: {
           accIncome: 0,    // 累计收益
           benchmarkReturn: 0, // 基准收益
           annualIncome: 0, // 年化收益
           maxRetracement: 0, // 最大回撤
           startDate: '-'
-        },
-
-        // 超级盈利因子组合
-
-        // 价值红利稳赢组合
-
-        // 稳进300
-
-        // 高成长R
+        }
 
 
       }
     },
     mounted() {
+      this.resName=this.$route.meta.name;
       this.chartsObj.alpha1 = this.$echarts.init(document.querySelector('.alpha1'));
-      this.getBaiMaLiangHua1HaoData();
+      this.getData();
       window.onresize = () => {
         this.handleChartResize();
       };
@@ -95,19 +90,19 @@ Description
         });
       },
       //白马量化1号数据
-      getBaiMaLiangHua1HaoData() {
+      getData() {
         const url = this.parseUrl(this.G.api.strategy, {
-          res: 'alpha策略',
-          report: '白马量化对冲1号'
+          res: this.$route.meta.res,
+          report: this.resName
         });
         this.$api.get(url, {}, res => {
           if (res.ret.retCode === '0') {
             //左侧信息
-            this.baiMaLiangHuaInfo = {
-              accIncome: res.data.accIncome,
-              benchmarkReturn: res.data.benchmarkReturn,
-              annualIncome: res.data.annualIncome,
-              maxRetracement: res.data.maxRetracement,
+            this.totalInfo = {
+              accIncome: res.data.accIncome?(res.data.accIncome*100).toFixed(2):'',
+              benchmarkReturn: res.data.benchmarkReturn?(res.data.benchmarkReturn*100).toFixed(2):'',
+              annualIncome: res.data.annualIncome?(res.data.annualIncome*100).toFixed(2):'',
+              maxRetracement: res.data.maxRetracement?(res.data.maxRetracement*100).toFixed(2):'',
               startDate: res.data.startDate
             }
             //图表数据
@@ -133,7 +128,8 @@ Description
               grid: {
                 top: 60,
                 left: 40,
-                right: 80
+                right: 40,
+                containLabel:true
               },
               tooltip: {
                 trigger: 'axis',
@@ -173,7 +169,7 @@ Description
                 boundaryGap: [0, '100%'],
                 position: 'right',
                 name: '累计收益',
-                nameGap: 30,
+                nameGap: 50,
                 nameLocation: 'center',
                 nameRotate: 270,
                 axisLabel: {
