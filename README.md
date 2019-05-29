@@ -2,7 +2,7 @@
 
 > vue2+iview3+axios+echarts 
 
-### 布局+ 页面自适应做了很多优化
+## 布局+ 页面自适应做了很多优化
 
 ## Build Setup
 
