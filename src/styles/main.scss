@@ -44,6 +44,75 @@ pre, code, kbd, samp{
 .red{
     color: red;
 }
+.page {
+    .model {
+      display: flex;
+      max-width: 1400px;
+      header {
+        padding: 20px;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .sider-info {
+        width: 280px;
+        background-color: #ffffff;
+        .sp-data {
+          padding: 0 16px;
+          .value {
+            font-size: 32px;
+            color: red;
+            font-weight: bold;
+          }
+        }
+        .row-info {
+          display: flex;
+          border-top: 1px solid #e9e9e9;
+          padding: 16px 0;
+          &:nth-of-type(3) {
+            border-bottom: 1px solid #e9e9e9;
+          }
+          .group {
+            padding-left: 16px;
+            flex-grow: 1;
+            &:nth-of-type(2) {
+              border-left: 1px solid #e9e9e9;
+            }
+            .label {
+            }
+            .value {
+              font-size: 24px;
+              font-weight: 600;
+            }
+          }
+        }
+        .extra-info {
+          padding: 20px;
+          .group {
+            .label {
+              width: 70px;
+              text-align-last: justify;
+            }
+          }
+        }
+      }
+      .chart-wrapper {
+        position: relative;
+        flex: 1;
+        margin-left: 20px;
+        background-color: #ffffff;
+        .chart {
+          height: 400px;
+        }
+      }
+    }
+  }
+  
+  .date-ul{
+    position:absolute;
+    right:180px;
+    top:15px;
+    z-index:1000;
+  }
 
 @import "./components/basic";
 @import "./components/layout";

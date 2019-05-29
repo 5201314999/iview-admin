@@ -1,45 +1,22 @@
 <!--
 Description
 @authors fanjiongrong (fanjiongrong@tvflnet.com)
-@date    2019-05-27 14:34:14
+@date    2019-05-28 14:35:34
 @version 1.0.0
 -->
 <template>
-  <div class="tip-wrapper">
-      <h1>~页面正在开发</h1>
-      <div class="group">
-        <h2 class="sub-title">别担心上车，我带你回去</h2>
-        <router-link to="/main"><Button type="primary">返回首页</Button></router-link>
-      </div>
-      <img src="../assert/images/todo.png">
+  <div class="main">
+      <img src="../assert/images/logo.png" alt="logo">
   </div>
 </template>
 
 <script>
-  export default {
-  }
+  export default {}
 </script>
 
 <style lang="scss" scoped>
-  .tip-wrapper {
-      min-height: 400px;
+    .main{
       text-align: center;
-      color: #1b8ee4;
-      h1{
-          margin-top:50px;
-      }
-      .group {
-        margin-top: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .sub-title {
-          margin-right: 16px;
-        }
-      }
-      img {
-        margin-top: 40px;
-      }
-    
-  }
+      margin-top:150px;
+    }
 </style>

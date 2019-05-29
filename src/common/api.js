@@ -45,7 +45,7 @@ function base(method, url, params, success, failure, config) {
     axios(configuration).then((res) => {
         if(res.data['ret'] && res.data['ret']['retCode'] && res.data['ret']['retCode'].toString() === 'A001'){
             setTimeout(() => {
-                window.location.href = AUTH;
+                // window.location.href = AUTH;
             }, 2500);
         }else{
             if((typeof success).toUpperCase() === 'FUNCTION') success(res.data);
