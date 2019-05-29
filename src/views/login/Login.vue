@@ -80,7 +80,7 @@ export default {
     let userinfo = localStorage.getItem("userinfo");
     if(userinfo){
       userinfo = JSON.parse(userinfo);
-      if((userinfo.updateTime-(new Date).getTime())<4*60*60*60){
+      if((new Date).getTime() -userinfo.updateTime<4*60*60*60){
         this.G.user = userinfo;
         this.$router.push({ name: "首页" });
       }
