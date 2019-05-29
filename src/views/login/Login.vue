@@ -17,13 +17,15 @@
             <i class="icon account"></i><input
               type="text"
               placeholder="请输入帐号"
-            >
+              v-model="account"
+            />
           </div>
           <div class="form-control">
             <i class="icon password"></i><input
               type="password"
               placeholder="请输入密码"
-            >
+              v-model="password"
+            />
           </div>
 
           <input
@@ -68,7 +70,8 @@
 export default {
   data() {
     return {
-      data: {}
+      account: "",
+      password: ""
     };
   },
   components: {},
@@ -132,7 +135,28 @@ export default {
   },
   methods: {
     login() {
-        this.$router.push({name:'首页'})
+      if (this.isEmpty(this.password) || this.isEmpty(this.account)) {
+        this.$Message.warning('请填写账号密码');
+        return
+      }
+      this.$api.get(
+        this.G.api.login,
+        {
+          userName: this.account,
+          password: this.password
+        },
+        res => {
+          this.G.user = res.data;
+          if (res.data) {
+            this.$router.push({ name: "首页" });
+          } else {
+            this.$Message.warning('账号或密码有误');
+          }
+        },
+        err => {
+          this.$error(err);
+        }
+      );
     }
   }
 };

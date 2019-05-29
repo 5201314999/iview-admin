@@ -309,7 +309,8 @@ let menu = {
  * @type {{user: string, logout: string, project: string}}
  */
 const api = {
-    strategy: '/stat/res/{res}/report-form/{report}'
+    strategy: '/stat/res/{res}/report-form/{report}',
+    login: '/user/login'
 };
 /**
  * file's configuration
