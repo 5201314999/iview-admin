@@ -89,6 +89,7 @@ const HeaderComponent = {
   methods: {
     logout() {
       this.G.user = null;
+      localStorage.removeItem('userinfo')
       this.$router.push({ name: "登录" });
     },
     collapsedMenu() {
