@@ -88,6 +88,7 @@ const HeaderComponent = {
   },
   methods: {
     logout() {
+      this.G.user = null;
       this.$router.push({ name: "登录" });
     },
     collapsedMenu() {
