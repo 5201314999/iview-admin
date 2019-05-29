@@ -112,7 +112,7 @@ Description
               strategy.push((e.strategy * 100).toFixed(2));
             });
             const option = {
-              color: ['rgb(58, 161, 255)', 'rgb(242, 99, 123)'],
+              // color: ['rgb(58, 161, 255)', 'rgb(242, 99, 123)'],
               title: {
                 text: '模拟交易',
                 top: 20,
@@ -202,7 +202,7 @@ Description
                   symbol: 'none',
                   sampling: 'average',
                   itemStyle: {
-                    color: 'rgb(255, 70, 131)'
+                    color: "rgb(58, 161, 255)"
                   },
                   areaStyle: {
                     color: 'rgba(58, 161, 255,.5)'

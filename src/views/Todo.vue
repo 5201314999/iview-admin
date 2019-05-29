@@ -18,5 +18,9 @@ Description
     .main{
       text-align: center;
       margin-top:150px;
+      img{
+        width:150px;
+      }
+      
     }
 </style>
