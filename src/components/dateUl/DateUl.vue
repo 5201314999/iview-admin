@@ -69,25 +69,27 @@ Description
     display: flex;
     font-size: 14px;
     .label {
-      line-height: 30px;
-      margin-right: 10px;
+      line-height: 20px;
+      margin-right: 5px;
+      white-space: nowrap;
     }
     ul {
       display: flex;
-      height: 30px;
+      height: 20px;
       transition: 0.3s;
       li {
         list-style: none;
         background-color: #ffffff;
-        margin-right: 10px;
+        margin-right: 4px;
         height: 100%;
         line-height: 36px;
         background-color: #e8e8e8;
-        min-width: 30px;
-        height: 30px;
-        line-height: 30px;
+        min-width: 20px;
+        height: 20px;
+        line-height: 20px;
         text-align: center;
-        padding: 0 5px;
+        padding: 0 2px;
+        white-space: nowrap;
         &:hover {
           cursor: pointer;
           color: $theme-color;

@@ -1,4 +1,11 @@
 /* container */
+.container.root-container{
+    min-width: 948px;
+    overflow: auto;
+    &:not(.collapsed){
+        min-width: 1133px;
+    }
+}
 .ivu-layout, .container{
     overflow: hidden;
     .ivu-btn-large{

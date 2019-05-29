@@ -37,6 +37,7 @@ Description
         </Card>
 
         <Card class="chart-wrapper">
+          <date-ul class="date-ul"></date-ul>
           <div
             ref="chart1"
             style="width:100%;height:100%;"
@@ -48,6 +49,8 @@ Description
 </template>
 
 <script>
+import DateUl from "@/components/dateUl/DateUl";
+
 export default {
   data() {
     return {
@@ -61,10 +64,10 @@ export default {
         chart5: {},
         chart6: {}
       },
-      chartOptions:{}
+      chartOptions: {}
     };
   },
-  components: {},
+  components: { DateUl },
   created() {
     this.$nextTick(() => {
       // 初始化
@@ -81,13 +84,13 @@ export default {
         }),
         {},
         res => {
-          res.data.stats = res.data.stats.map(item=>{
+          res.data.stats = res.data.stats.map(item => {
             return {
               ...item,
               strategy: this.formatPercentage(item.strategy),
               csl: this.formatPercentage(item.csl)
-            }
-          })
+            };
+          });
 
           this.chartDatas.chart1 = res.data.stats || {};
           this.strategyDatas.chart1 = res.data || {};
@@ -216,10 +219,7 @@ export default {
       }
       return (num * 100).toFixed(2);
     },
-    genLineChartOption(){
-
-    },
-
+    genLineChartOption() {}
   }
 };
 </script>
@@ -236,9 +236,9 @@ export default {
       /deep/ .ivu-card-body {
         padding: 0;
       }
-      margin-right: 20px;
+      margin-right: 10px;
       flex: 1;
-      min-width: 370px;
+      min-width: 320px;
       max-width: 380px;
       .name {
         font-size: 20px;
@@ -266,7 +266,7 @@ export default {
           }
         }
         .text {
-          font-size: 24px;
+          font-size: 20px;
           font-weight: 600;
         }
       }
@@ -289,6 +289,7 @@ export default {
     }
     .chart-wrapper {
       flex: 2;
+      position: relative;
       /deep/ .ivu-card-body {
         height: 100%;
         padding: 0;
