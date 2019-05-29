@@ -1,5 +1,5 @@
 <template>
-    <Row class="container">
+    <Row class="container root-container" :class="{'collapsed':G.menu.collapsed}">
         <spin size="large" fix v-if="loading"></spin>
         <wi-layout></wi-layout>
     </Row>
@@ -18,3 +18,5 @@
     };
     export default HomeComponent;
 </script>
+
+

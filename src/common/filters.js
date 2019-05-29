@@ -1,5 +1,5 @@
 const formatEmpty = (value, format = '-') => {
-    if(value === null) return format;
+    if(value === null || value === undefined) return format;
     if((typeof value).toString().toLowerCase() === 'string'){
         if(value.trim().length === 0) return format;
     }

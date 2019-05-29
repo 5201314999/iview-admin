@@ -27,7 +27,7 @@ Vue.use(LazyLoad, {
     attempt: 1
 });
 Vue.use(tools);
-Vue.prototype.G = config;
+Vue.prototype.G = config.$data;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$echarts = echarts;

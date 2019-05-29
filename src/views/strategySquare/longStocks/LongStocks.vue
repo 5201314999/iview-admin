@@ -37,6 +37,7 @@ Description
         </Card>
 
         <Card class="chart-wrapper">
+          <date-ul class="date-ul"></date-ul>
           <div
             ref="chart1"
             style="width:100%;height:100%;"
@@ -48,6 +49,8 @@ Description
 </template>
 
 <script>
+import DateUl from "@/components/dateUl/DateUl";
+
 export default {
   data() {
     return {
@@ -61,10 +64,10 @@ export default {
         chart5: {},
         chart6: {}
       },
-      chartOptions:{}
+      chartOptions: {}
     };
   },
-  components: {},
+  components: { DateUl },
   created() {
     this.$nextTick(() => {
       // 初始化
@@ -81,13 +84,14 @@ export default {
         }),
         {},
         res => {
-          res.data.stats = res.data.stats.map(item=>{
+          // 转百分比
+          res.data.stats = res.data.stats.map(item => {
             return {
               ...item,
               strategy: this.formatPercentage(item.strategy),
               csl: this.formatPercentage(item.csl)
-            }
-          })
+            };
+          });
 
           this.chartDatas.chart1 = res.data.stats || {};
           this.strategyDatas.chart1 = res.data || {};
@@ -95,8 +99,20 @@ export default {
           let option = {
             tooltip: {
               trigger: "axis",
-              position: function(pt) {
-                return [pt[0], "10%"];
+              backgroundColor: "rgba(255,255,255,0.7)",
+              borderColor: "#333",
+              borderWidth: 1,
+              textStyle: {
+                color: "#000000"
+              },
+              formatter: params => {
+                return `${params[0].name}<br/>
+                          ${params[0].marker}${params[0].seriesName}: ${
+                  params[0].value
+                }%<br/>
+                          ${params[1].marker}${params[1].seriesName}: ${
+                  params[1].value
+                }%`;
               }
             },
             title: {
@@ -131,13 +147,16 @@ export default {
               })
             },
             yAxis: {
-              name: "累计收益(%)",
+              name: "累计收益",
               type: "value",
               boundaryGap: [0, "100%"],
               position: "right",
               nameRotate: "-90",
               nameLocation: "middle",
-              nameGap: 30
+              nameGap: 50,
+              axisLabel: {
+                formatter: "{value}%"
+              }
             },
             dataZoom: [
               {
@@ -216,10 +235,7 @@ export default {
       }
       return (num * 100).toFixed(2);
     },
-    genLineChartOption(){
-
-    },
-
+    genLineChartOption() {}
   }
 };
 </script>
@@ -236,9 +252,9 @@ export default {
       /deep/ .ivu-card-body {
         padding: 0;
       }
-      margin-right: 20px;
+      margin-right: 10px;
       flex: 1;
-      min-width: 370px;
+      min-width: 320px;
       max-width: 380px;
       .name {
         font-size: 20px;
@@ -253,7 +269,7 @@ export default {
         }
       }
       .profit-info {
-        padding: 20px 0;
+        padding: 30px 0;
         display: flex;
         border: 1px solid #eee;
         border-left: 0;
@@ -266,7 +282,7 @@ export default {
           }
         }
         .text {
-          font-size: 24px;
+          font-size: 20px;
           font-weight: 600;
         }
       }
@@ -289,6 +305,7 @@ export default {
     }
     .chart-wrapper {
       flex: 2;
+      position: relative;
       /deep/ .ivu-card-body {
         height: 100%;
         padding: 0;

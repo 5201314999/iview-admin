@@ -142,6 +142,7 @@ const HeaderComponent = {
     }
   },
   created() {
+    this.$root.header = this
     // const vm = this;
     // vm.$api.get(vm.G.api.project, {
     //     method: 'getProLink',
