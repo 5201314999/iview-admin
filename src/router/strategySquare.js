@@ -17,7 +17,7 @@ const LongStocks = () => import("@/views/strategySquare/longStocks/LongStocks");
 // const WenJin300 = () => import("@/views/strategySquare/alpha/WenJin300");
 // const GaoChengZhangR = () => import("@/views/strategySquare/alpha/GaoChengZhangR");
 
-const Alpha = () => import("@/views/strategySquare/alpha/alpha");
+const Alpha = () => import("@/views/strategySquare/alpha/Alpha");
 
 
 // // 股票多头
