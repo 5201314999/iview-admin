@@ -183,8 +183,8 @@
             updateMenuActive() {
                 const vm = this;
                 vm.$nextTick(() => {
-                    vm.$refs.menu.updateOpened();
-                    vm.$refs.menu.updateActiveName();
+                    vm.$refs.menu&&vm.$refs.menu.updateOpened();
+                    vm.$refs.menu&&vm.$refs.menu.updateActiveName();
                 });
             },
             setMenuActive() {
