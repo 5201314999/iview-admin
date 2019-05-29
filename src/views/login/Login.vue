@@ -157,7 +157,7 @@ export default {
         res => {
           let userInfo = {
             ...res.data,
-            updatedTime:(new Date).getTime()
+            updateTime:(new Date).getTime()
           }
           this.G.user = userInfo;
           localStorage.setItem('userinfo',JSON.stringify(userInfo));
