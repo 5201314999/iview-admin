@@ -125,7 +125,7 @@ export default {
       children: [
         {
           path: "chuangYeBanZhenJiaZhiZhuHe",
-          component: GaoChengZhangR,
+          component: ChuangYeBanZhenJiaZhiZhuHe,
           meta: {
             res: "股票多头",
             name: "创业板真价值组合"

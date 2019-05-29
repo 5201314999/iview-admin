@@ -9,7 +9,7 @@ Description
     <div class="strategy-wrapper">
       <div>
         <Card class="outline">
-          <div class="name">创业板真价值组合</div>
+          <div class="name">{{name}}</div>
           <div class="profit">
             <div class="title">累计收益</div>
             <div class="text red">{{formatPercentage(strategyDatas.chart1.accIncome)|formatEmpty}}%</div>
@@ -37,6 +37,7 @@ Description
         </Card>
 
         <Card class="chart-wrapper">
+          <date-ul class="date-ul"></date-ul>
           <div
             ref="chart1"
             style="width:100%;height:100%;"
@@ -48,6 +49,8 @@ Description
 </template>
 
 <script>
+import DateUl from "@/components/dateUl/DateUl";
+
 export default {
   data() {
     return {
@@ -61,10 +64,12 @@ export default {
         chart5: {},
         chart6: {}
       },
-      chartOptions:{}
+      chartOptions: {},
+      res:this.$route.meta.res,
+      name:this.$route.meta.name
     };
   },
-  components: {},
+  components: { DateUl },
   created() {
     this.$nextTick(() => {
       // 初始化
@@ -76,18 +81,19 @@ export default {
       // 请求数据
       this.$api.get(
         this.parseUrl(this.G.api.strategy, {
-          res: "股票多头",
-          report: "创业板真价值组合"
+          res: this.res,
+          report: this.name
         }),
         {},
         res => {
-          res.data.stats = res.data.stats.map(item=>{
+          // 转百分比
+          res.data.stats = res.data.stats.map(item => {
             return {
               ...item,
               strategy: this.formatPercentage(item.strategy),
               csl: this.formatPercentage(item.csl)
-            }
-          })
+            };
+          });
 
           this.chartDatas.chart1 = res.data.stats || {};
           this.strategyDatas.chart1 = res.data || {};
@@ -95,8 +101,20 @@ export default {
           let option = {
             tooltip: {
               trigger: "axis",
-              position: function(pt) {
-                return [pt[0], "10%"];
+              backgroundColor: "rgba(255,255,255,0.7)",
+              borderColor: "#333",
+              borderWidth: 1,
+              textStyle: {
+                color: "#000000"
+              },
+              formatter: params => {
+                return `${params[0].name}<br/>
+                          ${params[0].marker}${params[0].seriesName}: ${
+                  params[0].value
+                }%<br/>
+                          ${params[1].marker}${params[1].seriesName}: ${
+                  params[1].value
+                }%`;
               }
             },
             title: {
@@ -131,13 +149,16 @@ export default {
               })
             },
             yAxis: {
-              name: "累计收益(%)",
+              name: "累计收益",
               type: "value",
               boundaryGap: [0, "100%"],
               position: "right",
               nameRotate: "-90",
               nameLocation: "middle",
-              nameGap: 30
+              nameGap: 50,
+              axisLabel: {
+                formatter: "{value}%"
+              }
             },
             dataZoom: [
               {
@@ -216,85 +237,11 @@ export default {
       }
       return (num * 100).toFixed(2);
     },
-    genLineChartOption(){
-
-    },
-
+    genLineChartOption() {}
   }
 };
 </script>
 
-<style lang="scss" scoped>
-.strategy-wrapper {
-  display: flex;
-  justify-content: center;
-  > div {
-    max-width: 1400px;
-    width: 100%;
-    display: flex;
-    .outline {
-      /deep/ .ivu-card-body {
-        padding: 0;
-      }
-      margin-right: 20px;
-      flex: 1;
-      min-width: 370px;
-      max-width: 380px;
-      .name {
-        font-size: 20px;
-        font-weight: 600;
-        padding: 30px 20px;
-      }
-      .profit {
-        padding: 0 20px 30px 20px;
-        .text {
-          font-size: 32px;
-          font-weight: 600;
-        }
-      }
-      .profit-info {
-        padding: 20px 0;
-        display: flex;
-        border: 1px solid #eee;
-        border-left: 0;
-        border-right: 0;
-        & > div {
-          flex: 1;
-          padding-left: 20px;
-          &:not(:last-child) {
-            border-right: 1px solid #eee;
-          }
-        }
-        .text {
-          font-size: 24px;
-          font-weight: 600;
-        }
-      }
-      .info {
-        padding: 30px 20px;
-        & > div {
-          .title {
-            display: inline-block;
-            width: 70px;
-            text-align-last: justify;
-          }
-          &:not(:last-child) {
-            margin-bottom: 16px;
-          }
-          span:nth-child(2) {
-            font-size: 18px;
-          }
-        }
-      }
-    }
-    .chart-wrapper {
-      flex: 2;
-      /deep/ .ivu-card-body {
-        height: 100%;
-        padding: 0;
-      }
-    }
-  }
-}
-</style>
+<style src="./style.scss" lang="scss" scoped></style>
+
 
