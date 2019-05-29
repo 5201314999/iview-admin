@@ -9,11 +9,14 @@ const Main = () => import("@/views//Main");
 const Container = () => import("@/views/Container");
 
 // alpha 策略
-const BaiMaLiangHuaDuiChong1Hao = () => import("@/views/strategySquare/alpha/BaiMaLiangHuaDuiChong1Hao");
-const ChaoJiYinLiYinZiZuHe = () => import("@/views/strategySquare/alpha/ChaoJiYinLiYinZiZuHe");
-const JiaZhIHongLiWenYinZuHe = () => import("@/views/strategySquare/alpha/JiaZhIHongLiWenYinZuHe");
-const WenJin300 = () => import("@/views/strategySquare/alpha/WenJin300");
-const GaoChengZhangR = () => import("@/views/strategySquare/alpha/GaoChengZhangR");
+// const BaiMaLiangHuaDuiChong1Hao = () => import("@/views/strategySquare/alpha/BaiMaLiangHuaDuiChong1Hao");
+// const ChaoJiYinLiYinZiZuHe = () => import("@/views/strategySquare/alpha/ChaoJiYinLiYinZiZuHe");
+// const JiaZhIHongLiWenYinZuHe = () => import("@/views/strategySquare/alpha/JiaZhIHongLiWenYinZuHe");
+// const WenJin300 = () => import("@/views/strategySquare/alpha/WenJin300");
+// const GaoChengZhangR = () => import("@/views/strategySquare/alpha/GaoChengZhangR");
+
+const Alpha = () => import("@/views/strategySquare/alpha/alpha");
+
 
 // 股票多头
 const ChuangYeBanZhenJiaZhiZhuHe = () => import("@/views/strategySquare/longStocks/ChuangYeBanZhenJiaZhiZhuHe");
@@ -75,7 +78,7 @@ export default {
       children: [
         {
           path: "baiMaLiangHuaDuiChong1Hao",
-          component: BaiMaLiangHuaDuiChong1Hao,
+          component: Alpha,
           meta: {
             res: "alpha策略",
             name: "白马量化对冲1号"
@@ -83,7 +86,7 @@ export default {
         },
         {
           path: "chaoJiYinLiYinZiZuHe",
-          component: ChaoJiYinLiYinZiZuHe,
+          component: Alpha,
           meta: {
             res: "alpha策略",
             name: "超级盈利因子组合"
@@ -91,7 +94,7 @@ export default {
         },
         {
           path: "jiaZhIHongLiWenYinZuHe",
-          component: JiaZhIHongLiWenYinZuHe,
+          component: Alpha,
           meta: {
             res: "alpha策略",
             name: "价值红利稳赢组合"
@@ -99,7 +102,7 @@ export default {
         },
         {
           path: "wenJin300",
-          component: WenJin300,
+          component: Alpha,
           meta: {
             res: "alpha策略",
             name: "稳进300"
@@ -107,7 +110,7 @@ export default {
         },
         {
           path: "gaoChengZhangR",
-          component: GaoChengZhangR,
+          component: Alpha,
           meta: {
             res: "alpha策略",
             name: "高成长R"

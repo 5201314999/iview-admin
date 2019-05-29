@@ -73,9 +73,6 @@ Description
       this.resName=this.$route.meta.name;
       this.chartsObj.alpha1 = this.$echarts.init(document.querySelector('.alpha1'));
       this.getData();
-      window.onresize = () => {
-        this.handleChartResize();
-      };
       this.$root.$on('resize', this.handleChartResize);
     },
     methods: {
@@ -126,9 +123,11 @@ Description
                 }
               },
               grid: {
+                show: true,
+                bottom:60,
                 top: 60,
-                left: 40,
-                right: 40,
+                left: 50,
+                right: 50,
                 containLabel:true
               },
               tooltip: {
@@ -139,7 +138,7 @@ Description
                 textStyle: {
                   color: '#000000'
                 },
-                formatter: (params) => {
+                formatter: params => {
                   return `${params[0].name}<br/>
                           ${params[0].marker}${params[0].seriesName}: ${params[0].value}%<br/>
                           ${params[1].marker}${params[1].seriesName}: ${params[1].value}%`;
@@ -214,19 +213,22 @@ Description
                   name: '基准',
                   type: 'line',
                   smooth: true,
-                  symbol: 'none',
+                  symbol: "none",
+                  sampling: "average",
+                  itemStyle: {
+                    color: "rgb(242, 99, 123)"
+                  },
                   data: csl
                 }
               ]
             };
-            this.chartsObj.alpha1.clear();
-            this.chartsObj.alpha1.setOption(option, true);
+            this.chartsObj.alpha1.setOption(option);
           }
           else {
             this.$error(res.ret.retMsg);
           }
         }, err => {
-        //   this.$error('出现异常');
+          this.$error('出现异常');
         });
 
       }
