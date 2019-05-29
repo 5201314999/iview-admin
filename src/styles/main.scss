@@ -58,7 +58,7 @@ pre, code, kbd, samp{
       }
       .sider-info {
         flex: 1;
-        min-width: 370px;
+        min-width: 320px;
         max-width: 380px;
         background-color: #ffffff;
         .sp-data {
@@ -106,7 +106,7 @@ pre, code, kbd, samp{
       }
       .chart-wrapper {
         position: relative;
-        flex: 1;
+        flex: 2;
         margin-left: 20px;
         background-color: #ffffff;
         .chart {
