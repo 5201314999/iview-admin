@@ -1,6 +1,8 @@
 # frame
 
-> A Vue.js project
+> vue2+iview3+axios+echarts 
+
+### 布局+ 页面自适应做了很多优化
 
 ## Build Setup
 
@@ -19,3 +21,5 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+
