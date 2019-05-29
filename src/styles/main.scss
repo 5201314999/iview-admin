@@ -86,13 +86,13 @@ pre, code, kbd, samp{
             .label {
             }
             .value {
-              font-size: 24px;
+              font-size: 20px;
               font-weight: 600;
             }
           }
         }
         .extra-info {
-          padding: 20px;
+          padding: 30px 20px;
           .group {
             .label {
               width: 70px;
@@ -110,7 +110,7 @@ pre, code, kbd, samp{
         margin-left: 20px;
         background-color: #ffffff;
         .chart {
-          height: 400px;
+           height: 100%;
         }
       }
     }
