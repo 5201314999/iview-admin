@@ -18,7 +18,7 @@
               :src="require('../../assert/images/user3.svg')"
               class="header-avatar mr10"
             />
-            {{ G.user.nickName }}
+            {{ G.user ? G.user.nickName : "" }}
           </a>
           <a
             href="javascript:void(0);"
