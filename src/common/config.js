@@ -21,9 +21,7 @@ const title = '黄鹄科技策略量化平台';
  * user information( 初始化后覆盖 )
  * @type {{}}
  */
-let user = {
-    name: '罗杰'
-};
+let user = null;
 /**
  * site logo
  * @type {null}
@@ -173,7 +171,7 @@ let menu = {
                             title: '期货全品种策略R',
                             // icon: 'logo-octocat',
                             name: 'qiHuoQuanPinZhongCeLueR',
-                            path: '/strategySquare/qiHuoQuanPinZhongCeLueR'
+                            path: '/strategySquare/cta/qiHuoQuanPinZhongCeLueR'
                         },
                         {
                             title: 'SAR组合',

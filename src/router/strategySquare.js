@@ -8,6 +8,8 @@
 const Main = () => import("@/views//Main");
 const Container = () => import("@/views/Container");
 
+const LongStocks = () => import("@/views/strategySquare/longStocks/LongStocks");
+
 // alpha 策略
 // const BaiMaLiangHuaDuiChong1Hao = () => import("@/views/strategySquare/alpha/BaiMaLiangHuaDuiChong1Hao");
 // const ChaoJiYinLiYinZiZuHe = () => import("@/views/strategySquare/alpha/ChaoJiYinLiYinZiZuHe");
@@ -18,43 +20,43 @@ const Container = () => import("@/views/Container");
 const Alpha = () => import("@/views/strategySquare/alpha/alpha");
 
 
-// 股票多头
-const ChuangYeBanZhenJiaZhiZhuHe = () => import("@/views/strategySquare/longStocks/ChuangYeBanZhenJiaZhiZhuHe");
-const XiaoShiZhiJiJinR = () => import("@/views/strategySquare/longStocks/XiaoShiZhiJiJinR");
-const DaiWeiSiShuanJi = () => import("@/views/strategySquare/longStocks/DaiWeiSiShuanJi");
-const FenXianQiYeChengZhangZuHe = () => import("@/views/strategySquare/longStocks/FenXianQiYeChengZhangZuHe");
-const YinHangGaoJiaZhiLunDong = () => import("@/views/strategySquare/longStocks/YinHangGaoJiaZhiLunDong");
-const RenGongZhiNengZuHe = () => import("@/views/strategySquare/longStocks/RenGongZhiNengZuHe");
+// // 股票多头
+// const ChuangYeBanZhenJiaZhiZhuHe = () => import("@/views/strategySquare/longStocks/ChuangYeBanZhenJiaZhiZhuHe");
+// const XiaoShiZhiJiJinR = () => import("@/views/strategySquare/longStocks/XiaoShiZhiJiJinR");
+// const DaiWeiSiShuanJi = () => import("@/views/strategySquare/longStocks/DaiWeiSiShuanJi");
+// const FenXianQiYeChengZhangZuHe = () => import("@/views/strategySquare/longStocks/FenXianQiYeChengZhangZuHe");
+// const YinHangGaoJiaZhiLunDong = () => import("@/views/strategySquare/longStocks/YinHangGaoJiaZhiLunDong");
+// const RenGongZhiNengZuHe = () => import("@/views/strategySquare/longStocks/RenGongZhiNengZuHe");
 
-// 股票多空
-const LiangJiaGuaiDian = () => import("@/views/strategySquare/shortStocks/LiangJiaGuaiDian");
-const JiQiXueXiZuHe = () => import("@/views/strategySquare/shortStocks/JiQiXueXiZuHe");
-const XieTiaoBanZhuangCeLue = () => import("@/views/strategySquare/shortStocks/XieTiaoBanZhuangCeLue");
-const JiBenMianDuoYinZi = () => import("@/views/strategySquare/shortStocks/JiBenMianDuoYinZi");
+// // 股票多空
+// const LiangJiaGuaiDian = () => import("@/views/strategySquare/shortStocks/LiangJiaGuaiDian");
+// const JiQiXueXiZuHe = () => import("@/views/strategySquare/shortStocks/JiQiXueXiZuHe");
+// const XieTiaoBanZhuangCeLue = () => import("@/views/strategySquare/shortStocks/XieTiaoBanZhuangCeLue");
+// const JiBenMianDuoYinZi = () => import("@/views/strategySquare/shortStocks/JiBenMianDuoYinZi");
 
 
-// 期货CTA
-const QiHuoQuanPinZhongCeLueR = () => import("@/views/strategySquare/cta/QiHuoQuanPinZhongCeLueR");
-const SAR = () => import("@/views/strategySquare/cta/SAR");
-const RBreaker = () => import("@/views/strategySquare/cta/RBreaker");
-const GaiJinHaiGuiJiaoYiCeLue = () => import("@/views/strategySquare/cta/GaiJinHaiGuiJiaoYiCeLue");
+// // 期货CTA
+// const QiHuoQuanPinZhongCeLueR = () => import("@/views/strategySquare/cta/QiHuoQuanPinZhongCeLueR");
+// const SAR = () => import("@/views/strategySquare/cta/SAR");
+// const RBreaker = () => import("@/views/strategySquare/cta/RBreaker");
+// const GaiJinHaiGuiJiaoYiCeLue = () => import("@/views/strategySquare/cta/GaiJinHaiGuiJiaoYiCeLue");
 
-// 期权
-const WuFengXiangTaoLi = () => import("@/views/strategySquare/option/WuFengXiangTaoLi");
-const BoDongLvTaoLi = () => import("@/views/strategySquare/option/BoDongLvTaoLi");
-const DateGaoPinStrategy = () => import("@/views/strategySquare/option/DateGaoPinStrategy");
-const Delta = () => import("@/views/strategySquare/option/Delta");
-const Vega = () => import("@/views/strategySquare/option/Vega");
+// // 期权
+// const WuFengXiangTaoLi = () => import("@/views/strategySquare/option/WuFengXiangTaoLi");
+// const BoDongLvTaoLi = () => import("@/views/strategySquare/option/BoDongLvTaoLi");
+// const DateGaoPinStrategy = () => import("@/views/strategySquare/option/DateGaoPinStrategy");
+// const Delta = () => import("@/views/strategySquare/option/Delta");
+// const Vega = () => import("@/views/strategySquare/option/Vega");
 
-// 事件驱动
-const ChengFenGuTiaoZheng = () => import("@/views/strategySquare/eventDriven/ChengFenGuTiaoZheng");
-const GaoZhuangSong = () => import("@/views/strategySquare/eventDriven/GaoZhuangSong");
-const NianBaoMaiFu = () => import("@/views/strategySquare/eventDriven/NianBaoMaiFu");
-const YeJiYuZengZuHe = () => import("@/views/strategySquare/eventDriven/YeJiYuZengZuHe");
+// // 事件驱动
+// const ChengFenGuTiaoZheng = () => import("@/views/strategySquare/eventDriven/ChengFenGuTiaoZheng");
+// const GaoZhuangSong = () => import("@/views/strategySquare/eventDriven/GaoZhuangSong");
+// const NianBaoMaiFu = () => import("@/views/strategySquare/eventDriven/NianBaoMaiFu");
+// const YeJiYuZengZuHe = () => import("@/views/strategySquare/eventDriven/YeJiYuZengZuHe");
 
-// 其它
-const FenJiA = () => import("@/views/strategySquare/other/FenJiA");
-const KeZhuangZhaiTaoLi = () => import("@/views/strategySquare/other/KeZhuangZhaiTaoLi");
+// // 其它
+// const FenJiA = () => import("@/views/strategySquare/other/FenJiA");
+// const KeZhuangZhaiTaoLi = () => import("@/views/strategySquare/other/KeZhuangZhaiTaoLi");
 
 
 export default {
@@ -128,7 +130,7 @@ export default {
       children: [
         {
           path: "chuangYeBanZhenJiaZhiZhuHe",
-          component: ChuangYeBanZhenJiaZhiZhuHe,
+          component: LongStocks,
           meta: {
             res: "股票多头",
             name: "创业板真价值组合"
@@ -136,7 +138,7 @@ export default {
         },
         {
           path: "xiaoShiZhiJiJinR",
-          component: XiaoShiZhiJiJinR,
+          component: LongStocks,
           meta: {
             res: "股票多头",
             name: "小市值激进R"
@@ -144,7 +146,7 @@ export default {
         },
         {
           path: "daiWeiSiShuanJi",
-          component: DaiWeiSiShuanJi,
+          component: LongStocks,
           meta: {
             res: "股票多头",
             name: "戴维斯双击"
@@ -152,7 +154,7 @@ export default {
         },
         {
           path: "fenXianQiYeChengZhangZuHe",
-          component: FenXianQiYeChengZhangZuHe,
+          component: LongStocks,
           meta: {
             res: "股票多头",
             name: "分享企业成长组合"
@@ -160,7 +162,7 @@ export default {
         },
         {
           path: "yinHangGaoJiaZhiLunDong",
-          component: YinHangGaoJiaZhiLunDong,
+          component: LongStocks,
           meta: {
             res: "股票多头",
             name: "银行高价值轮动"
@@ -168,7 +170,7 @@ export default {
         },
         {
           path: "renGongZhiNengZuHe",
-          component: RenGongZhiNengZuHe,
+          component: LongStocks,
           meta: {
             res: "股票多头",
             name: "人工智能组合"
@@ -185,7 +187,7 @@ export default {
       children: [
         {
           path: "liangJiaGuaiDian",
-          component: LiangJiaGuaiDian,
+          component: LongStocks,
           meta: {
             res: "股票多空",
             name: "量价拐点"
@@ -193,7 +195,7 @@ export default {
         },
         {
           path: "jiQiXueXiZuHe",
-          component: JiQiXueXiZuHe,
+          component: LongStocks,
           meta: {
             res: "股票多空",
             name: "机器学习组合"
@@ -201,7 +203,7 @@ export default {
         },
         {
           path: "xieTiaoBanZhuangCeLue",
-          component: XieTiaoBanZhuangCeLue,
+          component: LongStocks,
           meta: {
             res: "股票多空",
             name: "协整搬砖策略"
@@ -209,7 +211,7 @@ export default {
         },
         {
           path: "jiBenMianDuoYinZi",
-          component: JiBenMianDuoYinZi,
+          component: LongStocks,
           meta: {
             res: "股票多空",
             name: "基本面多因子"
@@ -226,7 +228,7 @@ export default {
       children: [
         {
           path: "qiHuoQuanPinZhongCeLueR",
-          component: QiHuoQuanPinZhongCeLueR,
+          component: LongStocks,
           meta: {
             res: "期货CTA",
             name: "期货全品种策略R"
@@ -234,7 +236,7 @@ export default {
         },
         {
           path: "SAR",
-          component: SAR,
+          component: LongStocks,
           meta: {
             res: "期货CTA",
             name: "SAR组合"
@@ -242,7 +244,7 @@ export default {
         },
         {
           path: "RBreaker",
-          component: RBreaker,
+          component: LongStocks,
           meta: {
             res: "期货CTA",
             name: "RBreaker组合"
@@ -250,7 +252,7 @@ export default {
         },
         {
           path: "gaiJinHaiGuiJiaoYiCeLue",
-          component: GaiJinHaiGuiJiaoYiCeLue,
+          component: LongStocks,
           meta: {
             res: "期货CTA",
             name: "改进海龟交易策略"
@@ -268,7 +270,7 @@ export default {
        
         {
           path: "wuFengXiangTaoLi",
-          component: WuFengXiangTaoLi,
+          component: LongStocks,
           meta: {
             res: "期权",
             name: "无风险套利"
@@ -276,7 +278,7 @@ export default {
         },
         {
           path: "boDongLvTaoLi",
-          component: BoDongLvTaoLi,
+          component: LongStocks,
           meta: {
             res: "期权",
             name: "波动率套利"
@@ -284,7 +286,7 @@ export default {
         },
         {
           path: "dateGaoPinStrategy",
-          component: DateGaoPinStrategy,
+          component: LongStocks,
           meta: {
             res: "期权",
             name: "日内高频策略"
@@ -292,7 +294,7 @@ export default {
         },
         {
           path: "Delta",
-          component: Delta,
+          component: LongStocks,
           meta: {
             res: "期权",
             name: "Delta对冲策略"
@@ -300,7 +302,7 @@ export default {
         },
         {
           path: "Vega",
-          component: Vega,
+          component: LongStocks,
           meta: {
             res: "期权",
             name: "Vega策略"
@@ -317,7 +319,7 @@ export default {
       children: [
         {
           path: "chengFenGuTiaoZheng",
-          component: ChengFenGuTiaoZheng,
+          component: LongStocks,
           meta: {
             res: "事件驱动",
             name: "成分股调整埋伏"
@@ -325,7 +327,7 @@ export default {
         },
         {
           path: "gaoZhuangSong",
-          component: GaoZhuangSong,
+          component: LongStocks,
           meta: {
             res: "事件驱动",
             name: "高送转组合"
@@ -333,7 +335,7 @@ export default {
         },
         {
           path: "nianBaoMaiFu",
-          component: NianBaoMaiFu,
+          component: LongStocks,
           meta: {
             res: "事件驱动",
             name: "年报埋伏"
@@ -341,7 +343,7 @@ export default {
         },
         {
           path: "yeJiYuZengZuHe",
-          component: YeJiYuZengZuHe,
+          component: LongStocks,
           meta: {
             res: "事件驱动",
             name: "业绩预增组合"
@@ -358,7 +360,7 @@ export default {
       children: [
         {
           path: "fenJiA",
-          component: FenJiA,
+          component: LongStocks,
           meta: {
             res: "其它",
             name: "分级A轮动"
@@ -366,7 +368,7 @@ export default {
         },
         {
           path: "keZhuangZhaiTaoLi",
-          component: KeZhuangZhaiTaoLi,
+          component: LongStocks,
           meta: {
             res: "其它",
             name: "可转债套利"

@@ -27,7 +27,7 @@
             const vm = this;
             return {
                 collapse: vm.G.menu.collapsed,
-                username: vm.G.user.name,
+                username: vm.G.user ? vm.G.user.nickName : "",
                 update: false,
                 project: vm.G.title,
                 // logo: vm.G.logo，
