@@ -173,7 +173,7 @@ let menu = {
                             title: '期货全品种策略R',
                             // icon: 'logo-octocat',
                             name: 'qiHuoQuanPinZhongCeLueR',
-                            path: '/strategySquare/qiHuoQuanPinZhongCeLueR'
+                            path: '/strategySquare/cta/qiHuoQuanPinZhongCeLueR'
                         },
                         {
                             title: 'SAR组合',
